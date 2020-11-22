@@ -1,31 +1,37 @@
 import numpy as np
 import pandas as pd
 from math import *
-import func, collections, utils, importlib, ujson
+from datetime import date
+import func, collections, utils, importlib, ujson, pathlib, os
 
 ###################### Input #######################
 f = open('output/dist_dict0.json','r') #Required input for this file - distance dictionary to reduce computation complexity
 dist_dict0 = ujson.loads(f.read()) #Load the file
 dist_dict0 = func.dict_key2tuple(dist_dict0) #Convert the file to tuples (original format before saving to .json)
 
-# # Personal Mac data - for test
-file_trip = '/Users/irislab/Google Drive/CJM Code & Data/Data/trippub_top2k.csv' # Lab machine data
-# file_trip  ='/Users/yichingding/Google Drive/School/Stanford/Research/IRIS/Journey Map/App Approach Paper/CJM Code & Data/Data/trippub_top2k.csv'
+# Get the data
+data_file = 'trippub_top2k.csv' #2k data
+current_path = pathlib.Path(os.getcwd()) #Get the current working directory
+file_trip = str(current_path.parent.parent)+'/Data/'+data_file #Trip file location
+output_path = str(current_path.parent)+ '/LabMachineResults/'+str(date.today()) #Saves the data file in 
+if not os.path.exists(output_path): #Create output folder if not exists
+    os.makedirs(output_path)
+
 trip_ls  = func.data_processing(file_trip) #Generate the day trips for dataset
 ###################### Input #######################
 #Generate initial population (a set of CJMs each as an individual)
 m = 10 # Maximum length of CJs in initial ppl CJMs (also determines the number of ini ppl CJMs = m-1)
 n = 5 # Number of CJs in initial ppl CJMs
-gen_max = 200 #Number of generations
-file_no_tot = 30 #Number of trials (each trial produces a separate output file)
+gen_max = 3 #Number of generations
+file_no_tot = 1 #Number of trials (each trial produces a separate output file)
 ###################### New #######################
 for file_no in range(file_no_tot):
 	ppl, top_n = func.ini_ppl_gen(trip_ls, m, n) #Generate the initial populations
 	center_dict_all = {} #Create an empty dictionary for assignment
 	cjm_score = collections.defaultdict(list)
 	record = [['Key','Best CJM','Score']] #List of [best CJM key, current best CJM, current best score]
-	filename='output/FinalResult' + str(file_no) + '.csv'
-	func.save_ls2csv(record, 'w' , filename)
+	filename= output_path + '/FinalResult' + str(file_no+1) + '.csv' #Create name of the output folder
+	func.save_ls2csv(record, 'w' , filename) #Saves the header 'record'
 
 	for t in range(gen_max):
 		#Assign CJs to current ppl and evaluate current population (CJMs)

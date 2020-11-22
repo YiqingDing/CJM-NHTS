@@ -1,10 +1,9 @@
-import matplotlib.pyplot as plt
-test_lines = (((1,1),(2,2)), ((1,2),(2,2)))
-n = 1
-for trip_ind in test_lines:
-	print('This is line '+str(n))
-	plt.plot(trip_ind[0],trip_ind[1])
-	n = n+1
-plt.show()
+import os, pathlib
+from datetime import date
 
-#hello world123
+current_path = pathlib.Path(os.getcwd())
+data_file = 'trippub_top2k.csv'
+output_path = str(current_path.parent)+ '/LabMachineResults/'+str(date.today())
+# print(current_path.parent.parent)
+if not os.path.exists(output_path):
+    os.makedirs(output_path)

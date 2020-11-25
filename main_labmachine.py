@@ -9,11 +9,13 @@ f = open('output/dist_dict0.json','r') #Required input for this file - distance 
 dist_dict0 = ujson.loads(f.read()) #Load the file
 dist_dict0 = func.dict_key2tuple(dist_dict0) #Convert the file to tuples (original format before saving to .json)
 
-# Get the data
-data_file = 'trippub_top2k.csv' #2k data
+# Input data file and output settiings
 current_path = pathlib.Path(os.getcwd()) #Get the current working directory
-file_trip = str(current_path.parent.parent)+'/Data/'+data_file #Trip file location
-output_path = str(current_path.parent)+ '/LabMachineResults/'+str(date.today()) #Saves the data file in 
+
+data_file = 'trippub_top2k.csv' #File name of the 2k data
+file_trip = str(current_path.parent.parent)+'/Data/'+data_file #Data file location+name
+
+output_path = str(current_path.parent)+ '/LabMachineResults/'+str(date.today()) #Output file path
 if not os.path.exists(output_path): #Create output folder if not exists
     os.makedirs(output_path)
 

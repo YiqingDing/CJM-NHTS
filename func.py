@@ -1,4 +1,4 @@
-import utils, collections, csv, random
+import utils, collections, csv, random, os, pathlib
 import pandas as pd
 from math import *
 import numpy as np
@@ -20,7 +20,7 @@ def data_processing(file):
 		# if idx < n:  #Test maximum row number
 		TDCASEID = row.TDCASEID #Get the unique ID of the trip segment
 
-		new_id = str(int(row.TDCASEID))[:-2] #Get the ID for the day trip (HOUSEID+PERSONID)
+		new_id = str(int(row.TDCASEID))[:-2] #Get the ID of day trip for current trip segment (HOUSEID+PERSONID)
 		if row.WHYTO > 0: #The trip segment is valid with a WHY2 variable
 			if new_id != previous_id: #Not the same day trip as previous day trip
 				# Start a new day trip
@@ -34,9 +34,9 @@ def data_processing(file):
 				previous_id = new_id #Assign the new id 
 				
 				# Find the start and end time of the current trip segment, round to hours
-				time0 = int(row.STRTTIME)
-				time0round = int(floor(time0/100) + round(time0/100%1/0.6,0)) #Convert to decimal
-				time1 = int(row.ENDTIME)
+				time0 = int(row.STRTTIME) #Start time 0000-2359
+				time0round = int( floor(time0/100) + round(time0/100%1/0.6,0) ) #Convert to interger hours (round to the nearest hour)
+				time1 = int(row.ENDTIME) #End time 0000-2359
 				time1round = int(floor(time1/100) + round(time1/100%1/0.6,0))
 				if time1round == time0round:
 					time1round += 0.5 #if the start and end at the same hour, add a 30m interval
@@ -199,17 +199,68 @@ def dict_key2tuple(dict0):
 			new_dict.update({eval(key):val})
 	return new_dict
 
-def save_ls2csv(ls,writetype = 'w' , filename='output/results.csv'):
-	# Saves a list to a new csv file with filename 
+def save_ls2csv(ls,writetype = 'w' , file_name='output/results.csv'):
+	# Saves a list to a new csv file with file_name 
 	# Input:
 	# ls: A list
-	# filename: Name of csv file
+	# file_name: Name of csv file
 	# Output:
-	# Saves the ls to a csv file with filename, depends on the writetype
-	with open(filename,writetype) as f:
+	# Saves the ls to a csv file with file_name, depends on the writetype
+	with open(file_name,writetype) as f:
 		fwrite = csv.writer(f)
 		if writetype == 'w': #Write a new file
 			fwrite.writerows(ls)
 		else: #Append to an existing file
 			fwrite.writerow(ls)
 
+def data_sort_labmachine(folder_path, data_name_format, file_name = 'result_sorted.csv'):
+	#Input file folder and name format, analyze and save output analysis
+	#folder_path: Path of data file folder
+	#data_name_format: Name format of data files (start with)
+	#Output: A dataframe of best results, each as a row 
+	result = pd.DataFrame() #Empty dataframe to save best trips
+	for root,dirs,files in os.walk(folder_path): #Iterate over all data files in path
+		for file in files:
+			if file.startswith(data_name_format): #Check if the file starts with the name FinalResult
+				df = pd.read_csv(folder_path+'/'+file) #Read the file
+				result = result.append(df.tail(1)) #Append the last line (final optimized trip) to the result list
+
+	result.insert(0,'Trial No', range(1, result.shape[0]+1)) #Add the trial number 
+	final = result.sort_values('Score',ascending=False) #Sort the result list based on final score
+	output_path = folder_path+'/' + file_name
+	final.to_csv(output_path, index=False) #Save the result list to csv
+
+	#Return final result list (each row is an optimization result for a trial) and output file path (in case of future use)
+	return final, output_path
+
+def data_translate_labmachine(result_file, simplified_activities = True, keep_origin = True):
+	#Default book
+	NHTS_book = {1: 'Regular home activities (chores, sleep)', 2: 'Work from home (paid)', 3: 'Work', 4: 'Work-related meeting / trip', 
+	5: 'Volunteer activities (not paid)', 6: 'Drop off /pick up someone', 7: 'Change type of transportation', 
+	8: 'Attend school as a student', 9: 'Attend child care', 10: 'Attend adult care', 11: 'Buy goods (groceries, clothes, appliances, gas)',
+	12: 'Buy services (dry cleaners, banking, service a car, pet care)', 13: 'Buy meals (go out for a meal, snack, carry-out)',
+	14: 'Other general errands (post office, library)', 15: 'Recreational activities (visit parks, movies, bars, museums)',
+	16: 'Exercise (go for a jog, walk, walk the dog, go to the gym)', 17: 'Visit friends or relatives', 18: 'Health care visit (medical, dental, therapy)',
+	19: 'Religious or other community activities', 97: 'Something else', 99: 'Nothing',}
+
+	df_data = pd.read_csv(result_file, converters={'Best CJM': eval}) #Read the csv file and treat list as value
+	result_translated = pd.DataFrame() #Create an empty dataframe
+
+	for idx, row in df_data.iterrows():
+		trip_ls = row['Best CJM'] #The bset CJMs for current trial
+		trial_current = pd.concat([row]*len(trip_ls), ignore_index=True, axis = 1) #Make a dataframe with # of col equal to number of clusters
+		trial_current = trial_current.transpose() #Transpose the dataframe so each row is a cluster
+		activity_ls = [] #An empty list of activities for one cluster center
+
+		for trip_ind in trip_ls: #Iterate over one trip/cluster center
+			activity_ls.append(utils.trip_translator(input_trip = trip_ind, book=NHTS_book, single_col = simplified_activities)) #Append a activity list
+		trial_current.insert(3, 'Activity List', activity_ls)
+		trial_current.insert(3, 'Current Trip', trip_ls)
+		
+		result_translated = result_translated.append(trial_current)
+	if keep_origin == False:
+		del result_translated['Best CJM']
+		del result_translated['Key']
+	result_translated.to_csv(str(pathlib.Path(result_file).parent)+'/result_translated.csv',  index=False)
+
+	return result_translated

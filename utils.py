@@ -3,6 +3,7 @@ import numpy as np
 from math import *
 import matplotlib.pyplot as pl
 import collections, random, bisect, json
+import pandas as pd
 # R change wd: setwd("~/Google Drive/School/Stanford/Research/Journey Map/Markov Chain Paper/Code & Data/NHTS")
 
 def cal_dist(ind_trip, ind_top):
@@ -266,7 +267,35 @@ def merge_dict(a, b, path=None):
             a[key] = b[key]
     return a
 
-# def translator():
+def trip_translator(input_trip, book, single_col = False):
+	# Translate input trip in number format to a list of individual activities in words
+	# input_trip: A single tuple of ((time), (activity))
+	# book: A dictionary translating individual code for activities to strings of activities
+	# single_col: 
+	# 			- If the output would be a single cell dataframe or multiple cells
+	# 			- If single cell, only location is recorded
+	# 			- If multiple cells, each cell represent the loation at each 30 minutes (total 24 hours in step of .5 hours)
+	# output:
+	# 			-If single_col, output a single list of activities with no time information
+	# 			-If not signle_col, output a list of 49 values where activities are inserted at the index of their times
+	time_ls = input_trip[0]
+	loc_ls = input_trip[1]
+	
+	time_idx = [x*0.5 for x in range(0,49)]
+	if single_col == False: #Multiple cells
+		activity_ls = ['Nothing']*49 #Create an empty list of 49 99s (total 24 hours in step of .5 hours)
+		for idx, time in enumerate(time_ls):
+			activity_ls[int(time*2)] = book[loc_ls[idx]] #time*2 is the index in 49 cells (0-48 index)
+		# trip_df = pd.DataFrame([trip_df]) #Convert the list of activities to a dataframe row (column idx is time in 30 min)
+		# trip_df.columns = time_idx #Change the col label to hours
+	else:
+		activity_ls = [] #Create an empty list of activities
+		for loc in loc_ls:
+			activity_ls.append(book[loc])
+		# trip_df = pd.DataFrame(columns = ['CJM']) #Create an empty dataframe with column named "CJM"
+		# trip_df.at[0,'CJM'] = trip_cell #Fill the dataframe cell with list of activities
+	return activity_ls
+
 
 def plot():
 	yticklabel = ['Regular home activities', 'Work from home (paid)', 'Work', 'Work-related meeting / trip', 'Volunteer activities (not paid)', 'Drop off /pick up someone', 'Change type of transportation', 'Attend school as a student','Attend child care','Attend adult care', 'Buy goods (groceries, clothes, appliances, gas)', 'Buy services (dry cleaners, banking, service a car, pet care)', 'Buy meals (go out for a meal, snack, carry-out)', 'Other general errands (post office, library)', 'Recreational activities (visit parks, movies, bars, museums)', 'Exercise (go for a jog, walk, walk the dog, go to the gym)', 'Visit friends or relatives', 'Health care visit (medical, dental, therapy)','Religious or other community activities']

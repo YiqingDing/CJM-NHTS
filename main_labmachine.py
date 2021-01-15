@@ -5,27 +5,28 @@ from datetime import date
 import func, collections, utils, importlib, ujson, pathlib, os
 
 ###################### Input #######################
+
+# Input data file
+current_path = pathlib.Path(os.getcwd()) #Get the current working directory
+data_file = 'trippub_top2k.csv' #File name of the 2k data
+file_trip = str(current_path.parent.parent)+'/Data/'+data_file #Data file location+name
+trip_ls  = func.data_processing(file_trip) #Generate the day trips for dataset
+
+#Create output folder
+output_path = str(current_path.parent)+ '/LabMachineResults/'+str(date.today()) #Output file path
+if not os.path.exists(output_path): #Create output folder if not exists
+    os.makedirs(output_path)
+#Read raw distance dictionary
 f = open('output/dist_dict0.json','r') #Required input for this file - distance dictionary to reduce computation complexity
 dist_dict0 = ujson.loads(f.read()) #Load the file
 dist_dict0 = func.dict_key2tuple(dist_dict0) #Convert the file to tuples (original format before saving to .json)
 
-# Input data file and output settiings
-current_path = pathlib.Path(os.getcwd()) #Get the current working directory
-
-data_file = 'trippub_top2k.csv' #File name of the 2k data
-file_trip = str(current_path.parent.parent)+'/Data/'+data_file #Data file location+name
-
-output_path = str(current_path.parent)+ '/LabMachineResults/'+str(date.today()) #Output file path
-if not os.path.exists(output_path): #Create output folder if not exists
-    os.makedirs(output_path)
-
-trip_ls  = func.data_processing(file_trip) #Generate the day trips for dataset
 ###################### Input #######################
 #Generate initial population (a set of CJMs each as an individual)
 m = 10 # Maximum length of CJs in initial ppl CJMs (also determines the number of ini ppl CJMs = m-1)
 n = 5 # Number of CJs in initial ppl CJMs
-gen_max = 3 #Number of generations
-file_no_tot = 1 #Number of trials (each trial produces a separate output file)
+gen_max = 50 #Number of generations
+file_no_tot = 20 #Number of trials (each trial produces a separate output file)
 ###################### New #######################
 for file_no in range(file_no_tot):
 	ppl, top_n = func.ini_ppl_gen(trip_ls, m, n) #Generate the initial populations

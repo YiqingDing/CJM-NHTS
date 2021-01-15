@@ -1,7 +1,8 @@
-import utils, collections, csv, random, os, pathlib
+import utils, collections, csv, random, os, pathlib, ast
 import pandas as pd
 from math import *
 import numpy as np
+import matplotlib.pyplot as plt
 
 def data_processing(file):
 	# Read the data file and return a list of day trips
@@ -37,7 +38,7 @@ def data_processing(file):
 				time0 = int(row.STRTTIME) #Start time 0000-2359
 				time0round = int( floor(time0/100) + round(time0/100%1/0.6,0) ) #Convert to interger hours (round to the nearest hour)
 				time1 = int(row.ENDTIME) #End time 0000-2359
-				time1round = int(floor(time1/100) + round(time1/100%1/0.6,0))
+				time1round = int(floor(time1/100) + round(time1/100%1/0.6,0)) #Possible 00 - 24
 				if time1round == time0round:
 					time1round += 0.5 #if the start and end at the same hour, add a 30m interval
 				current_trip = [[time0round, time1round], [row.WHYFROM, row.WHYTO]] #Rebuild a new current day trip log
@@ -85,12 +86,12 @@ def ini_ppl_gen(trip, m, n = 10):
 	# The following loop assigns each most_common trip to its respecitive bucket/CJM
 	for trip_set in ini_ppl_cnt: #Iterate over the most common entries
 		#Each trip_set entry is a tuple of (trip, count of trip occurance)
-		trip_ind = trip_set[0] #Extract the individual trip - ((time), (activities))
-		ind_l = len(trip_ind[0]) #Individual trip length
+		ind_trip = trip_set[0] #Extract the individual trip - ((time), (activities))
+		ind_l = len(ind_trip[0]) #Individual trip length
 		if i<= num_max: #If total assignment number hasn't reach max yet
 			if ind_l <= m and (n - len(ini_ppl[ind_l])) > 0: #Length of journey falls within range and there is space in the bucket
-				ini_ppl[ind_l].extend([trip_ind]) #Add the trip to the bucket (bucket list length < n)
-				top_n.append(trip_ind) #Add the trip to the Top_n list
+				ini_ppl[ind_l].extend([ind_trip]) #Add the trip to the bucket (bucket list length < n)
+				top_n.append(ind_trip) #Add the trip to the Top_n list
 				i += 1 #Increase new assignment number
 		else: #The total assignment reached max
 			break #If reaches the maximum number of assignment, break out of the loop
@@ -213,7 +214,7 @@ def save_ls2csv(ls,writetype = 'w' , file_name='output/results.csv'):
 		else: #Append to an existing file
 			fwrite.writerow(ls)
 
-def data_sort_labmachine(folder_path, data_name_format, file_name = 'result_sorted.csv'):
+def data_sort_labmachine(folder_path, data_name_format, output_file_name = 'result_sorted.csv'):
 	#Input file folder and name format, analyze and save output analysis
 	#folder_path: Path of data file folder
 	#data_name_format: Name format of data files (start with)
@@ -227,11 +228,12 @@ def data_sort_labmachine(folder_path, data_name_format, file_name = 'result_sort
 
 	result.insert(0,'Trial No', range(1, result.shape[0]+1)) #Add the trial number 
 	final = result.sort_values('Score',ascending=False) #Sort the result list based on final score
-	output_path = folder_path+'/' + file_name
+	output_path = folder_path+'/' + output_file_name
 	final.to_csv(output_path, index=False) #Save the result list to csv
 
 	#Return final result list (each row is an optimization result for a trial) and output file path (in case of future use)
-	return final, output_path
+	# final is a dataframe
+	return final
 
 def data_translate_labmachine(result_file, simplified_activities = True, keep_origin = True):
 	#Default book
@@ -243,24 +245,105 @@ def data_translate_labmachine(result_file, simplified_activities = True, keep_or
 	16: 'Exercise (go for a jog, walk, walk the dog, go to the gym)', 17: 'Visit friends or relatives', 18: 'Health care visit (medical, dental, therapy)',
 	19: 'Religious or other community activities', 97: 'Something else', 99: 'Nothing',}
 
-	df_data = pd.read_csv(result_file, converters={'Best CJM': eval}) #Read the csv file and treat list as value
+	df_data = pd.read_csv(result_file, converters={'Best CJM': eval}) #Read the sorted csv file and treat CJM list as value(rather than string)
 	result_translated = pd.DataFrame() #Create an empty dataframe
 
-	for idx, row in df_data.iterrows():
-		trip_ls = row['Best CJM'] #The bset CJMs for current trial
-		trial_current = pd.concat([row]*len(trip_ls), ignore_index=True, axis = 1) #Make a dataframe with # of col equal to number of clusters
-		trial_current = trial_current.transpose() #Transpose the dataframe so each row is a cluster
-		activity_ls = [] #An empty list of activities for one cluster center
+	for idx, row in df_data.iterrows(): #Iterate over each set of cluster centers for each trial(row)
+		trip_ls = row['Best CJM'] #The bset CJMs for current trial as a list
 
-		for trip_ind in trip_ls: #Iterate over one trip/cluster center
-			activity_ls.append(utils.trip_translator(input_trip = trip_ind, book=NHTS_book, single_col = simplified_activities)) #Append a activity list
-		trial_current.insert(3, 'Activity List', activity_ls)
-		trial_current.insert(3, 'Current Trip', trip_ls)
-		
-		result_translated = result_translated.append(trial_current)
-	if keep_origin == False:
+		for ind_trip in trip_ls: #Iterate over each trip/cluster center in current set and translate the trip 
+			trip_current_df = row.copy().to_frame().transpose() #Create a copy of the current row
+			trip_current_df.insert(3, 'Current Trip', [ind_trip]) #Add the current trip to the row
+			trip_current_df.reset_index(drop=True, inplace=True)
+			# single_col determines the format of the translated result
+				# If true, a single cell dataframe containing list of activities is generated (time ignored)
+				# If false, a row dataframe where each cell contains an activity for that 30 min interval (49 lists in total)
+			trip_translated_df = utils.trip_translator(input_trip = ind_trip, book=NHTS_book, single_col = simplified_activities)
+			trip_current_df = pd.concat([trip_current_df,trip_translated_df],axis = 1) #Concat translated result with current trip
+
+			result_translated = result_translated.append(trip_current_df) #Append the current trip to translated result
+
+	if keep_origin == False: #If the original Best CJM and keys are kept
 		del result_translated['Best CJM']
 		del result_translated['Key']
-	result_translated.to_csv(str(pathlib.Path(result_file).parent)+'/result_translated.csv',  index=False)
+	
+	name_extension = 'simplified' if simplified_activities else 'full'
+	result_translated.to_csv(str(pathlib.Path(result_file).parent)+'/result_translated_'+ name_extension +'.csv',  index=False) #Save to CSV and ignore index
 
+	#Output: A csv file with each row as a cluster center for a specific trial in the trial column
 	return result_translated
+
+def raw_translate(raw_trip_ls, simplified_activities = True):
+	#Default book
+	NHTS_book = {1: 'Regular home activities (chores, sleep)', 2: 'Work from home (paid)', 3: 'Work', 4: 'Work-related meeting / trip', 
+	5: 'Volunteer activities (not paid)', 6: 'Drop off /pick up someone', 7: 'Change type of transportation', 
+	8: 'Attend school as a student', 9: 'Attend child care', 10: 'Attend adult care', 11: 'Buy goods (groceries, clothes, appliances, gas)',
+	12: 'Buy services (dry cleaners, banking, service a car, pet care)', 13: 'Buy meals (go out for a meal, snack, carry-out)',
+	14: 'Other general errands (post office, library)', 15: 'Recreational activities (visit parks, movies, bars, museums)',
+	16: 'Exercise (go for a jog, walk, walk the dog, go to the gym)', 17: 'Visit friends or relatives', 18: 'Health care visit (medical, dental, therapy)',
+	19: 'Religious or other community activities', 97: 'Something else', 99: 'Nothing',}
+	
+	result_translated = pd.DataFrame() #Create an empty dataframe
+
+	for ind_trip in raw_trip_ls: #Iterate over each trip/cluster center in current set and translate the trip 
+		
+		trip_current_df = pd.DataFrame([[ind_trip]], columns = ['Current Trip'] ) #Create an empty df
+		trip_current_df.reset_index(drop=True, inplace=True)
+		# single_col determines the format of the translated result
+			# If true, a single cell dataframe containing list of activities is generated (time ignored)
+			# If false, a row dataframe where each cell contains an activity for that 30 min interval (49 lists in total)
+		trip_translated_df = utils.trip_translator(input_trip = ind_trip, book=NHTS_book, single_col = simplified_activities)
+		trip_current_df = pd.concat([trip_current_df,trip_translated_df],axis = 1) #Concat translated result with current trip
+
+		result_translated = result_translated.append(trip_current_df) #Append the current trip to translated result
+	
+	name_extension = 'simplified' if simplified_activities else 'full'
+	result_translated.to_csv('result_translated_raw.csv',  index=False) #Save to CSV and ignore index
+
+	#Output: A csv file with each row as a cluster center for a specific trial in the trial column
+	return result_translated
+
+def most_frequent_activities(result_translated, result_file_path):
+	col_names = utils.col_names_30min() #Get names of the columns (hours)
+	sort_dict = {} #A dictionary of sorted activities (key is the time range, value is another dictionary where key is activity, value is number of appearances)
+	sort_ls = [] #A list of most frequent activities at each hour (len = len(col_names)) excluding 'Nothing'
+	freq1 = [] #A list of frequencies, freq1 refers to freq including 'Nothing'
+	freq2 = [] #A list of frequencies, freq2 refers to freq excluding 'Nothing'
+	# sort_ls_raw = [] #A list of most frequent activities at each hour (len = len(col_names)) including 'Nothing'
+	for time_range in col_names: # Iterate over 30-min time range
+		sort_dict_df = result_translated[time_range].value_counts() #Count the number of appearances of activities for this time range
+		sort_dict[time_range] = sort_dict_df.to_dict() #Create a dictionary: key is time range, value is another dictionary (key is activities, value is # of appearances)
+
+		activities_ls = list(sort_dict_df.index.values) #List of activities filled at this hour, in the order of number of appearances
+		sort_ls.append('Nothing')
+		freq1.append(1) #Default 'Nothing' freq1 = 1, freq1 refers to freq including 'Nothing'
+		freq2.append(1) #Default 'Nothing' freq2 = 1, freq2 refers to freq excluding 'Nothing'
+		# sort_ls_raw.append(activities_ls[0])
+		for activity in activities_ls: #The 1st activity that is not 'Nothing' would be the most appearing one
+			if activity != 'Nothing' and sort_dict_df[activity]>= 50: #Only records if appeared over 50 times
+				sort_ls[-1] = activity #Replace 'Nothing' with another activity and stop
+				freq1[-1] = sort_dict_df[activity]/( sum(sort_dict[time_range].values()) ) # Change freq to the freq with 'Nothing'
+				freq2[-1] = sort_dict_df[activity]/( sum(sort_dict[time_range].values()) - sort_dict[time_range]['Nothing']) # Change freq to the freq without 'Nothing'
+				break
+
+	pd.DataFrame([sort_ls,freq1, freq2], columns = col_names).to_csv(str(pathlib.Path(result_file_path).parent)+'/frequent_activities.csv',  index=False)
+	return sort_dict, sort_ls
+
+def plot_centers(trip_data_df, result_loc, raw_trip_ls, top_n = float("inf")):
+	# Given set of centers in df format, plot and save all the centers
+	# Input:
+	# 	trip_data_df: Dataframe of trip centers with four columns [Trial No, Key, Best CJM, Score]
+	# 	result_loc: Location of current file
+	img_folder_name = 'IMG' #Name of folder to save images to
+	img_folder_path =  result_loc +'/'+img_folder_name
+	if not os.path.exists(img_folder_path):
+		os.mkdir(img_folder_path)
+	key = 'Best CJM'
+	for index, ind_trip in trip_data_df[key].reset_index(drop = True).iteritems():
+		if index < top_n:
+			if isinstance(ind_trip,str):
+				ind_trip = ast.literal_eval(ind_trip)
+			fig = utils.vec_plot(ind_trip,[], raw_trip_ls)
+			img_file_path = img_folder_path + '/img_'+str(index+1)
+			fig.savefig(img_file_path)
+			plt.close()

@@ -4,17 +4,17 @@ from math import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-def data_processing(file):
-	# Read the data file and return a list of day trips
+def data_processing(raw_trip_path, processed_file_name = 'final_trip.csv'):
+	# Read the raw data file and return a list of day trips
 	# Output:
 	# trip: List of day trips, each item is a 2-tuple, with 1st item being timestamps, 2nd item being events
 	# final_trip.csv: A csv file with all the day tips, every 2 lines form a day trip
-
-	# file = 'NHTS/trippub.csv'
-	raw_data = pd.read_csv(file) #Read the data and return a pandas df
+	# raw_trip_path = 'NHTS/trippub.csv'
+	raw_data = pd.read_csv(raw_trip_path) #Read the data and return a pandas df
 	previous_id = 0 #Initialize the ID of the day trip
 	trip = []  #Create an empty trip segment list
-	csv_trip = open('output/final_trip.csv','w') #Create an empty output csv file
+	processed_trip_path = 'output/'+ processed_file_name #Default output folder
+	csv_trip = open(processed_trip_path,'w') #Create an empty output csv file
 	csv_writer = csv.writer(csv_trip, delimiter = ',') #Create a writer object for output
 	# n = 10 #Test variable for limit row
 	for row in raw_data.itertuples(): #Iterate over namedtuple for each row (1st row as index)
@@ -62,6 +62,33 @@ def data_processing(file):
 	trip.append(current_trip)
 	#return a list of day trips, each day trip is in the format of tuple(time tuple, location tuple)
 	return trip
+
+def data_input(file_name, mode = 'w'):
+	# Given raw file name and mode, return either newly processed data or data stored in existing file
+	# The file_name input is always the raw file name, depends on mode:
+	# 	If 'w': raw file is read and processed. 
+	# 	If 'r': processed file name is inferred and read.
+	current_path = pathlib.Path(os.getcwd()) #Get the current working directory
+	if mode == 'w': #Data writing mode: Process raw inputs and return and save generated data 
+		processed_file_name = file_name.split('.csv')[0]+'_processed'+'.csv'
+		raw_trip_path = str(current_path.parent.parent)+'/Data/'+file_name #Raw data file path
+		trip_ls = data_processing(raw_trip_path, processed_file_name)
+	elif mode == 'r': #Data reading mode: Read the existing processed file
+		# Generate processed data file name from given file_name
+		processed_file_name = file_name.split('.csv')[0]+'_processed'+'.csv'
+		processed_trip_path = 'output/'+ processed_file_name #Default output folder
+		csv_trip = open(processed_trip_path,'r') #Create an empty output csv file
+		csv_reader = csv.reader(csv_trip, delimiter = ',')
+		trip_ls = []
+		for idx, row in enumerate(csv_reader):
+			# row is a list (either time or activities)
+			row = tuple(ast.literal_eval(i) for i in row)
+			if (idx+1)%2 == 1: #If the row is a time row (idx is even 0, 2, 4...)
+				trip_ls.append([row]) #Start a new trip (witht he bracket)
+			else: #If the row is an activity row
+				trip_ls[-1].append(row) #Append the activities
+	trip_ls = utils.ls2tuple(trip_ls)
+	return trip_ls
 
 def ini_ppl_gen(trip, m, n = 10):
 	# generate initial population (a list of journey maps = A list of lists of journeys) and top_n list
@@ -172,9 +199,9 @@ def ga_CJM(ppl, cjm_score, top_n):
 def cal_mutual_dist_para(data_0, data_1, dist_dict =  collections.defaultdict(utils.dd)):
 	# Parallel computing: calculate the distances between different pairs of data entries and load them into dist_dict
 	# Input: 
-	# Let's think of overall data to be a combination of different data_0, and data_1 is the set start from data_0 to the end (including data_0)
+	# Let's think of the complete dataset to be a combination of different datasets. data_0 is one of them (the target one), and data_1 is the set start from data_0 to the end (including data_0) of the complete dataset 
 	# data_0: A data list specific to this process in parallel computing
-	# data_1: The data starts from data_0 in the entire dataset to the end of the dataset (including data_0)
+	# data_1: The data starts from data_0 in the entire dataset to the end of the complete dataset (including data_0)
 	# dist_dict: Existing distance dictionary, default = empty 2d dictionary
 	# Output: Dictionary of dstances between different pairs of data entries, dist_dict[item1][item2]
 	for item_1 in data_0:
@@ -298,7 +325,7 @@ def raw_translate(raw_trip_ls, simplified_activities = True):
 		result_translated = result_translated.append(trip_current_df) #Append the current trip to translated result
 	
 	name_extension = 'simplified' if simplified_activities else 'full'
-	result_translated.to_csv('result_translated_raw.csv',  index=False) #Save to CSV and ignore index
+	result_translated.to_csv('result_translated_raw_'+name_extension+ '.csv',  index=False) #Save to CSV and ignore index
 
 	#Output: A csv file with each row as a cluster center for a specific trial in the trial column
 	return result_translated
@@ -320,7 +347,8 @@ def most_frequent_activities(result_translated, result_file_path):
 		freq2.append(1) #Default 'Nothing' freq2 = 1, freq2 refers to freq excluding 'Nothing'
 		# sort_ls_raw.append(activities_ls[0])
 		for activity in activities_ls: #The 1st activity that is not 'Nothing' would be the most appearing one
-			if activity != 'Nothing' and sort_dict_df[activity]>= 50: #Only records if appeared over 50 times
+			# if activity != 'Nothing' and sort_dict_df[activity]>= 50: #Only records if appeared over 50 times
+			if activity != 'Nothing':
 				sort_ls[-1] = activity #Replace 'Nothing' with another activity and stop
 				freq1[-1] = sort_dict_df[activity]/( sum(sort_dict[time_range].values()) ) # Change freq to the freq with 'Nothing'
 				freq2[-1] = sort_dict_df[activity]/( sum(sort_dict[time_range].values()) - sort_dict[time_range]['Nothing']) # Change freq to the freq without 'Nothing'

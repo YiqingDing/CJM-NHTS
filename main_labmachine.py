@@ -7,15 +7,14 @@ import func, collections, utils, importlib, ujson, pathlib, os
 ###################### Input #######################
 
 # Input data file
-current_path = pathlib.Path(os.getcwd()) #Get the current working directory
-data_file = 'trippub_top2k.csv' #File name of the 2k data
-file_trip = str(current_path.parent.parent)+'/Data/'+data_file #Data file location+name
-trip_ls  = func.data_processing(file_trip) #Generate the day trips for dataset
+raw_trip_file = 'trippub_top2k.csv' #File name of the 2k data
+trip_ls  = func.data_input(raw_trip_file,'w') #Generate the day trips for dataset
 
 #Create output folder
 output_path = str(current_path.parent)+ '/LabMachineResults/'+str(date.today()) #Output file path
 if not os.path.exists(output_path): #Create output folder if not exists
     os.makedirs(output_path)
+
 #Read raw distance dictionary
 f = open('output/dist_dict0.json','r') #Required input for this file - distance dictionary to reduce computation complexity
 dist_dict0 = ujson.loads(f.read()) #Load the file

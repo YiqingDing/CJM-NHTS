@@ -1,10 +1,8 @@
 import func, os, pathlib, importlib
 
 # Input data file (raw trip list) - use this for plot
-current_path = pathlib.Path(os.getcwd()) #Get the current working directory
-data_file = 'trippub_top2k.csv' #File name of the 2k data
-file_trip = str(current_path.parent.parent)+'/Data/'+data_file #Data file location+name
-trip_ls  = func.data_processing(file_trip) #Generate the day trips for dataset
+raw_file_name = 'trippub_top2k.csv' #Raw file name of the 2k data
+raw_trip_ls  = func.data_input(raw_file_name, 'r') #Generate the day trips for dataset
 
 # Input: Local data files from "output" folder with names similar as "FinalResult0.csv"
 current_path = pathlib.Path(os.getcwd()) #Get the current working directory
@@ -18,9 +16,9 @@ sorted_file_path = input_folder_path+'/'+sorted_file_name # Sorted file output p
 sorted_result = func.data_sort_labmachine(folder_path = input_folder_path, data_name_format = 'FinalResult', output_file_name= sorted_file_name) #compute the sorted result and output a dataframe (results may have been converted to str)
 
 # Plot sorted_result and save the plots to certain folder
-func.plot_centers(trip_data_df = sorted_result, result_loc = input_folder_path, raw_trip_ls = trip_ls, top_n = 5)
+func.plot_centers(trip_data_df = sorted_result, result_loc = input_folder_path, raw_trip_ls = raw_trip_ls, top_n = 5)
 
-# # Result translation
+# Result translation
 # simplified_translation = False
 # result_translated = func.data_translate_labmachine(sorted_file_path, simplified_translation, False) #Translate data into words 
 # if not simplified_translation: #If translated in full words

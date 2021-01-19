@@ -362,7 +362,9 @@ def axs_raw():
 
 	ax.set_xlim([0,25])
 	ax2.set_xlim([0,25])
-	ax2.set_xticks(range(0,26))
+	ax2.set_xticks(range(0,25))
+
+	ax2.set_xlabel('Hour')
 	return fig, (ax, ax2)
 
 def vec_plot(trip_ls, axs = [], raw_trip_ls = []):

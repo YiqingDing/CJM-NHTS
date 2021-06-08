@@ -1,0 +1,2754 @@
+Current idx is 0
+Current idx is 1
+Current idx is 2
+Current idx is 3
+Current idx is 4
+Current idx is 5
+Current idx is 6
+Current idx is 7
+Current idx is 8
+Current idx is 9
+Current idx is 10
+Current idx is 11
+Current idx is 12
+Current idx is 13
+Current idx is 14
+Current idx is 15
+Current idx is 16
+Current idx is 17
+Current idx is 18
+Current idx is 19
+Current idx is 20
+Current idx is 21
+Current idx is 22
+Current idx is 23
+Current idx is 24
+Current idx is 25
+Current idx is 26
+Current idx is 27
+Current idx is 28
+Current idx is 29
+Current idx is 30
+Current idx is 31
+Current idx is 32
+Current idx is 33
+Current idx is 34
+Current idx is 35
+Current idx is 36
+Current idx is 37
+Current idx is 38
+Current idx is 39
+Current idx is 40
+Current idx is 41
+Current idx is 42
+Current idx is 43
+Current idx is 44
+Current idx is 45
+Current idx is 46
+Current idx is 47
+Current idx is 48
+Current idx is 49
+Current idx is 50
+Current idx is 51
+Current idx is 52
+Current idx is 53
+Current idx is 54
+Current idx is 55
+Current idx is 56
+Current idx is 57
+Current idx is 58
+Current idx is 59
+Current idx is 60
+Current idx is 61
+Current idx is 62
+Current idx is 63
+Current idx is 64
+Current idx is 65
+Current idx is 66
+Current idx is 67
+Current idx is 68
+Current idx is 69
+Current idx is 70
+Current idx is 71
+Current idx is 72
+Current idx is 73
+Current idx is 74
+Current idx is 75
+Current idx is 76
+Current idx is 77
+Current idx is 78
+Current idx is 79
+Current idx is 80
+Current idx is 81
+Current idx is 82
+Current idx is 83
+Current idx is 84
+Current idx is 85
+Current idx is 86
+Current idx is 87
+Current idx is 88
+Current idx is 89
+Current idx is 90
+Current idx is 91
+Current idx is 92
+Current idx is 93
+Current idx is 94
+Current idx is 95
+Current idx is 96
+Current idx is 97
+Current idx is 98
+Current idx is 99
+Current idx is 100
+Current idx is 101
+Current idx is 102
+Current idx is 103
+Current idx is 104
+Current idx is 105
+Current idx is 106
+Current idx is 107
+Current idx is 108
+Current idx is 109
+Current idx is 110
+Current idx is 111
+Current idx is 112
+Current idx is 113
+Current idx is 114
+Current idx is 115
+Current idx is 116
+Current idx is 117
+Current idx is 118
+Current idx is 119
+Current idx is 120
+Current idx is 121
+Current idx is 122
+Current idx is 123
+Current idx is 124
+Current idx is 125
+Current idx is 126
+Current idx is 127
+Current idx is 128
+Current idx is 129
+Current idx is 130
+Current idx is 131
+Current idx is 132
+Current idx is 133
+Current idx is 134
+Current idx is 135
+Current idx is 136
+Current idx is 137
+Current idx is 138
+Current idx is 139
+Current idx is 140
+Current idx is 141
+Current idx is 142
+Current idx is 143
+Current idx is 144
+Current idx is 145
+Current idx is 146
+Current idx is 147
+Current idx is 148
+Current idx is 149
+Current idx is 150
+Current idx is 151
+Current idx is 152
+Current idx is 153
+Current idx is 154
+Current idx is 155
+Current idx is 156
+Current idx is 157
+Current idx is 158
+Current idx is 159
+Current idx is 160
+Current idx is 161
+Current idx is 162
+Current idx is 163
+Current idx is 164
+Current idx is 165
+Current idx is 166
+Current idx is 167
+Current idx is 168
+Current idx is 169
+Current idx is 170
+Current idx is 171
+Current idx is 172
+Current idx is 173
+Current idx is 174
+Current idx is 175
+Current idx is 176
+Current idx is 177
+Current idx is 178
+Current idx is 179
+Current idx is 180
+Current idx is 181
+Current idx is 182
+Current idx is 183
+Current idx is 184
+Current idx is 185
+Current idx is 186
+Current idx is 187
+Current idx is 188
+Current idx is 189
+Current idx is 190
+Current idx is 191
+Current idx is 192
+Current idx is 193
+Current idx is 194
+Current idx is 195
+Current idx is 196
+Current idx is 197
+Current idx is 198
+Current idx is 199
+Current idx is 200
+Current idx is 201
+Current idx is 202
+Current idx is 203
+Current idx is 204
+Current idx is 205
+Current idx is 206
+Current idx is 207
+Current idx is 208
+Current idx is 209
+Current idx is 210
+Current idx is 211
+Current idx is 212
+Current idx is 213
+Current idx is 214
+Current idx is 215
+Current idx is 216
+Current idx is 217
+Current idx is 218
+Current idx is 219
+Current idx is 220
+Current idx is 221
+Current idx is 222
+Current idx is 223
+Current idx is 224
+Current idx is 225
+Current idx is 226
+Current idx is 227
+Current idx is 228
+Current idx is 229
+Current idx is 230
+Current idx is 231
+Current idx is 232
+Current idx is 233
+Current idx is 234
+Current idx is 235
+Current idx is 236
+Current idx is 237
+Current idx is 238
+Current idx is 239
+Current idx is 240
+Current idx is 241
+Current idx is 242
+Current idx is 243
+Current idx is 244
+Current idx is 245
+Current idx is 246
+Current idx is 247
+Current idx is 248
+Current idx is 249
+Current idx is 250
+Current idx is 251
+Current idx is 252
+Current idx is 253
+Current idx is 254
+Current idx is 255
+Current idx is 256
+Current idx is 257
+Current idx is 258
+Current idx is 259
+Current idx is 260
+Current idx is 261
+Current idx is 262
+Current idx is 263
+Current idx is 264
+Current idx is 265
+Current idx is 266
+Current idx is 267
+Current idx is 268
+Current idx is 269
+Current idx is 270
+Current idx is 271
+Current idx is 272
+Current idx is 273
+Current idx is 274
+Current idx is 275
+Current idx is 276
+Current idx is 277
+Current idx is 278
+Current idx is 279
+Current idx is 280
+Current idx is 281
+Current idx is 282
+Current idx is 283
+Current idx is 284
+Current idx is 285
+Current idx is 286
+Current idx is 287
+Current idx is 288
+Current idx is 289
+Current idx is 290
+Current idx is 291
+Current idx is 292
+Current idx is 293
+Current idx is 294
+Current idx is 295
+Current idx is 296
+Current idx is 297
+Current idx is 298
+Current idx is 299
+Current idx is 300
+Current idx is 301
+Current idx is 302
+Current idx is 303
+Current idx is 304
+Current idx is 305
+Current idx is 306
+Current idx is 307
+Current idx is 308
+Current idx is 309
+Current idx is 310
+Current idx is 311
+Current idx is 312
+Current idx is 313
+Current idx is 314
+Current idx is 315
+Current idx is 316
+Current idx is 317
+Current idx is 318
+Current idx is 319
+Current idx is 320
+Current idx is 321
+Current idx is 322
+Current idx is 323
+Current idx is 324
+Current idx is 325
+Current idx is 326
+Current idx is 327
+Current idx is 328
+Current idx is 329
+Current idx is 330
+Current idx is 331
+Current idx is 332
+Current idx is 333
+Current idx is 334
+Current idx is 335
+Current idx is 336
+Current idx is 337
+Current idx is 338
+Current idx is 339
+Current idx is 340
+Current idx is 341
+Current idx is 342
+Current idx is 343
+Current idx is 344
+Current idx is 345
+Current idx is 346
+Current idx is 347
+Current idx is 348
+Current idx is 349
+Current idx is 350
+Current idx is 351
+Current idx is 352
+Current idx is 353
+Current idx is 354
+Current idx is 355
+Current idx is 356
+Current idx is 357
+Current idx is 358
+Current idx is 359
+Current idx is 360
+Current idx is 361
+Current idx is 362
+Current idx is 363
+Current idx is 364
+Current idx is 365
+Current idx is 366
+Current idx is 367
+Current idx is 368
+Current idx is 369
+Current idx is 370
+Current idx is 371
+Current idx is 372
+Current idx is 373
+Current idx is 374
+Current idx is 375
+Current idx is 376
+Current idx is 377
+Current idx is 378
+Current idx is 379
+Current idx is 380
+Current idx is 381
+Current idx is 382
+Current idx is 383
+Current idx is 384
+Current idx is 385
+Current idx is 386
+Current idx is 387
+Current idx is 388
+Current idx is 389
+Current idx is 390
+Current idx is 391
+Current idx is 392
+Current idx is 393
+Current idx is 394
+Current idx is 395
+Current idx is 396
+Current idx is 397
+Current idx is 398
+Current idx is 399
+Current idx is 400
+Current idx is 401
+Current idx is 402
+Current idx is 403
+Current idx is 404
+Current idx is 405
+Current idx is 406
+Current idx is 407
+Current idx is 408
+Current idx is 409
+Current idx is 410
+Current idx is 411
+Current idx is 412
+Current idx is 413
+Current idx is 414
+Current idx is 415
+Current idx is 416
+Current idx is 417
+Current idx is 418
+Current idx is 419
+Current idx is 420
+Current idx is 421
+Current idx is 422
+Current idx is 423
+Current idx is 424
+Current idx is 425
+Current idx is 426
+Current idx is 427
+Current idx is 428
+Current idx is 429
+Current idx is 430
+Current idx is 431
+Current idx is 432
+Current idx is 433
+Current idx is 434
+Current idx is 435
+Current idx is 436
+Current idx is 437
+Current idx is 438
+Current idx is 439
+Current idx is 440
+Current idx is 441
+Current idx is 442
+Current idx is 443
+Current idx is 444
+Current idx is 445
+Current idx is 446
+Current idx is 447
+Current idx is 448
+Current idx is 449
+Current idx is 450
+Current idx is 451
+Current idx is 452
+Current idx is 453
+Current idx is 454
+Current idx is 455
+Current idx is 456
+Current idx is 457
+Current idx is 458
+Current idx is 459
+Current idx is 460
+Current idx is 461
+Current idx is 462
+Current idx is 463
+Current idx is 464
+Current idx is 465
+Current idx is 466
+Current idx is 467
+Current idx is 468
+Current idx is 469
+Current idx is 470
+Current idx is 471
+Current idx is 472
+Current idx is 473
+Current idx is 474
+Current idx is 475
+Current idx is 476
+Current idx is 477
+MC crop list generated for mc_len= 1 !
+--------------Clustering Starts for No.1 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 38 sets--for MC 1---------
+The number of clusters is 1
+--------------Clustering Starts for No.38 out of 38 sets--for MC 1---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 2 !
+--------------Clustering Starts for No.1 out of 39 sets--for MC 2---------
+The number of clusters is 4
+--------------Clustering Starts for No.2 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.38 out of 39 sets--for MC 2---------
+The number of clusters is 1
+--------------Clustering Starts for No.39 out of 39 sets--for MC 2---------
+The number of clusters is 1
+The number of clusters for this division are [4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [1]
+MC crop list generated for mc_len= 3 !
+--------------Clustering Starts for No.1 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 39 sets--for MC 3---------
+The number of clusters is 2
+--------------Clustering Starts for No.30 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 39 sets--for MC 3---------
+The number of clusters is 2
+--------------Clustering Starts for No.37 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.38 out of 39 sets--for MC 3---------
+The number of clusters is 1
+--------------Clustering Starts for No.39 out of 39 sets--for MC 3---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1] and the index of meaningful clusters are [29, 36]
+MC crop list generated for mc_len= 4 !
+--------------Clustering Starts for No.1 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 39 sets--for MC 4---------
+The number of clusters is 2
+--------------Clustering Starts for No.4 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 39 sets--for MC 4---------
+The number of clusters is 2
+--------------Clustering Starts for No.14 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 39 sets--for MC 4---------
+The number of clusters is 2
+--------------Clustering Starts for No.28 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 39 sets--for MC 4---------
+The number of clusters is 2
+--------------Clustering Starts for No.32 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 39 sets--for MC 4---------
+The number of clusters is 2
+--------------Clustering Starts for No.38 out of 39 sets--for MC 4---------
+The number of clusters is 1
+--------------Clustering Starts for No.39 out of 39 sets--for MC 4---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1] and the index of meaningful clusters are [3, 13, 27, 31, 37]
+MC crop list generated for mc_len= 5 !
+--------------Clustering Starts for No.1 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 39 sets--for MC 5---------
+The number of clusters is 2
+--------------Clustering Starts for No.5 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 39 sets--for MC 5---------
+The number of clusters is 2
+--------------Clustering Starts for No.27 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 39 sets--for MC 5---------
+The number of clusters is 2
+--------------Clustering Starts for No.36 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.38 out of 39 sets--for MC 5---------
+The number of clusters is 1
+--------------Clustering Starts for No.39 out of 39 sets--for MC 5---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1] and the index of meaningful clusters are [4, 26, 35]
+MC crop list generated for mc_len= 6 !
+--------------Clustering Starts for No.1 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 39 sets--for MC 6---------
+The number of clusters is 2
+--------------Clustering Starts for No.28 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.38 out of 39 sets--for MC 6---------
+The number of clusters is 1
+--------------Clustering Starts for No.39 out of 39 sets--for MC 6---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [27]
+MC crop list generated for mc_len= 7 !
+--------------Clustering Starts for No.1 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 39 sets--for MC 7---------
+The number of clusters is 2
+--------------Clustering Starts for No.7 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 39 sets--for MC 7---------
+The number of clusters is 2
+--------------Clustering Starts for No.29 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.38 out of 39 sets--for MC 7---------
+The number of clusters is 1
+--------------Clustering Starts for No.39 out of 39 sets--for MC 7---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [6, 28]
+MC crop list generated for mc_len= 8 !
+--------------Clustering Starts for No.1 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 39 sets--for MC 8---------
+The number of clusters is 2
+--------------Clustering Starts for No.31 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.38 out of 39 sets--for MC 8---------
+The number of clusters is 1
+--------------Clustering Starts for No.39 out of 39 sets--for MC 8---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [30]
+MC crop list generated for mc_len= 9 !
+--------------Clustering Starts for No.1 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.38 out of 39 sets--for MC 9---------
+The number of clusters is 1
+--------------Clustering Starts for No.39 out of 39 sets--for MC 9---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 10 !
+--------------Clustering Starts for No.1 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 38 sets--for MC 10---------
+The number of clusters is 1
+--------------Clustering Starts for No.38 out of 38 sets--for MC 10---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 11 !
+--------------Clustering Starts for No.1 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 37 sets--for MC 11---------
+The number of clusters is 2
+--------------Clustering Starts for No.19 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 37 sets--for MC 11---------
+The number of clusters is 2
+--------------Clustering Starts for No.31 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 37 sets--for MC 11---------
+The number of clusters is 1
+--------------Clustering Starts for No.37 out of 37 sets--for MC 11---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [18, 30]
+MC crop list generated for mc_len= 12 !
+--------------Clustering Starts for No.1 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 36 sets--for MC 12---------
+The number of clusters is 1
+--------------Clustering Starts for No.36 out of 36 sets--for MC 12---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 13 !
+--------------Clustering Starts for No.1 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 35 sets--for MC 13---------
+The number of clusters is 1
+--------------Clustering Starts for No.35 out of 35 sets--for MC 13---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 14 !
+--------------Clustering Starts for No.1 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 34 sets--for MC 14---------
+The number of clusters is 2
+--------------Clustering Starts for No.17 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 34 sets--for MC 14---------
+The number of clusters is 2
+--------------Clustering Starts for No.19 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 34 sets--for MC 14---------
+The number of clusters is 1
+--------------Clustering Starts for No.34 out of 34 sets--for MC 14---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [16, 18]
+MC crop list generated for mc_len= 15 !
+--------------Clustering Starts for No.1 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 33 sets--for MC 15---------
+The number of clusters is 2
+--------------Clustering Starts for No.17 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 33 sets--for MC 15---------
+The number of clusters is 1
+--------------Clustering Starts for No.33 out of 33 sets--for MC 15---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [16]
+MC crop list generated for mc_len= 16 !
+--------------Clustering Starts for No.1 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 32 sets--for MC 16---------
+The number of clusters is 2
+--------------Clustering Starts for No.19 out of 32 sets--for MC 16---------
+The number of clusters is 2
+--------------Clustering Starts for No.20 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.31 out of 32 sets--for MC 16---------
+The number of clusters is 1
+--------------Clustering Starts for No.32 out of 32 sets--for MC 16---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [18, 19]
+MC crop list generated for mc_len= 17 !
+--------------Clustering Starts for No.1 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 31 sets--for MC 17---------
+The number of clusters is 2
+--------------Clustering Starts for No.17 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 31 sets--for MC 17---------
+The number of clusters is 2
+--------------Clustering Starts for No.19 out of 31 sets--for MC 17---------
+The number of clusters is 2
+--------------Clustering Starts for No.20 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 31 sets--for MC 17---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 31 sets--for MC 17---------
+The number of clusters is 2
+--------------Clustering Starts for No.31 out of 31 sets--for MC 17---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1] and the index of meaningful clusters are [16, 18, 19, 30]
+MC crop list generated for mc_len= 18 !
+--------------Clustering Starts for No.1 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 30 sets--for MC 18---------
+The number of clusters is 1
+--------------Clustering Starts for No.30 out of 30 sets--for MC 18---------
+The number of clusters is 2
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2] and the index of meaningful clusters are [30]
+MC crop list generated for mc_len= 19 !
+--------------Clustering Starts for No.1 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 29 sets--for MC 19---------
+The number of clusters is 2
+--------------Clustering Starts for No.18 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 29 sets--for MC 19---------
+The number of clusters is 1
+--------------Clustering Starts for No.29 out of 29 sets--for MC 19---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [17]
+MC crop list generated for mc_len= 20 !
+--------------Clustering Starts for No.1 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 28 sets--for MC 20---------
+The number of clusters is 2
+--------------Clustering Starts for No.18 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 28 sets--for MC 20---------
+The number of clusters is 2
+--------------Clustering Starts for No.23 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 28 sets--for MC 20---------
+The number of clusters is 1
+--------------Clustering Starts for No.28 out of 28 sets--for MC 20---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [17, 22]
+MC crop list generated for mc_len= 21 !
+--------------Clustering Starts for No.1 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 27 sets--for MC 21---------
+The number of clusters is 1
+--------------Clustering Starts for No.27 out of 27 sets--for MC 21---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 22 !
+--------------Clustering Starts for No.1 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 26 sets--for MC 22---------
+The number of clusters is 1
+--------------Clustering Starts for No.26 out of 26 sets--for MC 22---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 23 !
+--------------Clustering Starts for No.1 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 25 sets--for MC 23---------
+The number of clusters is 2
+--------------Clustering Starts for No.16 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 25 sets--for MC 23---------
+The number of clusters is 1
+--------------Clustering Starts for No.25 out of 25 sets--for MC 23---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [15]
+MC crop list generated for mc_len= 24 !
+--------------Clustering Starts for No.1 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 24 sets--for MC 24---------
+The number of clusters is 2
+--------------Clustering Starts for No.16 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 24 sets--for MC 24---------
+The number of clusters is 2
+--------------Clustering Starts for No.18 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 24 sets--for MC 24---------
+The number of clusters is 1
+--------------Clustering Starts for No.24 out of 24 sets--for MC 24---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [15, 17]
+MC crop list generated for mc_len= 25 !
+--------------Clustering Starts for No.1 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 23 sets--for MC 25---------
+The number of clusters is 2
+--------------Clustering Starts for No.17 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 23 sets--for MC 25---------
+The number of clusters is 1
+--------------Clustering Starts for No.23 out of 23 sets--for MC 25---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [16]
+MC crop list generated for mc_len= 26 !
+--------------Clustering Starts for No.1 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 22 sets--for MC 26---------
+The number of clusters is 2
+--------------Clustering Starts for No.15 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 22 sets--for MC 26---------
+The number of clusters is 2
+--------------Clustering Starts for No.17 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 22 sets--for MC 26---------
+The number of clusters is 1
+--------------Clustering Starts for No.22 out of 22 sets--for MC 26---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are [14, 16]
+MC crop list generated for mc_len= 27 !
+--------------Clustering Starts for No.1 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 21 sets--for MC 27---------
+The number of clusters is 1
+--------------Clustering Starts for No.21 out of 21 sets--for MC 27---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 28 !
+--------------Clustering Starts for No.1 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 20 sets--for MC 28---------
+The number of clusters is 2
+--------------Clustering Starts for No.16 out of 20 sets--for MC 28---------
+The number of clusters is 2
+--------------Clustering Starts for No.17 out of 20 sets--for MC 28---------
+The number of clusters is 2
+--------------Clustering Starts for No.18 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 20 sets--for MC 28---------
+The number of clusters is 1
+--------------Clustering Starts for No.20 out of 20 sets--for MC 28---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1] and the index of meaningful clusters are [15, 16, 17]
+MC crop list generated for mc_len= 29 !
+--------------Clustering Starts for No.1 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 19 sets--for MC 29---------
+The number of clusters is 2
+--------------Clustering Starts for No.16 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 19 sets--for MC 29---------
+The number of clusters is 1
+--------------Clustering Starts for No.19 out of 19 sets--for MC 29---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1] and the index of meaningful clusters are [15]
+MC crop list generated for mc_len= 30 !
+--------------Clustering Starts for No.1 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 18 sets--for MC 30---------
+The number of clusters is 2
+--------------Clustering Starts for No.16 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 18 sets--for MC 30---------
+The number of clusters is 1
+--------------Clustering Starts for No.18 out of 18 sets--for MC 30---------
+The number of clusters is 2
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2] and the index of meaningful clusters are [15, 18]
+MC crop list generated for mc_len= 31 !
+--------------Clustering Starts for No.1 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 17 sets--for MC 31---------
+The number of clusters is 2
+--------------Clustering Starts for No.11 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.16 out of 17 sets--for MC 31---------
+The number of clusters is 1
+--------------Clustering Starts for No.17 out of 17 sets--for MC 31---------
+The number of clusters is 2
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2] and the index of meaningful clusters are [10, 17]
+MC crop list generated for mc_len= 32 !
+--------------Clustering Starts for No.1 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 16 sets--for MC 32---------
+The number of clusters is 2
+--------------Clustering Starts for No.14 out of 16 sets--for MC 32---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 16 sets--for MC 32---------
+The number of clusters is 3
+--------------Clustering Starts for No.16 out of 16 sets--for MC 32---------
+The number of clusters is 2
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 2] and the index of meaningful clusters are [13, 15, 16]
+MC crop list generated for mc_len= 33 !
+--------------Clustering Starts for No.1 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 15 sets--for MC 33---------
+The number of clusters is 1
+--------------Clustering Starts for No.15 out of 15 sets--for MC 33---------
+The number of clusters is 3
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3] and the index of meaningful clusters are [15]
+MC crop list generated for mc_len= 34 !
+--------------Clustering Starts for No.1 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 14 sets--for MC 34---------
+The number of clusters is 2
+--------------Clustering Starts for No.11 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 14 sets--for MC 34---------
+The number of clusters is 1
+--------------Clustering Starts for No.14 out of 14 sets--for MC 34---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1] and the index of meaningful clusters are [10]
+MC crop list generated for mc_len= 35 !
+--------------Clustering Starts for No.1 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 13 sets--for MC 35---------
+The number of clusters is 1
+--------------Clustering Starts for No.13 out of 13 sets--for MC 35---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 36 !
+--------------Clustering Starts for No.1 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 12 sets--for MC 36---------
+The number of clusters is 1
+--------------Clustering Starts for No.12 out of 12 sets--for MC 36---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 37 !
+--------------Clustering Starts for No.1 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 11 sets--for MC 37---------
+The number of clusters is 1
+--------------Clustering Starts for No.11 out of 11 sets--for MC 37---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 38 !
+--------------Clustering Starts for No.1 out of 10 sets--for MC 38---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 10 sets--for MC 38---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 10 sets--for MC 38---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 10 sets--for MC 38---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 10 sets--for MC 38---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 10 sets--for MC 38---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 10 sets--for MC 38---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 10 sets--for MC 38---------
+The number of clusters is 2
+--------------Clustering Starts for No.9 out of 10 sets--for MC 38---------
+The number of clusters is 1
+--------------Clustering Starts for No.10 out of 10 sets--for MC 38---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 2, 1, 1] and the index of meaningful clusters are [8]
+MC crop list generated for mc_len= 39 !
+--------------Clustering Starts for No.1 out of 9 sets--for MC 39---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 9 sets--for MC 39---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 9 sets--for MC 39---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 9 sets--for MC 39---------
+The number of clusters is 2
+--------------Clustering Starts for No.5 out of 9 sets--for MC 39---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 9 sets--for MC 39---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 9 sets--for MC 39---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 9 sets--for MC 39---------
+The number of clusters is 1
+--------------Clustering Starts for No.9 out of 9 sets--for MC 39---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 2, 1, 1, 1, 1, 1] and the index of meaningful clusters are [4]
+MC crop list generated for mc_len= 40 !
+--------------Clustering Starts for No.1 out of 8 sets--for MC 40---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 8 sets--for MC 40---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 8 sets--for MC 40---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 8 sets--for MC 40---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 8 sets--for MC 40---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 8 sets--for MC 40---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 8 sets--for MC 40---------
+The number of clusters is 1
+--------------Clustering Starts for No.8 out of 8 sets--for MC 40---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 41 !
+--------------Clustering Starts for No.1 out of 7 sets--for MC 41---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 7 sets--for MC 41---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 7 sets--for MC 41---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 7 sets--for MC 41---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 7 sets--for MC 41---------
+The number of clusters is 2
+--------------Clustering Starts for No.6 out of 7 sets--for MC 41---------
+The number of clusters is 1
+--------------Clustering Starts for No.7 out of 7 sets--for MC 41---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 2, 1, 1] and the index of meaningful clusters are [5]
+MC crop list generated for mc_len= 42 !
+--------------Clustering Starts for No.1 out of 6 sets--for MC 42---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 6 sets--for MC 42---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 6 sets--for MC 42---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 6 sets--for MC 42---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 6 sets--for MC 42---------
+The number of clusters is 1
+--------------Clustering Starts for No.6 out of 6 sets--for MC 42---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 43 !
+--------------Clustering Starts for No.1 out of 5 sets--for MC 43---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 5 sets--for MC 43---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 5 sets--for MC 43---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 5 sets--for MC 43---------
+The number of clusters is 1
+--------------Clustering Starts for No.5 out of 5 sets--for MC 43---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 44 !
+--------------Clustering Starts for No.1 out of 4 sets--for MC 44---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 4 sets--for MC 44---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 4 sets--for MC 44---------
+The number of clusters is 1
+--------------Clustering Starts for No.4 out of 4 sets--for MC 44---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 45 !
+--------------Clustering Starts for No.1 out of 3 sets--for MC 45---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 3 sets--for MC 45---------
+The number of clusters is 1
+--------------Clustering Starts for No.3 out of 3 sets--for MC 45---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 46 !
+--------------Clustering Starts for No.1 out of 2 sets--for MC 46---------
+The number of clusters is 1
+--------------Clustering Starts for No.2 out of 2 sets--for MC 46---------
+The number of clusters is 1
+The number of clusters for this division are [1, 1] and the index of meaningful clusters are []
+MC crop list generated for mc_len= 47 !
+--------------Clustering Starts for No.1 out of 1 sets--for MC 47---------
+The number of clusters is 1
+The number of clusters for this division are [1] and the index of meaningful clusters are []

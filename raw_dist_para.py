@@ -14,7 +14,7 @@ file_trip  = 'trippub_top2k.csv'
 #####################Folder Paths#######################
 output_file_path = 'output/dist_dict0.json'
 #####################Raw Trips#######################
-trip_ls  = func.data_input(file_trip, 'r') #Generate a list of day trips
+trip_ls  = func.trip_ls_input(file_trip, 'r') #Generate a list of day trips
 trip_ls_div = utils.ls_split(trip_ls, p-1) #Divide the list of trips into (n-1) separate lists, each for parallel computing
 ###################################################Input##################################################################
 #Parallel computing parameters
@@ -28,7 +28,7 @@ if my_rank != 0: #If the process is not root, compute the distances in this proc
 	data_0 = trip_ls_div[my_rank-1] #The individual list of data for current process
 	data_1 = [j for i in trip_ls_div[my_rank-1:] for j in i] #Extract a list of entries start from data_0 (inclusive) to the end
 	#Compute the distances among different trips in current list/segment
-	dist_dict_curr = func.cal_mutual_dist_para(data_0, data_1)
+	dist_dict_curr = func.cal_mutual_dist_baseline(data_0, data_1)
 	comm.send(dist_dict_curr, dest = 0) #Send the distance dictionary to the root process
 else: #If this is the root computation - compile all the distances computed from other processes
 	dist_dict0 = collections.defaultdict(lambda: collections.defaultdict(int)) #Create empty dictionary 

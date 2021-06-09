@@ -21,8 +21,8 @@ trip_df = func.tripls2df(trip_ls_raw, t_interval) #Convert trips into df where c
 s = 21
 alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
 # The following 2 lines apply for LM 
-loop_iter = range(0,23) #Max transition number available
-loop_iter = range(23,47) #Max transition number available
+loop_iter = range(0,23) #Max transition number available - MacKate
+loop_iter = range(23,47) #Max transition number available - DNab
 ##### Complete Dataset for Prior Generation #####
 trip_df_complete = pandas.read_csv('trip_df_complete.csv')
 trip_df_select = trip_df_complete.sample(3000) #Choose 3000 samples (select the size of prior dataset - how much prior info given)

@@ -12,7 +12,7 @@ raw_trip_file = 'trippub_top2k.csv' #File name of the 2k data
 trip_ls  = func.trip_ls_input(raw_trip_file,'w') #Generate the day trips for dataset
 
 #Create output folder
-output_path = str(current_path.parent)+ '/LabMachineResults/'+str(date.today()) #Output file path
+output_path = str(current_path.parent)+ '/Results/Baseline_LabMachine/'+str(date.today()) #Output file path
 if not os.path.exists(output_path): #Create output folder if not exists
     os.makedirs(output_path)
 

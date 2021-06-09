@@ -92,7 +92,8 @@ def trip_data_processing(raw_trip_path, processed_file_name = 'final_trip.csv', 
 def trip_ls_input(file_name, mode = 'w', save_file = True):
 	# Given raw file name and mode, return either newly processed data or data stored in existing file
 	# The file_name input is always the raw file name, depends on mode:
-	# 	If 'w': raw file is read and processed. 
+		# If 'w': raw file is processed:
+			# If save_file=True: Processed file is saved
 	# 	If 'r': processed file name is inferred and read.
 	current_path = pathlib.Path(os.getcwd()) #Get the current working directory
 	if mode == 'w': #Data writing mode: Process raw inputs and return and save generated data 

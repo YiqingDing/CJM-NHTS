@@ -1,4 +1,4 @@
-import func, utils, xlsxwriter, pandas
+import func, utils, xlsxwriter, pandas, pathlib, os
 ###################### Test Packages #######################
 ###################### Input #######################
 #Input for the clustering algorithm:
@@ -23,14 +23,17 @@ alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
 loop_iter = range(47) #Max transition number available
 ##### Complete Dataset for Prior Generation #####
 trip_df_complete = pandas.read_csv('trip_df_complete.csv')
+trip_df_select = trip_df_complete.sample(3000) #Choose 3000 samples (select the size of prior dataset - how much prior info given)
+trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
 #################################################
-workbook = xlsxwriter.Workbook('Bayesian_Clustering_Results.xlsx')
+# Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
+workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results.xlsx')
 worksheet = workbook.add_worksheet('General Results')
 for i in loop_iter: #Iterate over different number of transitions
 	# mc_len = 4 #Test mc_len value
 	mc_len = i+1 #Number of transitions in desired Markov chains
 	mc_crop_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to mc lists of list using number of transitions
-	mc_crop_ls_complete = func.tripdf2mcls(trip_df_complete, mc_len) #Convert the complete trip df to mc lists of list
+	mc_crop_ls_prior = func.tripdf2mcls(trip_df_prior, mc_len) #Convert the complete trip df to mc lists of list
 	print('MC crop list generated for mc_len=',mc_len,'!')
 	###################### Input #######################
 	set_no = len(mc_crop_ls) #Total number of cluster sets for one day
@@ -40,7 +43,7 @@ for i in loop_iter: #Iterate over different number of transitions
 		# Each time window contains a list of MCs
 		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets--for MC '+str(mc_len)+'---------')
 		# Perform Bayesian clustering (prior using the dataset )
-		prior_input_dev = ['dev',mc_crop_ls_complete[idx]] #Form the prior input for dev prior
+		prior_input_dev = ['dev',mc_crop_ls_prior[idx]] #Form the prior input for dev prior
 		cluster_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev)
 		# cluster_ls = func.bayesian_clustering(mc_ls,alpha, s)
 		cluster_len_ls.append(len(cluster_ls))

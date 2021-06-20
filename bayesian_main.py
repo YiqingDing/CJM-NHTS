@@ -22,12 +22,18 @@ s = 21
 alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
 loop_iter = range(47) #Max transition number available
 ##### Complete Dataset for Prior Generation #####
-trip_df_complete = pandas.read_csv('trip_df_complete.csv')
+#### The following 4 lines generate the complete data file and save it as a csv (commented)
+# raw_trip_file_complete = 'trippub.csv' #File name of the 2k data
+# trip_ls_raw_complete  = func.trip_ls_input(raw_trip_file_complete,'w',save_file = False) #Generate the day trips for the complete dataset
+# trip_df = func.tripls2df(trip_ls_raw_complete, t_interval)
+# trip_df.to_csv('trip_df_complete.csv', index = False)
+#### The above 4 lines generate the complete data file and save it as a csv (commented)
+trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]:,] #Only use the rows not belong to test dataset
 trip_df_select = trip_df_complete.sample(3000) #Choose 3000 samples (select the size of prior dataset - how much prior info given)
 trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
-workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results.xlsx')
+workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results_'+os.getlogin()+'.xlsx')
 worksheet = workbook.add_worksheet('General Results')
 for i in loop_iter: #Iterate over different number of transitions
 	# mc_len = 4 #Test mc_len value

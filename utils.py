@@ -525,8 +525,11 @@ def f2_comp(count_ls, prior_ls, mode='log'):
 
 def cluster_ls2count_ls(cluster_ls):
 	# Convert cluster list to count list
-	# Cluster list is a list where each entry is a cluster, i.e. a list of count matrices
-	# Count list is a list where each entry is a count matrices combined from original count matrices
+	# Input:
+		# Cluster list is a list where each entry is a cluster, i.e. a list of count matrices
+	# Output:
+		# Count list is a list where each entry is a count matrices combined from original count matrices
+		# m_ls: List of number of MCs in each cluster
 	###########################################################################################
 	count_ls = []
 	m_ls = []

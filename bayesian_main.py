@@ -20,7 +20,11 @@ trip_ls_raw  = func.trip_ls_input(raw_trip_file,'w') #Generate the day trips for
 trip_df = func.tripls2df(trip_ls_raw, t_interval) #Convert trips into df where col are time windows
 s = 21
 alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
-loop_iter = range(47) #Max transition number available
+# loop_iter = range(47) #Max transition number available
+# Use user input for min and max loop number
+loop_min = int(input('Please enter the min loop number(inclusive): ') or 0)
+loop_max = int(input('Please enter the min loop number(exclusive - max 47): ') or 47)
+loop_iter = range(loop_min,loop_max)
 ##### Complete Dataset for Prior Generation #####
 #### The following 4 lines generate the complete data file and save it as a csv (commented)
 # raw_trip_file_complete = 'trippub.csv' #File name of the 2k data
@@ -33,36 +37,51 @@ trip_df_select = trip_df_complete.sample(3000) #Choose 3000 samples (select the 
 trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
-workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results_'+os.getlogin()+'.xlsx')
-worksheet = workbook.add_worksheet('General Results')
+workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results_'+os.environ.get('USER')+'.xlsx')
+worksheet_0 = workbook.add_worksheet('General Results')
 for i in loop_iter: #Iterate over different number of transitions
 	# mc_len = 4 #Test mc_len value
 	mc_len = i+1 #Number of transitions in desired Markov chains
-	mc_crop_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to mc lists of list using number of transitions
-	mc_crop_ls_prior = func.tripdf2mcls(trip_df_prior, mc_len) #Convert the complete trip df to mc lists of list
+	mc_crop_ls, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to mc lists of list using number of transitions
+	mc_crop_ls_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] #Convert the complete trip df to mc lists of list
 	print('MC crop list generated for mc_len=',mc_len,'!')
+	worksheet_1 = workbook.add_worksheet(str(mc_len)+' Transition') #Added new sheet to record result for the specific number of transitions
+	last_row_no = 1 # Last row number used for writing in worksheet_1 (reset for every mc_len)
 	###################### Input #######################
-	set_no = len(mc_crop_ls) #Total number of cluster sets for one day
+	set_no = len(mc_crop_ls) #Total number of cluster sets for one day (# of time windows)
 	cluster_len_ls = [] #List of cluster length
 	for idx, mc_ls in enumerate(mc_crop_ls): #Iterate over all the time windows
 		mc_ls = mc_crop_ls[idx] #Choose the time window corresponding to idx
 		# Each time window contains a list of MCs
 		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets--for MC '+str(mc_len)+'---------')
+		prior_input_dev = ['dev',mc_crop_ls_prior[idx]] #Generate the prior input for dev prior
 		# Perform Bayesian clustering (prior using the dataset )
-		prior_input_dev = ['dev',mc_crop_ls_prior[idx]] #Form the prior input for dev prior
-		cluster_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev)
-		# cluster_ls = func.bayesian_clustering(mc_ls,alpha, s)
-		cluster_len_ls.append(len(cluster_ls))
+		cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev)
+		# cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s) #Uniform prior
+		cluster_len_ls.append(len(cluster_ls)) #Append cluster length
 		print('The number of clusters is',cluster_len_ls[idx])
-
-		# if cluster_ls_len != 1:
-		# 	print('The cluster with meaningful result is No.'+str(idx+1))
-		# 	break
+		
+		# Saving to worksheet starts from row 1 (1st row reserved for general result)
+		# row_0 = 1+ idx * (s+1) #Starting row number of current saving 
+		worksheet_1.write(last_row_no,0,'No. '+str(idx+1)) #Write current title (time window), at row 1, 23, etc.
+		worksheet_1.write_row(last_row_no,1,mc_title_ls[idx]) #Write current title (time window), at row 1, 23, etc.
+		if cluster_len_ls[-1]>1: #Only saves trans_ls if the clustering result is meaningful
+			trans_ls_zip = list(zip(*trans_ls)) #Convert flat trans_ls to a list in which each entry is a list of row values for all trans matrices
+			k0 = 0 #Index for row no of trans_ls_zip - relative row number (reset for each time window)
+			for j in range(last_row_no+1,last_row_no+s+1): #Absolute row number in excel
+				# j starts from last_row_no+1 (2, 24, etc.) and ends at last_row_no+s+1 (22, 44, etc.)
+				# k0 points to each row within trans_ls_zip and k0 increments with j
+				for k, row_ls in enumerate(trans_ls_zip[k0]): #Iterate over list of rows for all trans_mat
+					worksheet_1.write_row(j,k*(s+1),row_ls) #Write the one row for one matrix and goes to the next matrix
+				k0 +=1 #Update the relative index
+			last_row_no += s+1 #Update the last_row_no with the new index
+		else:
+			worksheet_1.write(last_row_no+1,1,'No meaning clustering result generated!')
+			last_row_no += 2
 	idx_meaningful = [i+1 for i, e in enumerate(cluster_len_ls) if e != 1]
 	print('The number of clusters for this division are',cluster_len_ls,'and the index of meaningful clusters are',idx_meaningful)
 	# Saves the file
-	worksheet.write(i,0,str(mc_len)+' transitions:')
-	worksheet.write(i,1,str(cluster_len_ls))
-	worksheet.write(i,2,str(idx_meaningful))
+	worksheet_1.write_row(0,0,[str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the time window specific sheet
+	worksheet_0.write_row(i,0,[str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the 'General Result' sheet
 ###################### Test #######################
 workbook.close()

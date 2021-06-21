@@ -391,20 +391,27 @@ def tripdf2mcls(trip_df, mc_len):
 		# mc_crop_ls: A list of list, in which each entry is a list of Markov chains - cropped out of trip_df
 			# A list of Markov chains is a list of list, in which each entry is a Markov chains
 				# A Markov chain is a list of activities 
+		# col_name_ls: A list of list, in which each entry is a list of column names, each corresponding to the list in mc_crop_ls
 	#####################################################
 	i_max = trip_df.shape[1]-1 #Maximum index of trip_df column
 	mc_crop_ls = [] #Initialize the output mc list
 	# for i in np.arange(0,trip_df.shape[1]-1,mc_len):
+	col_names = list(trip_df.columns) #Complete list of names
+	col_name_ls = [] #Output list of names for each entry in mc_crop_ls
+	if mc_len < 1:
+		raise Exception('Min of mc_len is 1')
 	if mc_len > trip_df.shape[1]-1: #Warning
 		raise Exception('The number of transitions desired is larger than max transitions available')
-	for i in range(trip_df.shape[1]-mc_len): 
+	for i in range(trip_df.shape[1]-mc_len):
+		# The last starting index is always (trip_df.shape[1]-mc_len-1)
 		i_end = min(i+mc_len, i_max) #Find out the end index for cropping (avoid out of index with min fn)
-		ind_df = trip_df.iloc[:,int(i):i_end] #Crop the specific columns out of trip_df
+		ind_df = trip_df.iloc[:,int(i):i_end+1] #Crop the specific columns out of trip_df
 		ind_ls = ind_df.values.tolist() #Convert the ind_df to list of item, where each item is a row in the original df
-		ind_mc_ls = datals2mcls(ind_ls) #Convert the data list to mc list
+		ind_mc_ls = datals2mcls(ind_ls) #Convert the data list to mc list - preprocessing
 		if ind_mc_ls: #Only appends if it's not completely zeros
 			mc_crop_ls.append(ind_mc_ls)
-	return mc_crop_ls
+			col_name_ls.append(col_names[i:i_end+1])
+	return mc_crop_ls, col_name_ls
 
 def datals2mcls(data_ls):
 	# Process all the chains in a list to a list of Markov chains
@@ -427,6 +434,9 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 		# alpha: Global precision
 		# s: Number of states for Markov chain 
 		# prior_input: A list of data for prior generation. The 1st element, prior_input[0], is always the prior type
+	# Output:
+		# cluster_ls: See below
+		# trans_ls: List of transitional matrices, where each entry is a transitional matrix
 	################### Important Variables #####################
 	# 	cluster_ls: List of clusters, each entry is a list of count matrices (in list format). Can convert to count_ls.
 	# 	count_ls: List of count matrices, each entry is a count matrix combined from the corresponding cluster (list of count matrices)
@@ -572,7 +582,11 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 			# break #Break for outer loop
 		# utils.dict2json('temp/cluster_ls_'+str(run_no1)+'.json',cluster_ls)
 		# utils.dict2json('temp/count_ls_'+str(run_no1)+'.json',count_ls)
-	return cluster_ls
+	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Convert final clusters to list of count mat
+	trans_ls = []
+	for nmat in count_ls: #Convert list of count matrices to list of transitional matrices
+		trans_ls.append(utils.count2trans(nmat)) #Convert count matrix and append to list
+	return cluster_ls, trans_ls
 
 def prior_generator(prior_data, type = 'uniform'):
 	# Incomplete

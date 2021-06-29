@@ -23,7 +23,7 @@ alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
 # loop_iter = range(47) #Max transition number available
 # Use user input for min and max loop number
 loop_min = int(input('Please enter the min loop number(inclusive): ') or 0)
-loop_max = int(input('Please enter the min loop number(exclusive - max 47): ') or 47)
+loop_max = int(input('Please enter the max loop number(exclusive - max 47): ') or 47)
 loop_iter = range(loop_min,loop_max)
 ##### Complete Dataset for Prior Generation #####
 #### The following 4 lines generate the complete data file and save it as a csv (commented)
@@ -63,8 +63,8 @@ for i in loop_iter: #Iterate over different number of transitions
 		
 		# Saving to worksheet starts from row 1 (1st row reserved for general result)
 		# row_0 = 1+ idx * (s+1) #Starting row number of current saving 
-		worksheet_1.write(last_row_no,0,'No. '+str(idx+1)) #Write current title (time window), at row 1, 23, etc.
-		worksheet_1.write_row(last_row_no,1,mc_title_ls[idx]) #Write current title (time window), at row 1, 23, etc.
+		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] #Current title includes a number and title time windows
+		worksheet_1.write_row(last_row_no,0,current_title) #Write current title (time window), at row 1, 23, etc.
 		if cluster_len_ls[-1]>1: #Only saves trans_ls if the clustering result is meaningful
 			trans_ls_zip = list(zip(*trans_ls)) #Convert flat trans_ls to a list in which each entry is a list of row values for all trans matrices
 			k0 = 0 #Index for row no of trans_ls_zip - relative row number (reset for each time window)
@@ -76,7 +76,7 @@ for i in loop_iter: #Iterate over different number of transitions
 				k0 +=1 #Update the relative index
 			last_row_no += s+1 #Update the last_row_no with the new index
 		else:
-			worksheet_1.write(last_row_no+1,1,'No meaning clustering result generated!')
+			worksheet_1.write_row(last_row_no+1,0,['','No meaning clustering result generated!'])
 			last_row_no += 2
 	idx_meaningful = [i+1 for i, e in enumerate(cluster_len_ls) if e != 1]
 	print('The number of clusters for this division are',cluster_len_ls,'and the index of meaningful clusters are',idx_meaningful)

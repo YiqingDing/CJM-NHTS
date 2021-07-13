@@ -33,7 +33,7 @@ loop_iter = range(loop_min-1,loop_max-1)
 # trip_df.to_csv('trip_df_complete.csv', index = False)
 #### The above 4 lines generate the complete data file and save it as a csv (commented)
 trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]:,] #Only use the rows not belong to test dataset
-sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default all)') or 0)
+sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default all):') or 0)
 if sample_size == 0:
 	trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
 else:	

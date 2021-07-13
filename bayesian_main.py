@@ -42,6 +42,8 @@ else:
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
 workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results_'+os.environ.get('USER')+'.xlsx')
 worksheet_0 = workbook.add_worksheet('General Results')
+print('Execution starts! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
+print('***********************************************************************************************')
 for i in loop_iter: #Iterate over different number of transitions
 	# mc_len = 4 #Test mc_len value
 	mc_len = i+1 #Number of transitions in desired Markov chains
@@ -87,4 +89,6 @@ for i in loop_iter: #Iterate over different number of transitions
 	worksheet_1.write_row(0,0,[str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the time window specific sheet
 	worksheet_0.write_row(i,0,[str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the 'General Result' sheet
 ###################### Test #######################
+print('***********************************************************************************************')
+print('Execution completed! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
 workbook.close()

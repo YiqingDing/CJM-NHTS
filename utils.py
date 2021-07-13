@@ -2,12 +2,13 @@
 import numpy as np
 from math import *
 import matplotlib.pyplot as plt, matplotlib.lines as ml
-import collections, random, bisect, ujson, csv,ast, os, sys
+# import matplotlib
+import collections, random, bisect, ujson, csv,ast, os, sys, itertools
 from sklearn.neighbors import KernelDensity
 import pandas as pd
 from scipy.special import gamma, factorial, binom, gammaln
 import scipy.stats
-# np.seterr(divide='ignore')
+import networkx as nx
 # R change wd: setwd("~/Google Drive/School/Stanford/Research/Journey Map/Markov Chain Paper/Code & Data/NHTS")
 
 # 4 different sections:
@@ -743,6 +744,18 @@ def NHTS():
 
 	return NHTS_book
 
+def NHTS_new():
+	# Updated the last indices 20&21 for a smoother number
+	NHTS_book = {1: 'Regular home activities (chores, sleep)', 2: 'Work from home (paid)', 3: 'Work', 4: 'Work-related meeting / trip', 
+	5: 'Volunteer activities (not paid)', 6: 'Drop off /pick up someone', 7: 'Change type of transportation', 
+	8: 'Attend school as a student', 9: 'Attend child care', 10: 'Attend adult care', 11: 'Buy goods (groceries, clothes, appliances, gas)',
+	12: 'Buy services (dry cleaners, banking, service a car, pet care)', 13: 'Buy meals (go out for a meal, snack, carry-out)',
+	14: 'Other general errands (post office, library)', 15: 'Recreational activities (visit parks, movies, bars, museums)',
+	16: 'Exercise (go for a jog, walk, walk the dog, go to the gym)', 17: 'Visit friends or relatives', 18: 'Health care visit (medical, dental, therapy)',
+	19: 'Religious or other community activities', 20: 'Something else', 21: 'Nothing',}
+
+	return NHTS_book
+
 def dict2json(file, *data):
 	# Save the input data as a list into json file
 	json_data = ujson.dumps(data)
@@ -861,8 +874,298 @@ def discrete_normal_dist(prior_mat, kernel = 'gaussian'):
 		# kde = KernelDensity(kernel, bandwidth=0.2).fit(row) #Perform kenel density estimation on discrete data
 	return norm_prior_mat
 
+def path_processor(f_path, change_slash = 1):
+	# Given a file or folder path, process it as needed
+	# Input:
+		# f_path: A file or folder path
+		# change_slash: if the slash is changed
 
-##########################################################Plot Functions############################################################
+	if change_slash: #If ending slash needs to be changed
+		if f_path[-1] == '/' or '\\':
+			new_path = f_path[:-1] #Remove the forward or backward slash
+			print('Returning a file path (without slash)!')
+		else:
+			if '\\' in f_path:
+				new_path = f_path + '\\'
+			else:
+				new_path = f_path + '\\'
+			print('Returning a folder path (with slash)!')
+
+	return new_path
+########################################################## DataAnalysis.py
+def calcRow(windowArray, s, ttype = 'Baseline'):
+	# Compute the row ranges for given row indices in windowArray
+	# Input:
+		# windowArray: List of target indices
+		# s: State size
+		# ttype: Type of table:
+			# Baseline: Rows between target indices also have (21+1) rows - title+mat
+			# Result: Rows between target indices are abbreviated with only (1+1) rows - title+statement
+	# Output:
+		# rowRangeArr: A list of list, where each entry is a list of row ranges according to ttype in the df
+	rowRangeArr = []
+	if ttype == 'Result':
+		for idx, window_no in enumerate(windowArray):
+			rowRange = [(s-1)*idx + 2*window_no] #Starting row index (for the trans matrix)
+			rowRange.append(rowRange[-1]+s-1) #Ending row index (for the trans matrix)
+			rowRangeArr.append(rowRange) #Append to the array
+	elif ttype == 'Baseline':
+		for idx in windowArray: #Iterate over indices in windowArray
+			rowRangeArr.append([(idx-1)*(s+1)+2, (idx-1)*(s+1)+2+s-1])
+			# start: (s+1)*idx - s+1
+	else:
+		raise Exception('No such table type allowed!')
+	return rowRangeArr
+
+def node_layout_raw(node_tot):
+	# Given list of nodes, generate the node locations using our algorithm
+	# Input:
+		# node_tot: 3 level list
+			# 1st level, node_col = node_tot[i] - Nodes belong to the same column (can have multiple rows)
+			# 2nd level, node_ls = node_col[j] = node_tot[i][j] - List of nodes belong to the same row&column
+			# 3rd level, node = node_ls[k] = node_col[j][k] = node_tot[i][j][k]
+	# Output:
+		# nodePos: A dictionary for node location where key = node, val = location
+	# Comment:
+		# 1. The location of the 1st node starts from left bottom. 
+		# 2. We compute positions for each row of nodes given columns of data. Each row spans across different columns.
+		# 3. Columns within the same row can have different height (can be empty). We refer to these columns as node_ls.
+		# 4. This algorithm doesn't use bipartite_layout function, thus has more flexibility
+	####################################################################################
+	node_sep = 0.3 #Separation distance between two nodes within the same row
+	row_sep = 3*node_sep #Separation between two rows
+	hor_sep = 2 #Horizontal distance between two columns
+	curr_x = 0 #Starting x direction coordinates
+	nodePos = {} #Create an empty dictionary
+
+	start_loc = np.asarray([0,0],dtype='f') #Starting location of the the list of nodes, starts from (0,0)
+	for node_row in itertools.zip_longest(*node_tot, fillvalue = []): #Iterate over rows across different column
+		# Each row contains multiple columns, each col is a list of nodes
+		# Each column can have different lengths, but all built on the same base height
+		for node_ls in node_row: #Extract one column out of current row
+			# This iterator forms a segment of (row, column), which is a list of nodes, thus denoted as node_ls
+			if node_ls != []: #There is a column rather than empty
+				delta_height = (len(node_ls)-1)*node_sep #Height dist between end and start for current list
+				end_loc = start_loc+np.asarray([0,delta_height]) #End location for current list
+				coord = np.linspace(start_loc,end_loc,num = len(node_ls)) #Get the coordinates for current list
+				nodePos.update(dict(zip(node_ls,coord))) #Add the coordinates for current row to the dict
+			#Compute the start loc for next list (same even if node_ls=[])
+			start_loc += np.asarray([hor_sep, 0]) #Shifts to the next column
+		
+		# At the end of each row, reset x of start_loc to 0, and increase y of start_loc with max_height+row_sep
+		start_loc[0] = 0 #Reset x coordinate to 0 (start)
+		max_height = max([(len(i)-1)*node_sep for i in node_row])  #Compute max_height among this row
+		start_loc[1] += max_height + row_sep
+	return nodePos
+
+def node_validate(pmat, start_num = 1):
+	# Given a transitional matrix, we return a list of nodes which are valid
+	# Input:
+		# pmat: Transitional matrix of size sxs
+		# start_num: Starting state number, default 1. States are int start from this num.
+	# Output:
+		# state_valid: A list of states with nonzero entries either on row or column
+	pmat = np.asarray(pmat) if not isinstance(pmat, np.ndarray) else pmat #Convert to array if it's a list
+	# Compute valid states (either have a nonzero prob in or out)
+	state_valid_raw = np.unique(np.argwhere(pmat)) #argwhere gets indices for any nonzero, unique extracts the unique indices
+	state_valid = (state_valid_raw + start_num).tolist() #+start_state for state starts from start_state
+	# pmat_valid = pmat[state_valid_raw,state_valid_raw]
+	return state_valid
+
+def plot_mc(mc_data,plot_type, s=21, ax = None):
+	# Plot a mc_dict according to a step plan
+	# Steps:
+		# 1. Transform trans mat and extract edges & states
+		# 2. Plot the MC as the starting state towards end states
+	# Input:
+		# mc_data
+		# plot_type
+		# s
+		# ax: Current axe
+	# if ax == None: #Get current axe
+	# 	ax = plt.gca()
+
+	if plot_type =='heatmap':
+		# Plot each chain's transitional matrix as a heatmap
+		# mc_data is pmat, the transitional matrix
+		mc_data = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
+
+		# labels = [NHTS_new()[i+1] for i in range(mc_data.shape[0])]
+		labels = [i+1 for i in range(mc_data.shape[0])]
+
+		# print('Initial AR:',ax.get_aspect())
+		AR = 0.7 #Aspect ratio for the heatmap
+		im, cbar = heatmap(mc_data, labels, labels, ax=ax,
+                   cmap="YlGn", 
+                   aspect = AR,
+                   # cbarlabel="Transitional Probabilities",
+                   # cbar_kw= {'use_gridspec': True, 'panchor': 'C','pad': 0.05})
+                   cbar_kw= {'use_gridspec': True, 'panchor': 'C','pad': 0.05,
+                   # 'aspect':10/AR, 
+                   'fraction':0.05/AR, 
+                   'location':'bottom'})
+		# print('Final AR:',ax.get_aspect())
+	elif plot_type == 'simulation':
+		# Plot the simulation result for the given MC
+		# mc_data is pmat, the transitional matrix
+		mc_data = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
+		states, dist_steps = simulate_mc(mc_data) #Simulate (states, dist_steps) with default setting
+		unique_states = np.unique(states) #Get the unique set of states appeared in states simulation
+		for state in unique_states:
+			ax.plot(dist_steps[0], dist_steps[1][state], label = NHTS_new()[state]) #Plot prob vs offset for each state
+	else:
+		# mc_data is a dictionary keyed by edge pair tuples and valued by trans prob
+		# We will plot using networkx package
+		G=nx.DiGraph() #Create directed graph
+		nodes_tot = np.unique(np.asarray(list(mc_data.keys()))) #Unique nodes embedded in edges
+		G.add_nodes_from(nodes_tot) #Add all the nodes
+		if plot_type == 'step':
+			# Plot each MC as a transition from one step to the next by duplicating end states for edges into new states (whose %21 reminder is the same as original state)
+			nodes_left = np.unique(np.asarray(list(mc_data.keys()))[:,0]) #Nodes that will be plotted on the left/top (starting nodes) - Starting state
+			labels = [NHTS_new()[node%21 or 21] for node in nodes_tot] #Get labels for current nodes from NHTS_new dict
+			nodePos = nx.bipartite_layout(G, nodes = nodes_left) #Create a position dict
+		elif plot_type == 'homogeneous':
+			# Plot each MC without creating new states
+			labels = [NHTS_new()[node] for node in nodes_tot] #Get labels for current nodes
+			nodePos = nx.planar_layout(G)
+			# nodePos = nx.shell_layout(G)
+			# nodePos = nx.spring_layout(G)
+			# nodePos = nx.spiral_layout(G)
+			# nodePos = nx.kamada_kawai_layout(G)
+			nodePos = nx.random_layout(G)
+		else:
+			raise Exception('No such plot type!')
+		state_labels = dict(zip(nodes_tot, labels)) #Generate the state-label pair dict
+		
+		edge_ls = list(mc_data.keys()) #Get the edges from the dictionary keys
+		edge_width = list(mc_data.values()) #Get the edge width
+		G.add_edges_from(edge_ls) #Add the edges
+		######################
+		# print(list(nx.nodes_with_selfloops(G)))
+		######################
+		size_multiplier = 10
+		nx.draw_networkx(G,
+			ax = ax, 
+			pos = nodePos, 
+			with_labels = True, 
+			labels = state_labels, 
+			width = [width*3 for width in edge_width],
+			font_size = 0.5*size_multiplier,	node_size = 50*size_multiplier
+			)
+		
+	return ax
+
+def heatmap(data, row_labels, col_labels, ax=None,
+            cbar_kw={}, cbarlabel="", **kwargs):
+    """
+    Create a heatmap from a numpy array and two lists of labels.
+
+    Parameters
+    ----------
+    data
+        A 2D numpy array of shape (N, M).
+    row_labels
+        A list or array of length N with the labels for the rows.
+    col_labels
+        A list or array of length M with the labels for the columns.
+    ax
+        A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
+        not provided, use current axes or create a new one.  Optional.
+    cbar_kw
+        A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
+    cbarlabel
+        The label for the colorbar.  Optional.
+    **kwargs
+        All other arguments are forwarded to `imshow`.
+    """
+
+    if not ax:
+        ax = plt.gca()
+
+    # Plot the heatmap
+    im = ax.imshow(data, **kwargs)
+    
+    pos = ax.get_position()
+    
+    # Create colorbar
+    ########################################################################################
+    # divider = make_axes_locatable(ax)
+    # cax = divider.append_axes('right', size='5%', pad=0.05)
+    # print('Initial position is',ax.get_position(),'aspect ratio is ', ax.get_aspect())
+    
+    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+    # print('Final position is',ax.get_position(),'aspect ratio is ', ax.get_aspect())
+    ########################################################################################
+    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
+
+    # We want to show all ticks...
+    ax.set_xticks(np.arange(data.shape[1]))
+    ax.set_yticks(np.arange(data.shape[0]))
+    # ... and label them with the respective list entries.
+    ax.set_xticklabels(col_labels)
+    ax.set_yticklabels(row_labels)
+
+    # Let the horizontal axes labeling appear on top.
+    ax.tick_params(top=True, bottom=False,
+                   labeltop=True, labelbottom=False)
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
+             rotation_mode="anchor")
+
+    # Turn spines off and create white grid.
+    ax.spines[:].set_visible(False)
+
+    ax.set_xticks(np.arange(data.shape[1]+1)-.5, minor=True)
+    ax.set_yticks(np.arange(data.shape[0]+1)-.5, minor=True)
+    ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+    ax.tick_params(which="minor", bottom=False, left=False)
+
+    return im, cbar
+
+def simulate_mc(pmat, n_steps = 20000, **kwargs):
+	# Given a single MC's transitional matrix, simulate it and return the states & equilibrium distribution at different time steps
+	# Input:
+		# pmat:
+		# n_steps: Number of steps to be simulated, default 20000
+		# kwargs:
+			# start_state: Start index for state space, default 1
+			# state_space: State space given pmat, default node_valid in pmat
+			# initial_state: Initial state, default choose randomly from state_space
+			# offset_step: Offset step size from which equilibrium prob is computed, default 5
+	
+	pmat = np.asarray(pmat) if not isinstance(pmat, np.ndarray) else pmat #Convert pmat to np array if it's not
+	# Extract parameters from kwargs or using default settings
+	start_state = kwargs['start_state'] if 'start_state' in kwargs.keys() else 1 #Start state, default 1
+	state_space0 = np.linspace(start_state,start_state+pmat.shape[0]-1, pmat.shape[0], dtype = int) #State space without condiering pmat: [start_state : start_state+s-1]
+	state_space = kwargs['state_space'] if 'state_space' in kwargs.keys() else node_validate(pmat) #State space with pmat, node_valid in pmat
+	initial_state = kwargs['initial_state'] if 'initial_state' in kwargs.keys() else np.random.choice(state_space) #Initial state, default uniform randomly chosen from state space
+	offset_step = kwargs['offset_step'] if 'offset_step' in kwargs.keys() else 5 #Get # of offset step
+	##################################
+	# Start simulation
+	states = [initial_state] #Initialize the list of states, starts from initial state
+	# Simulate the MC with n_steps
+	for i in range(n_steps):
+		trans_prob = pmat[states[-1]-start_state] #Transitional prob from last state (adjusted to idx in pmat with start state)
+		# if sum(trans_prob) != 1:
+			# print(trans_prob)
+			# print('Warning!!!!! sum is',sum(trans_πprob))
+		# If MC jumps into a chain with empty entries, end the simulation
+		if sum(trans_prob) == 0:
+			break
+		states.append(np.random.choice(state_space0, p = trans_prob))
+	states = np.array(states)
+	
+	offsets = range(1, min(n_steps, len(states)), offset_step)
+	dist_prob = {} #Initialize the distribution probability dictionary, keyed by state and valued by list of dist prob corresponding to time in offsets
+	for state in state_space: #Iterate over each state within the state space
+		dist_prob[state] = [np.sum(states[:offset] == state) / offset for offset in offsets] #Compute prob of appearance up to offset point
+		# axs[0].plot(offsets, dist_prob, label = utils.NHTS_new()[state_idx]) #Plot prob vs offset
+	dist_steps = [offsets, dist_prob]
+
+	return states, dist_steps
+
+##########################################################Original Plot Functions############################################################
 def raw_plot(raw_trip_ls = []):
 	# Plot raw trip list as points. This function returns a set of axes object that will be reused to plot 
 	# Input:
@@ -961,6 +1264,7 @@ def vec_plot(trip_ls, axs = [], raw_trip_ls = []):
 		ax.plot(ind_trip[0],ind_trip[1],'D-',markersize=10)
 		ax2.plot(ind_trip[0],ind_trip[1],'D-',markersize=10)
 	return fig
+
 def matplotlib_params():
 	rc_params = {
 	'xtick.labelsize':	40, #Tick on x-axe

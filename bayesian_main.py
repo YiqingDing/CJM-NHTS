@@ -22,8 +22,8 @@ s = 21
 alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
 # loop_iter = range(47) #Max transition number available
 # Use user input for min and max loop number
-loop_min = int(input('Please enter the min loop number(inclusive): ') or 0)
-loop_max = int(input('Please enter the max loop number(exclusive - max 47): ') or 47)
+loop_min = int(input('Please enter the min number of transitions(inclusive): ') or 0)
+loop_max = int(input('Please enter the max number of transitions(exclusive - max 47): ') or 47)
 loop_iter = range(loop_min,loop_max)
 ##### Complete Dataset for Prior Generation #####
 #### The following 4 lines generate the complete data file and save it as a csv (commented)

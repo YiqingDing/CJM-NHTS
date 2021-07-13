@@ -1,9 +1,13 @@
-import utils, collections, csv, random, os, pathlib, ast, uuid, time, copy
+import utils, collections, csv, random, os, pathlib, ast, uuid, time, copy, itertools
 import pandas as pd
 from math import *
 import numpy as np
 from bidict import bidict
 import matplotlib.pyplot as plt, matplotlib.lines as ml
+# from matplotlib.gridspec import GridSpec
+import networkx as nx
+from matplotlib.backends.backend_pdf import PdfPages
+
 np.seterr('raise')
 
 def trip_data_processing(raw_trip_path, processed_file_name = 'final_trip.csv', save_file = True):
@@ -650,7 +654,7 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv):
 	for data in new_val_ls:
 		# dict keys starts from start_id
 		if f_hash(data, tuple) in id_dict.inverse:
-			print('There will be the day!!!\n')
+			raise Exception('Input value already in id_dict!!!\n')
 		id_dict[uuid.uuid4().hex] = f_hash(data, tuple) #Change the data to hashable for dic keys
 	return id_dict
 
@@ -835,3 +839,274 @@ def plot_freq_centers_heat(sort_dict, result_loc):
 	fig, ax1 = utils.ax3d_plot_heat(freq, ylabel, xlabel)
 	fig.savefig(img_folder_path+'/FrequencyHeat.png')
 	plt.close()
+
+#################################################### DataAnalysis ############################################################
+def processed_data_generator(dataFilePath, baselineFilePath, resultNo, s = 21, func_type = 'Write'):
+	# Mix the baseline result with the clustered result and generate a new excel (with multiple sheets)
+	# Input:
+		# dataFilePath: Path for clustered result data
+		# baselineFilePath: Path for baseline result data (unclustered)
+		# resultNo; List of transitions where there are meaningful clustering results
+	# Output:
+		# 
+	baselineFile = pd.ExcelFile(baselineFilePath) #Generate a ExcelFile object for raw file
+	processedFilePath = dataFilePath.split('.xlsx')[0]+'_processed.xlsx' #Generate a processed file path
+	if func_type == 'Write':
+		processedFileWriter = pd.ExcelWriter(processedFilePath) #Create a processed file writer
+
+		for transitionNo in resultNo: #Input results only for those with meaningful result
+			sheetName = baselineFile.sheet_names[transitionNo-1] #Get the current sheet name
+			baselineT = baselineFile.parse(sheet_name = transitionNo-1, header = None) #Read the baseline sheet
+			SpecificT = pd.read_excel(dataFilePath, sheet_name = transitionNo,header = None) #Read the result sheet
+			newT =  pd.DataFrame(np.nan, index= baselineT.index , columns=SpecificT.columns) #Create new table/sheet with appropriate size
+			newT.loc[:,:] = baselineT #Fill the new table with the baseline data and then edit this new table
+
+			windowArray = ast.literal_eval(SpecificT.loc[0,2]) #Get the list of meaningful time window indices (which time windows within the current transitional # have meaningful results), this index is 1-indexed
+
+			# We want to replace data for indices in windowArray in baselineT with the data in SpecificT
+			rowRangeArr = utils.calcRow(windowArray,s, ttype = 'Result')
+			baselineRangeArr = utils.calcRow(windowArray,s, ttype = 'Baseline')
+			for idx, rowRange in enumerate(rowRangeArr):
+				baselineRange = baselineRangeArr[idx] #Get the ranges for baseline file
+				temp_df = SpecificT.loc[list(range(*rowRange))+[rowRange[1]]] #The df that will replace origin
+				temp_df.index = newT.loc[list(range(*baselineRange))+[baselineRange[1]]].index #Re-index the df so it can be filled in newT
+				newT.loc[list(range(*baselineRange))+[baselineRange[1]]] = temp_df #Fill the rows in newT with temp_df
+			newT.to_excel(processedFileWriter,sheet_name = sheetName, header = False, index = False) #Save newT to a new sheet
+	
+		processedFileWriter.close()
+	elif func_type != 'Read':
+		raise Exception('No such function type! Input Read or Write')
+	return processedFilePath
+
+def node_col2layout(state_valid):
+	# Unused!!!
+	# Both shifts below keep the remainder of (state/s) the same and thus keeps state labels the same
+	col1 = (np.asarray(state_valid)+2*s*chainNo).tolist() #1st column, shifts by 2*s*chainNo to avoid repetition
+	col2 = (col1 + s).tolist() #Shifts s from column to avoid repetition
+	node_tot[0].append(col1)
+	node_tot[1].append(col2)
+	return None
+
+def pmat2dict(pmat,plot_type,start_state = 1):
+	# Given a transitional matrix, converts it to a dictionary keyed by edge pairs and valued by trans prob
+	# Input:
+		# pmat: Transitional matrix with state as intergers from [start_state,start_state+s], with s = pmat.shape[0]
+		# plot_type: Type of processing model:
+			# 'step': We will duplicate nodes and treat the trans mat as one step forward transitions from original state to the duplicated nodes. 
+			# 'homogeneous': We will use the original nodes.
+		# start_state: An integer that the states start from.
+	# Output:
+		# mc_dict: A dictionary keyed by edge pairs in tuples and valued by trans prob.
+	# Note: Since we want the nodes to be distributed along two sides, we will duplicate the states and final number of nodes will be 2*valid_states
+	pmat = np.asarray(pmat) if not isinstance(pmat, np.ndarray) else pmat #Convert pmat to np array if it's not
+	s = pmat.shape[0] #Get number of states
+	mc_dict = collections.defaultdict(float) #Initialize the dictionary
+	edges = np.argwhere(pmat)+start_state #Get the raw edges (without modification to indices)
+	if plot_type == 'step': #We will indices of the end of edges
+		edges[:, 1] += s #Modify indices of end of edge/column
+	edges = [tuple(i) for i in edges.tolist()] #Convert edges to list of tuples
+	probs = pmat[np.nonzero(pmat)].tolist() #Get all the nonzero values in pmat
+	mc_dict = dict(zip(edges,probs))  #Zip edge and prob and create the dict
+	return mc_dict
+
+def simulate_mc_sheet(pmat_sheet, n_steps = 20000, **kwargs):
+	# Given a sheet of Markov chain transitional matrices, simulate its transitions and record states
+	# Input:
+		# pmat_sheet: A list of list that contains all the trans mat for current sheet
+			# Each entry of pmat_sheet is pmat_window, which contains all the pmat for a single time window
+			# Each entry of pmat_window is a pmat
+		# n_steps
+		# initial_state
+	# Output:
+		# states
+		# 
+	
+	# Extract titles for figs and axes from kwargs if there are any
+	titles_dict = {'title_sheet': kwargs['title_sheet']} if 'title_sheet' in kwargs.keys() else {'title_sheet': 'Markov Chain Simulation'}
+	titles_dict['title_win'] = kwargs['title_win']+' '+str(n_steps)+' steps' if 'title_win' in kwargs.keys() else str(n_steps)+' steps'
+	# Generate the figs and axes
+	figs, axs = fig_generator(fig_num = 1, ax_num = [1],titles_dict = titles_dict) #Create the figs and axes
+
+	pmat_flatten = [pmat for pmat_window in pmat_sheet for pmat in pmat_window] #Get a flattend list of pmats
+	for pmat in pmat_flatten:
+		states, dist_steps = utils.simulate_mc(pmat, n_steps = 20000, plot_simulation = True, **kwargs)
+
+	file_path = kwargs['file_path'] if 'file_path' in kwargs.keys() else '/MCsimulation.pdf' #Extract the file path
+	fig2pdf(file_path,fig_num = 'all') #Save all figures to PDF
+
+	
+
+######### Plotting in DataAnalysis #############
+def plot_mc_sheet(mc_sheet, titles_dict, size, plot_type = 'homogeneous', fig_type = 'multiple', s = 21, save_pdf = False, **kwargs):
+	# Given all MCs for time windows within one sheet, plot them depends on fig_type:
+		# fig_type='single': Plot each time window on one column with one figure contains all time windows
+		# fig_type='multiple': Plot each time window on a single figure, and produce multiple figures
+	# Input:
+		# mc_data: A list of list that contains all the nodes&edges, and structured as follows:
+			# Each entry of mc_sheet is a list, mc_window, contains all the nodes&edges for the time window
+			# Each entry of mc_window is a container, mc_data, for one MC within the window
+		# titles_dict: A dictionary contains titles for figures and axes:
+			# 'title_win': Title for each time window
+			# 'title_sheet': Title for each sheet (contains all MCs of the same transition #)
+		# size: A 2-tuple:
+			# size[0]: transCountArr - List of # of trans mat in each time window
+			# size[1]: # of time windows
+		# plot_type: The type of plot to be generated, this determines type of container in mc_window
+			# 'step' or 'homogeneous': mc_data is a dictionary where keys are edges (node pairs) and values are edge weights
+			# 'heatmap' or 'simulation': mc_data is a transitional matrix
+		# fig_type: 'single' or 'multiple' that determines the # of figures to be generated
+		# s: Number of states
+		# save_pdf: Save figure(s) as PDF or not:
+			# True: Save PDF without showing figs
+			# False: Showing figs without saving as PDF
+	# Note: This function primarily deals with axes and figure level settings. 
+		# To modify plotting within the axes, check out utils.plot_mc_dict.
+	################################################
+	border_dist = 0.1 #Distance between borders of subplots (default 0.1)
+	fig_size = (15,10) #Size of each figure
+	if fig_type == 'single':
+		fig_num = 1
+		# If there is only 1 fig, we will create a gridspace with unit rows
+		ax_num = size # Since only 1 fig, only 1 element in ax_num with row and column number of axes in figure
+	elif fig_type =='multiple':
+		# If there are multiple figures:
+			#Number of fig = number of windows = # of columns = size[1]
+			#Each fig has number of axes = number of trans mat in the time window=transCountArr=size[0]
+		ax_num, fig_num = size
+		# print('ax_num =',ax_num,'fig_num =',fig_num)
+	else:
+		raise Exception('No such figure type! Choose single or multiple')
+	# if plot_type == 'simulation': #Simulation type of plot overrides fig_type
+	# 	fig_num = 1
+	# 	ax_num = [1]
+
+	# Create the axes and figures using the given parameters
+	figs, axs = fig_generator(fig_num, ax_num, titles_dict = titles_dict, border_dist=border_dist)
+	
+	mc_flatten = [mc_data for mc_window in mc_sheet for mc_data in mc_window]
+	for idx, ax in enumerate(axs):
+		# print('idx is',idx, 'with data is',mc_flatten[idx])
+		utils.plot_mc(mc_flatten[idx],plot_type, ax=ax) #Plot MC based on plot_type on current axe
+	
+	if save_pdf == True:
+		# Save all the figures in this sheet into a single PDF
+		resultFolderPath = kwargs['resultFolderPath'] if 'resultFolderPath' in kwargs.keys() else '' #Extract result folder path if there is such (a/b/c/ format)
+		resultAffix = kwargs['affix'] if 'affix' in kwargs.keys() else '' #Extract result file affix if there is such
+		resultFilePath = resultFolderPath + titles_dict['title_sheet']+'_'+plot_type+'_'+resultAffix+'.pdf' #Generate PDF file path
+
+		fig2pdf(resultFilePath, fig_num ='all')
+	else:
+		plt.show()
+	
+	return None
+
+def fig_generator(fig_num, ax_num, titles_dict, fig_size = (15, 10), border_dist = 0.2):
+	# Given set of figure parameters, return a list of (figure, ax) objects for plotting
+	# Input:
+		# fig_num: Number of figures
+		# ax_num: A List, in which each entry is either a list or int which gives row&column number of grids for corresponding fig:
+			# The composition of ax_num is dependent on fig_num and len(ax_num), which is # of time windows:
+				# fig_num = 1 & len(ax_num) > 1: 
+					# This is the case where there are multiple time windows (each can have multiple plots) need to be plotted (columns) on the same figure
+					# ax_num[0] is an array of number of rows for each column
+					# ax_num[1] is the total row number
+				# fig_num != 1 or len(ax_num) = 1:
+					# This is the case where each a single figure only contains a single time winodw (can contain multiple plots)
+					# ax_num[i] is number of plots in each figure i
+		# fig_size: Size of each figure
+		# titles_dict: A dictionary contains titles for figures and axes:
+			# 'title_win': List of titles for each time window
+			# 'title_sheet': A single title for current sheet (the sheet contains all MCs of the same transition #)
+		# border_dist
+	# Output:
+		# figs, axs: List of figures and axes
+	figs = [] #A list of figures
+	axs = [] #A list of axes
+	c_layout = False #Indicator for constrained layout
+	t_layout = not c_layout #Indicator for tight layout
+	if fig_num == 1 and len(ax_num)>1: #There is only one figure with with multiple time windows, i.e. fig_type = 'single'
+		fig = plt.figure(figsize = fig_size, constrained_layout=c_layout, tight_layout = t_layout) #Build figure
+		fig.suptitle(titles_dict['title_sheet']) #Add the title to the figure
+		ax_title = titles_dict['title_win'] #Get the list of titles for the axes, one for each time window/column
+
+		# Compute number of rows and columns for grids on figure 
+		grid_row_num = np.lcm.reduce(ax_num[0]) #Row # = Least common multiplier for all val in transCountArr
+		grid_col_num = ax_num[1] #Column # = # of time windows
+
+		#Create grid and set border distances
+		gs = fig.add_gridspec(grid_row_num, grid_col_num, 
+			left=border_dist, right=1-border_dist, top=1-border_dist, bottom=border_dist,
+			wspace = border_dist, hspace = border_dist)  
+		
+		# Iterate over each col & row to add axes
+		for i in range(grid_col_num): #Iterate over each column (time window)
+			ax_row_num = ax_num[0][i] #Get the number of rows/MCs for current column
+			row_num = int(grid_row_num/ax_row_num) #Compute number of rows occupied for each MC for current col
+
+			for j in range(ax_row_num): #Iterate over each row (MC/plot)
+				ax = fig.add_subplot(gs[j*row_num:(j+1)*row_num-1,i], label = str(i)) #Add the axe
+				axs.append(ax)
+			axs[-ax_row_num].set_title(ax_title[i]) #Only the 1st axe in column has title
+		figs.append(fig)
+
+	else: #There are multiple figures, i.e. fig_type = 'multiple', each figure corresponding to a time window
+		# This also applies for a single time winodw for a single figure
+		fig_title = titles_dict['title_win'] #fig_title is a list of title for each figure/time window
+
+		for i in range(fig_num):
+			fig = plt.figure(num = i, figsize = fig_size, constrained_layout=c_layout, tight_layout = t_layout) 
+			fig_ax_num = ax_num[i] #Number of plots/MCs = # of trans mat on this figure
+			ax_col_num = 2 #Number of columns for axes
+			if fig_ax_num > ax_col_num:
+				# Number of figures is larger than column number-> Multi column
+				ax_row_num = ceil(fig_ax_num/ax_col_num) #Number of rows for axes: Here we use 2 columns
+				extra_ax_num = fig_ax_num%ax_col_num #Number of axes leftover
+				extra_row_num = bool(extra_ax_num) #Number of extra rows that are incompleted filled (with leftover axes), 0 or 1
+				
+				grid_col_num = np.lcm(ax_col_num,extra_ax_num) or ax_col_num #Number of grids to be placed (if extra=0, this equal to ax_col_num)
+				# print('grid_col_num=',grid_col_num,'extra_ax_num=',extra_ax_num,'ax_col_num=',ax_col_num)
+				if extra_ax_num != 0:
+					grid_col_span0 = int(grid_col_num/extra_ax_num) #Grid span for axes in rows that are incompletely filled
+				grid_col_span1 = int(grid_col_num/ax_col_num) #Grid span for axes in rows that are completely filled
+
+				for j in range(extra_ax_num): #Fill 1st row with the extra axes
+					axs.append(plt.subplot2grid([ax_row_num,grid_col_num], [0,j*grid_col_span0], fig = fig, colspan = grid_col_span0))
+
+				for j in range(fig_ax_num-extra_ax_num): #Iterate over each axes that belongs to rows that are completely filled
+					axs.append(plt.subplot2grid([ax_row_num,grid_col_num],
+						[floor(j/ax_col_num)+extra_row_num, (j%ax_col_num)*grid_col_span1], fig = fig,
+						colspan = grid_col_span1))
+			else:
+			# 1-Column setting
+				fig, ax = plt.subplots(nrows=fig_ax_num, ncols =1, num = i, figsize = fig_size, constrained_layout=c_layout, tight_layout = t_layout,
+				subplot_kw={'aspect':1}) #Build figure with only 1 column
+				axs.extend(ax) #ax is a list of axes thus needs to be merged with axs (extend than append)
+			################
+			fig.suptitle(titles_dict['title_sheet']+' - '+fig_title[i]) #Get and assign the title to the figure (axes don't have a title)
+			figs.append(fig)
+			
+	return figs, axs
+
+def fig2pdf(file_path, fig_num = 'all', **kwargs):
+	# Given the file path and figure numbers to be saved, save figures to a pdf
+	# Input:
+		# file_path: Path of file to be saved, must not end with '\' or '/'
+		# fig_num: 'all' or list of int, list of figure numbers
+	################################
+	folder_path = os.path.split(file_path)[0] #Extract the folder path
+	if not os.path.exists(folder_path): #Create the result folder if not exists yet
+		os.mkdir(folder_path)
+	
+	pp = PdfPages(file_path) #Create the pdf file
+	# Get the list of figures given by fig_num
+	if fig_num == 'all':
+		figs = list(map(plt.figure, plt.get_fignums())) #Get list of all figures opened right now
+	else:
+		figs = list(map(plt.figure, fig_num)) #Get list of figures given by fig_num
+	for fig in figs: #Iterate over each figure
+		pp.savefig(fig)
+
+	pp.close() #Close and save the PDF
+	plt.close('all') #Close all figures
+
+	return None

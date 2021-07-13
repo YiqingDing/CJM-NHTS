@@ -22,9 +22,9 @@ s = 21
 alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
 # loop_iter = range(47) #Max transition number available
 # Use user input for min and max loop number
-loop_min = int(input('Please enter the min number of transitions(inclusive): ') or 0)
-loop_max = int(input('Please enter the max number of transitions(exclusive - max 47): ') or 47)
-loop_iter = range(loop_min,loop_max)
+loop_min = int(input('Please enter the min number of transitions(inclusive - min 1): ') or 1)
+loop_max = int(input('Please enter the max number of transitions(exclusive - max 48): ') or 48)
+loop_iter = range(loop_min-1,loop_max-1)
 ##### Complete Dataset for Prior Generation #####
 #### The following 4 lines generate the complete data file and save it as a csv (commented)
 # raw_trip_file_complete = 'trippub.csv' #File name of the 2k data
@@ -33,8 +33,11 @@ loop_iter = range(loop_min,loop_max)
 # trip_df.to_csv('trip_df_complete.csv', index = False)
 #### The above 4 lines generate the complete data file and save it as a csv (commented)
 trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]:,] #Only use the rows not belong to test dataset
-trip_df_select = trip_df_complete.sample(3000) #Choose 3000 samples (select the size of prior dataset - how much prior info given)
-trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
+sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default all)') or 0)
+if sample_size == 0:
+	trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
+else:	
+	trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
 workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results_'+os.environ.get('USER')+'.xlsx')

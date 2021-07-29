@@ -1,20 +1,8 @@
-import networkx as nx
-import matplotlib.pyplot as plt
-
-# Create a graph and add a self-loop to node 0
-G = nx.complete_graph(3, create_using=nx.DiGraph)
-G.add_edge(0, 0)
-pos = nx.circular_layout(G)
-
-# As of version 2.6, self-loops are drawn by default with the same styling as
-# other edges
-nx.draw(G, pos, with_labels=True)
-
-# Add self-loops to the remaining nodes
-edgelist = [(1, 1), (2, 2)]
-G.add_edges_from(edgelist)
-
-# Draw the newly added self-loops with different formatting
-nx.draw_networkx_edges(G, pos, edgelist=edgelist, arrowstyle="<|-", style="dashed")
-
-plt.show()
+import func, utils, statistics
+t_interval = 0.5
+raw_trip_file = 'trippub_top2k.csv' #File name of the 2k data
+trip_ls_raw  = func.trip_ls_input(raw_trip_file,'w') #Generate the day trips for dataset
+# trip_len_ls = [len(i[0]) for i in trip_ls_raw]
+trip_df = func.tripls2df(trip_ls_raw, t_interval) #Convert trips into df where col are time windows
+mc_len = 47
+mc_crop_ls, mc_title_ls = func.tripdf2mcls(trip_df, mc_len)

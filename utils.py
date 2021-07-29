@@ -1,9 +1,10 @@
 # Utilis file that contains all the essential function for data processing, etc
 import numpy as np
 from math import *
-import matplotlib.pyplot as plt, matplotlib.lines as ml
+import matplotlib.pyplot as plt
+# from matplotlib import rc
 # import matplotlib
-import collections, random, bisect, ujson, csv,ast, os, sys, itertools
+import collections, random, bisect, ujson, csv,ast, os, sys, itertools, pydtmc
 from sklearn.neighbors import KernelDensity
 import pandas as pd
 from scipy.special import gamma, factorial, binom, gammaln
@@ -389,7 +390,7 @@ def initial_cluster_ls(count_ls):
 	return cluster_ls
 
 def data2mc(data):
-	# Given a data/chain, convert to a Markov chain
+	# Given a data/chain, convert to a Markov chain.
 	# Input:
 		# data: A list of activities where idx corresponds to time, values corresponds to activities at the time
 			# If no activities ocurred at certain times, 0 is placed
@@ -419,11 +420,12 @@ def data2mc(data):
 
 	return mc
 
-def mc2mat(mc, s):
+def mc2mat(mc, s, start_state = 1):
 	# Convert a MC to transitional and count matrices based on the frequency of different states
 	# Input:
-		# mc: A list of states, states are translated to integers starting from 1
+		# mc: A list of states, states are translated to integers starting from start_state
 		# s: Number of states
+		# start_state: First integer whic state starts from
 		# Suspended Inputs:
 			# alpha: Global precision (sum of prior), for null transitions
 			# m: Number of chains, for null transitions
@@ -434,13 +436,16 @@ def mc2mat(mc, s):
 	# The following lines create a zero nmat np array and a prior array
 	# If in the end any of the rows of nmat are completely zeros, the prior array will be added
 	n = len(mc) #Length of mc (time)
-	nmat = np.zeros((s,s),dtype=int) #Create a zero matrix
+	nmat = np.zeros((s,s),dtype=int) #Create a zero matrix with size (s,s)
 	
 	# Loop over each state in mc and record the transitions in count matrix
 	for t in range(n-1): #There are n-1 transitions
 		i = mc[t] #Starting state
 		j = mc[t+1] #Ending state
-		nmat[i-1][j-1] += 1 #-1 for python 0 index
+		if i >= start_state and j >= start_state: #Check if the starting and ending states are both valid
+			nmat[i-start_state][j-start_state] += 1 #Minus start_state for python 0 index
+		# else: #Else raise an error
+			# raise Exception('The state value is less than start_state!!!')
 
 	# Suspended function: Add an uniform prior to the all zero rows (need alpha input)
 	# nmat_prior = np.asarray(uniform_prior_mat(m, s, alpha)) #Create a prior matrix (no rows are completely zeros)
@@ -744,8 +749,15 @@ def NHTS():
 
 	return NHTS_book
 
-def NHTS_new():
+def NHTS_new(extra = None, **kwargs):
 	# Updated the last indices 20&21 for a smoother number
+	# Input:
+		# extra: A string or None (default):
+			# If str, extra gives type of returned value in dict, and kwargs provides different kinds of parameters
+	# Output:
+		# NHTS_book: A dictionary keyed by state index (1 - 21) and valued the following:
+			# If extra is None, returns labels
+			# If extra is colormap, returns unique color 
 	NHTS_book = {1: 'Regular home activities (chores, sleep)', 2: 'Work from home (paid)', 3: 'Work', 4: 'Work-related meeting / trip', 
 	5: 'Volunteer activities (not paid)', 6: 'Drop off /pick up someone', 7: 'Change type of transportation', 
 	8: 'Attend school as a student', 9: 'Attend child care', 10: 'Attend adult care', 11: 'Buy goods (groceries, clothes, appliances, gas)',
@@ -753,7 +765,13 @@ def NHTS_new():
 	14: 'Other general errands (post office, library)', 15: 'Recreational activities (visit parks, movies, bars, museums)',
 	16: 'Exercise (go for a jog, walk, walk the dog, go to the gym)', 17: 'Visit friends or relatives', 18: 'Health care visit (medical, dental, therapy)',
 	19: 'Religious or other community activities', 20: 'Something else', 21: 'Nothing',}
-
+	if extra == 'colormap':
+		s = len(NHTS_book.keys())
+		colormap =  kwargs['colormap'] if 'colormap' in kwargs.keys() else 'gist_rainbow'
+		cm = plt.get_cmap(colormap) #Get a colormap (can edit type)
+		colorCycle = [cm(1.*i/s) for i in range(s)] #Default color map that will be applied to all plots
+		for idx, (key, value) in enumerate(NHTS_book.items()): #Iterate over each item in dictionary 
+			NHTS_book[key] = colorCycle[idx] #Convert to a list and append a color kind
 	return NHTS_book
 
 def dict2json(file, *data):
@@ -972,8 +990,8 @@ def node_validate(pmat, start_num = 1):
 	# pmat_valid = pmat[state_valid_raw,state_valid_raw]
 	return state_valid
 
-def plot_mc(mc_data,plot_type, s=21, ax = None):
-	# Plot a mc_dict according to a step plan
+def plot_mc(mc_data,plot_type, s=21, ax = None, **kwargs):
+	# Plot a mc_data according to a selected plot_type
 	# Steps:
 		# 1. Transform trans mat and extract edges & states
 		# 2. Plot the MC as the starting state towards end states
@@ -982,12 +1000,28 @@ def plot_mc(mc_data,plot_type, s=21, ax = None):
 		# plot_type
 		# s
 		# ax: Current axe
-	# if ax == None: #Get current axe
-	# 	ax = plt.gca()
+		# kwargs:
+			# colormap
+	
+	# print('---------------------------------------------------------------------------')
+	# print(ax.get_gridspec().nrows)
+	# print(ax.get_gridspec().ncols)
+	# print(ax.get_subplotspec().is_first_row())
+	# print(ax.get_subplotspec().rowspan.start)
+	# print(len(ax.get_subplotspec().colspan))
+	# print('---------------------------------------------------------------------------')
+	# print(ax.get_subplotspec())
+	# print('---------------------------------------------------------------------------')
+	# sys.exit(0)
+	if ax == None: #Get current axe if None given
+		ax = plt.gca()
 
+	leg_ncol = 2 #Number of columns in legend
+	if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
+		leg_ncol = 3 #If a subplot column spans the entire figure, increase legend col to 3
 	if plot_type =='heatmap':
 		# Plot each chain's transitional matrix as a heatmap
-		# mc_data is pmat, the transitional matrix
+		# mc_data is pmat with threshold applied, the transitional matrix
 		mc_data = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
 
 		# labels = [NHTS_new()[i+1] for i in range(mc_data.shape[0])]
@@ -996,29 +1030,122 @@ def plot_mc(mc_data,plot_type, s=21, ax = None):
 		# print('Initial AR:',ax.get_aspect())
 		AR = 0.7 #Aspect ratio for the heatmap
 		im, cbar = heatmap(mc_data, labels, labels, ax=ax,
-                   cmap="YlGn", 
-                   aspect = AR,
-                   # cbarlabel="Transitional Probabilities",
-                   # cbar_kw= {'use_gridspec': True, 'panchor': 'C','pad': 0.05})
-                   cbar_kw= {'use_gridspec': True, 'panchor': 'C','pad': 0.05,
-                   # 'aspect':10/AR, 
-                   'fraction':0.05/AR, 
-                   'location':'bottom'})
+		                   cmap="YlGn", 
+		                   aspect = AR,
+		                   # cbarlabel="Transitional Probabilities",
+		                   # cbar_kw= {'use_gridspec': True, 'panchor': 'C','pad': 0.05})
+		                   cbar_kw= {'use_gridspec': True, 'panchor': 'C','pad': 0.05,
+		                   # 'aspect':10/AR, 
+		                   'fraction':0.05/AR, 
+		                   'location':'bottom'})
 		# print('Final AR:',ax.get_aspect())
-	elif plot_type == 'simulation':
+	elif plot_type.startswith('simulation'):
 		# Plot the simulation result for the given MC
-		# mc_data is pmat, the transitional matrix
+		# mc_data is the raw pmat (without threshold applied), the transitional matrix
+		style_type = plot_type.split('-')[1] #Extract the type of plot style ('line' or 'bar')
+
+		# Simulation
+		n_steps = 5000
+		start_state = 1
 		mc_data = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
-		states, dist_steps = simulate_mc(mc_data) #Simulate (states, dist_steps) with default setting
-		unique_states = np.unique(states) #Get the unique set of states appeared in states simulation
-		for state in unique_states:
-			ax.plot(dist_steps[0], dist_steps[1][state], label = NHTS_new()[state]) #Plot prob vs offset for each state
+		s = mc_data.shape[0]
+		states, mc_sim = simulate_mc(mc_data, n_steps = n_steps, offset_step = 50, start_state = start_state) #Simulate (states, mc_sim) with default setting
+		plot_length = len(states) #Length of data to be plotted (default all)
+		unique_states = np.unique(states[:plot_length]) #Get the unique set of states appeared in states simulation
+		# Read returned data
+		offsets = mc_sim['offsets']
+		bisect_coeff = bisect.bisect(offsets,plot_length) #Find number of elements to be extracted out of both offsets and dist_prob
+		dist_prob = mc_sim['dist_prob'] #Get the list of prob for timesteps in offsets
+		extra_text = mc_sim['extra_text']
+		mc_property = mc_sim['mc_property'] #Get the mc property dict (defaultdict with value = False)
+
+		# Overall plot properties that apply to all simulation plots
+		bbox_props = dict(boxstyle='round', facecolor='wheat', alpha=0.5) #Property of text box
+		cm_type = kwargs['colormap'] if 'colormap' in kwargs.keys() else 'gist_rainbow' #Default colormap type
+		cm_dict = NHTS_new('colormap', colormap = cm_type) #Get a dictionary of colors for each state
+		
+		# Plotting
+		if style_type == 'line': #Simulation line plot
+			# Axes properties and plot settings
+			ax.set_ylim(-0.1,1.4)
+			ax.set_xlabel('Number of time steps')
+			ax.set_ylabel('Probability')
+			
+			ax.set_xlim(0,plot_length) #Set xlim
+			ax.text(n_steps/15, 1.35, extra_text, horizontalalignment='left', verticalalignment='top', bbox=bbox_props) #Create a text box with MC properties
+			ls = linestyle_generator(s) #Line style list
+			
+			for state in unique_states:
+				ax.plot(offsets[:bisect_coeff], dist_prob[state][:bisect_coeff], 
+					label = NHTS_new()[state], markersize=12, 
+					color = cm_dict[state], ls = ls[state - start_state],
+					alpha = 0.5, lw = 2.5) #Plot prob vs offset for each stat
+			ax.legend(frameon=False, loc = 'upper right')
+		elif style_type == 'bar': #Simulation bar plots
+			bar_type = plot_type.split('-')[2] #Get the type of bar plot ('random', 'absorb') - default 'random'
+
+			# Axes properties:
+			ylim = (0,1.4) #y-axis limit
+			property_bbox_loc = (0.5,1.35) #Location of the property box
+			legend_anchor_bbox = (0.5,-0.075) #Bbox the legend is anchored to
+
+			# Plot values
+			state_space = NHTS_new().keys()
+			state_labels = NHTS_new().values()
+			
+			dist_prob = {state: dist_prob[state][bisect_coeff-1] if state in dist_prob.keys() else 0 for state in state_space} #List of probabilities corresponding to plot_length for all states
+			if bar_type =='absorb' and mc_property['abs_states']: #If the mc is absorbing and bar type is 'absort'
+				# If Markov chain is not absorbing, we will still plot the dist_prob as usual
+				abs_states = mc_property['abs_states'] #List of absorbing states (int)
+				dist_prob = {state: 1/len(abs_states) if state in abs_states else 0 for state in state_space} #Define the distribution prob as uniform among absorbing states
+				extra_text += '\nPlotting Absorbing States!'
+				bbox_props['edgecolor'] = 'Red'
+
+			# Plot bar plot with legends and label
+			leg_texts = []
+			for state, label in NHTS_new().items(): #Iterate over every state in state space even state doesn't appear (do this to have a proper x-axis len)
+				if dist_prob[state] < 0.001: #If distribution prob=0, we would ignore the label/lagend
+					label = '_'+label
+				else:
+					leg_texts.append(label)
+				ax.bar(state, dist_prob[state] , width = 0.8, align = 'center', label = label, tick_label = state, color = cm_dict[state]) #Plot the bar
+				
+				if dist_prob[state] > 0: #If dist > 0, place a prob value label on top of the bar
+					rect = ax.patches[-1] #Get the recetangle that was plotted
+					ax.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, "{:.3f}".format(dist_prob[state]), ha='center', va='bottom', fontsize = 'small') #Place the prob value label
+			ax.set_ylim(*ylim)
+			
+			# Change the column number of legend 
+			if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
+				leg_ncol = 3 #If a subplot column spans the entire figure, increase legend col to 3
+			leg = ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol) #Place the legend
+			
+			# Resize the legend text size based on number of rows and width of the legend
+			txt_fontsize = 10 #Initial font size for legend and text
+			if (len(ax.get_subplotspec().colspan) < ax.get_gridspec().ncols) and len(leg_texts) > 1:#If axes size not spanning the entire figure and has at least 2 legends, we will test if the legend size needs to be adjusted
+				leg_text_row_len = [len('\t\t'.join(x)) for x in zip(leg_texts[:ceil(len(leg_texts)/leg_ncol)], leg_texts[ceil(len(leg_texts)/leg_ncol):])] #List of str length where each one is the length of a row in the legend
+				txt_fontsize -= int(bool(max(0, len(leg_text_row_len) -1))) #Row# above 1 will reduce font size by 1
+				if max(leg_text_row_len) > 65: #Reduce font size by 1
+					txt_fontsize -= 1
+				elif max(leg_text_row_len) > 85:  #Reduce font size by 1
+					txt_fontsize -= 1
+				if txt_fontsize != 10: #If legend font size changed
+					ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol, fontsize = txt_fontsize) #Replace the legend with a different font size
+
+			ax.text(*property_bbox_loc, extra_text, horizontalalignment='left', verticalalignment='top', bbox=bbox_props, fontsize = txt_fontsize) #Create a text box with MC properties
+			ax.set_xticks(range(start_state,s + start_state-1) ,minor = True) #Set x-axis minor ticks
+			ax.set_xticklabels(range(start_state,s + start_state-1) ,minor = True) #Set x-axis minor tick labels
+			ax.tick_params(axis = 'x',which = 'major' ,bottom = False, labelbottom = False) #Turn off x-axis major ticks & labels
+			
+
 	else:
-		# mc_data is a dictionary keyed by edge pair tuples and valued by trans prob
+		# mc_data is a dictionary keyed by edge pair tuples and valued by trans prob 
 		# We will plot using networkx package
+
 		G=nx.DiGraph() #Create directed graph
 		nodes_tot = np.unique(np.asarray(list(mc_data.keys()))) #Unique nodes embedded in edges
 		G.add_nodes_from(nodes_tot) #Add all the nodes
+
 		if plot_type == 'step':
 			# Plot each MC as a transition from one step to the next by duplicating end states for edges into new states (whose %21 reminder is the same as original state)
 			nodes_left = np.unique(np.asarray(list(mc_data.keys()))[:,0]) #Nodes that will be plotted on the left/top (starting nodes) - Starting state
@@ -1040,9 +1167,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None):
 		edge_ls = list(mc_data.keys()) #Get the edges from the dictionary keys
 		edge_width = list(mc_data.values()) #Get the edge width
 		G.add_edges_from(edge_ls) #Add the edges
-		######################
-		# print(list(nx.nodes_with_selfloops(G)))
-		######################
+		
 		size_multiplier = 10
 		nx.draw_networkx(G,
 			ax = ax, 
@@ -1050,7 +1175,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None):
 			with_labels = True, 
 			labels = state_labels, 
 			width = [width*3 for width in edge_width],
-			font_size = 0.5*size_multiplier,	node_size = 50*size_multiplier
+			font_size = 0.5*size_multiplier, node_size = 50*size_multiplier
 			)
 		
 	return ax
@@ -1129,7 +1254,10 @@ def simulate_mc(pmat, n_steps = 20000, **kwargs):
 		# pmat:
 		# n_steps: Number of steps to be simulated, default 20000
 		# kwargs:
-			# start_state: Start index for state space, default 1
+			# start_state: Start number for state space, default 1. 
+				# States of MC are treated as consecutive integers in simulate_mc 
+				# start_state is the 1st number in the sequence of states
+				# (state - start_state) is the index for state IN pmat
 			# state_space: State space given pmat, default node_valid in pmat
 			# initial_state: Initial state, default choose randomly from state_space
 			# offset_step: Offset step size from which equilibrium prob is computed, default 5
@@ -1138,32 +1266,74 @@ def simulate_mc(pmat, n_steps = 20000, **kwargs):
 	# Extract parameters from kwargs or using default settings
 	start_state = kwargs['start_state'] if 'start_state' in kwargs.keys() else 1 #Start state, default 1
 	state_space0 = np.linspace(start_state,start_state+pmat.shape[0]-1, pmat.shape[0], dtype = int) #State space without condiering pmat: [start_state : start_state+s-1]
-	state_space = kwargs['state_space'] if 'state_space' in kwargs.keys() else node_validate(pmat) #State space with pmat, node_valid in pmat
+	state_space = kwargs['state_space'] if 'state_space' in kwargs.keys() else node_validate(pmat, start_state) #State space with pmat, node_valid in pmat
 	initial_state = kwargs['initial_state'] if 'initial_state' in kwargs.keys() else np.random.choice(state_space) #Initial state, default uniform randomly chosen from state space
 	offset_step = kwargs['offset_step'] if 'offset_step' in kwargs.keys() else 5 #Get # of offset step
 	##################################
 	# Start simulation
 	states = [initial_state] #Initialize the list of states, starts from initial state
 	# Simulate the MC with n_steps
+
+	imat = np.eye(pmat.shape[0]) #Create an identity matrix
+	abs_states = [] #Initialize list of absorbing states
+	for state in state_space: #Iterate over all valid states (not the entire state space which is state_space0)
+		if sum(pmat[state-start_state]) == 0:
+			pmat[state-start_state] = imat[state-start_state] #Replace the valid row with a row from identity matrix
+
 	for i in range(n_steps):
 		trans_prob = pmat[states[-1]-start_state] #Transitional prob from last state (adjusted to idx in pmat with start state)
-		# if sum(trans_prob) != 1:
-			# print(trans_prob)
-			# print('Warning!!!!! sum is',sum(trans_πprob))
-		# If MC jumps into a chain with empty entries, end the simulation
-		if sum(trans_prob) == 0:
-			break
+		# # Deals with MC jumps into a chain with empty entries
+		# if sum(trans_prob) == 0:
+		# 	# print('Current MC ends early with length',i+1,'at state',states[-1])
+		# 	trans_prob[states[-1]-start_state] = 1 #Change trans prob for current state so it becomes an absorbing state
+		# 	pmat[states[-1]-start_state] = trans_prob #Replace the original trans_prob with updated trans_prob
 		states.append(np.random.choice(state_space0, p = trans_prob))
 	states = np.array(states)
-	
-	offsets = range(1, min(n_steps, len(states)), offset_step)
-	dist_prob = {} #Initialize the distribution probability dictionary, keyed by state and valued by list of dist prob corresponding to time in offsets
+
+	offsets = range(1, len(states), offset_step)
+	dist_prob = collections.defaultdict(int) #Initialize the distribution probability dictionary, keyed by state and valued by list of dist prob corresponding to time in offsets
 	for state in state_space: #Iterate over each state within the state space
 		dist_prob[state] = [np.sum(states[:offset] == state) / offset for offset in offsets] #Compute prob of appearance up to offset point
-		# axs[0].plot(offsets, dist_prob, label = utils.NHTS_new()[state_idx]) #Plot prob vs offset
-	dist_steps = [offsets, dist_prob]
+		# axs[0].plot(offsets, dist_prob, label = utils.NHTS_new()[state]) #Plot prob vs offset
+	
+	mc_sim = collections.defaultdict(dict) #Create a dictionary of simulation results
+	mc_sim['offsets']= offsets #Assign offsets
+	mc_sim['dist_prob']= dist_prob #Assign dist_prob
+	mc_sim['mc_property'] = collections.defaultdict(lambda: False) #Defaultdict for mc_property (default value False for all properties)
+	# ############
+	pmat_red = pmat[np.asarray(state_space) - start_state,:][:,np.asarray(state_space) - start_state] #Reduce the pmat to only rows with values (valid states)
+	if pmat_red.shape[0] != 1:
+		mc = pydtmc.MarkovChain(pmat_red, [str(i) for i in state_space]) #Build a dtmc object with pydtmc with states starting from 1
+		params = ['Irreducible: '+ str(mc.is_irreducible)+' || Aperiodic: '+str(mc.is_aperiodic)]  #Initial parameters
+		vals = [''] #Initial values of parameters
+		# Add communication classes to text
+		
+		if not mc.is_irreducible: #If MC is not irreducibel, append comm classes
+			comm_states = [[int(state) for state in classes] for classes in mc.communicating_classes] #Get a list of list for communicating states (each entry is a class)
+			mc_sim['mc_property']['comm_states'] = comm_states #Append comm state to the mc_sim's mc_property dict
+			# params.append('Communicating Classes: ')
+			# vals.append(str(comm_states))
+		# Add absorbing states to text
+		params.append('Absorbing: ') #Appending absorbing indicatior
+		vals.append(str(mc.is_absorbing)) 
+		if mc.is_absorbing: #Append the absorbing states if MC has absorbing states
+			params.append('Absorbing States: ')
+			mc_sim['mc_property']['abs_states'] = [int(state) for state in mc.absorbing_states] #Append absorbing state to the mc_sim's mc_property dict
+			abs_states_str = ', '.join(mc.absorbing_states) #A string of absorbing states
+			vals.append(abs_states_str)
+		extra_text = '\n'.join(map(''.join, zip(params, vals))) #Format the values each in a single str
+	else:
+		extra_text = 'There is only a single valid state!'
+	mc_sim['extra_text'] = extra_text #Add the extra step
 
-	return states, dist_steps
+	return states, mc_sim
+
+def linestyle_generator(n, **kwargs):
+	# Given n, generate a list of n different linestyles
+	ls_opt = ['-','--',':','-.',(0, (1, 10)), (0, (5, 3)), (0, (5, 1)), (0, (3, 3, 1, 3)), (0, (3, 1, 1, 1)), (0, (3, 3, 1, 3, 1, 3)), (0, (3, 1, 1, 1, 1, 1))]
+	ls_final = (ls_opt*ceil(n/len(ls_opt)))[:n]
+	return ls_final
+		
 
 ##########################################################Original Plot Functions############################################################
 def raw_plot(raw_trip_ls = []):

@@ -1,4 +1,4 @@
-import utils, collections, csv, random, os, pathlib, ast, uuid, time, copy, itertools
+import utils, collections, csv, random, os, pathlib, ast, uuid, time, copy, itertools, sys
 import pandas as pd
 from math import *
 import numpy as np
@@ -389,7 +389,7 @@ def tripls2df(trip_ls, t_interval):
 def tripdf2mcls(trip_df, mc_len):
 	# Given a trip df and MC length, generate data lists for the specific window length over the entire df
 	# Input:
-		# trip_df: A dataframe of trips, where each row is a trip and activities are assigned to columns of corresponding times
+		# trip_df: A dataframe of trips, where each row is a trip and activities are assigned to columns of corresponding times (empty columns are assigned default_val in tripls2df's call of utils.trip_translator)
 		# mc_len: Integer, defines how long a MC is, or how long the window to crop from
 	# Output:
 		# mc_crop_ls: A list of list, in which each entry is a list of Markov chains - cropped out of trip_df
@@ -402,10 +402,13 @@ def tripdf2mcls(trip_df, mc_len):
 	# for i in np.arange(0,trip_df.shape[1]-1,mc_len):
 	col_names = list(trip_df.columns) #Complete list of names
 	col_name_ls = [] #Output list of names for each entry in mc_crop_ls
+	# Warnings for transition number/mc_len
 	if mc_len < 1:
 		raise Exception('Min of mc_len is 1')
-	if mc_len > trip_df.shape[1]-1: #Warning
+	if mc_len > trip_df.shape[1]-1: 
 		raise Exception('The number of transitions desired is larger than max transitions available')
+
+	# Iterate over each time window
 	for i in range(trip_df.shape[1]-mc_len):
 		# The last starting index is always (trip_df.shape[1]-mc_len-1)
 		i_end = min(i+mc_len, i_max) #Find out the end index for cropping (avoid out of index with min fn)
@@ -413,16 +416,18 @@ def tripdf2mcls(trip_df, mc_len):
 		ind_ls = ind_df.values.tolist() #Convert the ind_df to list of item, where each item is a row in the original df
 		ind_mc_ls = datals2mcls(ind_ls) #Convert the data list to mc list - preprocessing
 		if ind_mc_ls: #Only appends if it's not completely zeros
-			mc_crop_ls.append(ind_mc_ls)
+			# ind_mc_ls_new = [mc_ls[np.nonzero(mc_ls)[0][0]:] for mc_ls in ind_mc_ls] #Remove leading zeros in the MC
+			mc_crop_ls.append(ind_mc_ls) 
 			col_name_ls.append(col_names[i:i_end+1])
 	return mc_crop_ls, col_name_ls
 
 def datals2mcls(data_ls):
-	# Process all the chains in a list to a list of Markov chains
+	# Process all the chains in a list (data_ls) to a list of Markov chains
 	# Input:
 		# data_ls: A list of data, where each data is a chain of activities
 	# Output:
 		# mc_ls: A list of Markov chains, where each MC is a chain of activities under operations
+	# This function performs utils.data2mc to all the item in data_ls. See utils.data2mc for more details.
 	#####################################################
 	mc_ls = [] #Initizalize the mc list
 	for data in data_ls:
@@ -441,6 +446,9 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 	# Output:
 		# cluster_ls: See below
 		# trans_ls: List of transitional matrices, where each entry is a transitional matrix
+	# Comments:
+		# 1. Print statements ending with comment '--PrintStatement' are used for showing progress of clustering
+		# 2. Please see below for the comments
 	################### Important Variables #####################
 	# 	cluster_ls: List of clusters, each entry is a list of count matrices (in list format). Can convert to count_ls.
 	# 	count_ls: List of count matrices, each entry is a count matrix combined from the corresponding cluster (list of count matrices)
@@ -458,29 +466,29 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 
 	# Compute distances and ids for unique count matrices in the new count_ls
 	id_dict, dist_dict_mat = KL_distance_input(count_ls) #If distances have not been computed previously 
-	# print('Initial distane computed!')
+	# print('Initial distane computed!') #--PrintStatement
 	# id_dict, dist_dict_mat = KL_distance_input('dist_dict_Bayesian.json') #If raw distances have been computed previously 
 	dist_rank = sorted(dist_dict_mat.items(), key = lambda x: x[1]) #Sort the dictionary based on distances between count_ls - output a tuple of (idx pair, distance)
 	
 	# Generate a prior_ls for count_ls, one prior for each count matrix or cluster
 	# Prior type given by prior_input[0], prior_data generated from prior_input
 	if prior_input[0] == 'dev': #dev prior case
-		# prior_input = ['dev', mc_ls_prior]
-		# prior_data = [mc_ls_prior, s, prior_ratio, cluster_len]
+		# Parameter: prior_input = ['dev', mc_ls_prior]
+		# Parameter: prior_data = [mc_ls_prior, s, prior_ratio, cluster_len]
 		prior_ratio = alpha/s * (1/len(prior_input[1])) #Prior ratio should be alpha/(m_prior*s)
 		prior_data = [prior_input[1], s, prior_ratio, len(cluster_ls)]
 	else: #Default uniform case
-		# prior_input = ['uniform']
-		# prior_data = [cluster_ls, alpha]
+		# Parameter: prior_input = ['uniform']
+		# Parameter: prior_data = [cluster_ls, alpha]
 		prior_data = [cluster_ls, alpha]
 	prior_ls = prior_generator(prior_data, type = prior_input[0]) #Generate prior_ls
 
 	p_new = posterior_Bayesian(cluster_ls, prior_ls) #Compute the initial posterior
 	p_old = float('-inf') #Initial old posterior
 
-	# print('The initial number of clusters is',len(cluster_ls))
+	# print('The initial number of clusters is',len(cluster_ls)) #--PrintStatement
 	###################### Loop #######################
-	# print('Clustering Starts!')
+	# print('Clustering Starts!') #--PrintStatement
 	run_no1 = 0 #Debug index for outer loop
 	while p_new > p_old: #Continue loop if if the previous run generated a better posterior
 		p_old = p_new #Replace p_old with p_new, the best posterior from previous run
@@ -488,8 +496,8 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 		###########################Test Variable###########################	
 		run_no2 = 0 #Debug index for inner loop
 		run_no1 += 1 #Debug index for outer loop
-		# print('----------------------------')
-		# print('External loop no.',run_no1, end = '')
+		# print('----------------------------')#--PrintStatement
+		# print('External loop no.',run_no1, end = '')#--PrintStatement
 		# print('External loop no.',run_no1)
 		# last_time = time.time() #Timepoint of last step
 		########################### Notes for Loop###########################
@@ -498,12 +506,12 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 		# In the inner loop, we simply loop over all the items in the dist_rank
 		# If a merging happens, we would change the clusters (so is the dist_rank)
 		########################### Notes for Loop###########################
-		# print(' And the number of clusters is', len(cluster_ls))
+		# print(' And the number of clusters is', len(cluster_ls))#--PrintStatement
 		while idx <= len(dist_rank)-1: #dist_rank is dynamically updated
 			run_no2 += 1
 			key_pair = dist_rank[idx][0] #Get the key pair
 			###################### Debug #######################
-			# print('The current run_no2 is', run_no2) #Basic print
+			# print('The current run_no2 is', run_no2) 
 
 			# key_pair_check = list(zip(*dist_rank))[0]
 			# key_ls_check = list(set(item for sublist in key_pair_check for item in sublist)) #All the keys in dist_rank
@@ -528,8 +536,8 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 			
 			if p_temp > p_new: #If the merged clusters (temp) have a higher posterior, we would accept
 				###################### Debug #######################
-				# print('The current run_no2 is', run_no2, end = '') 
-				# print(' The original p_new is',p_new, 'and the new p_new is',p_temp, 'and the number of new cluster centers is', len(cluster_ls_temp))
+				# print('The current run_no2 is', run_no2, end = '') #--PrintStatement
+				# print(' The original p_new is',p_new, 'and the new p_new is',p_temp, 'and the number of new cluster centers is', len(cluster_ls_temp)) #--PrintStatement
 
 				# a_mat = utils.cluster2count(cluster_ls[id1])
 				# b_mat = utils.cluster2count(cluster_ls[id2])
@@ -547,7 +555,7 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 				#Iterate over all dist_rank to remove any entries with merged cluster
 				dist_rank_temp = [dist_pair for dist_pair in dist_rank if not bool(set(key_pair).intersection(dist_pair[0]))]
 				# print('The number of units removed from dist_rank is' ,(len(dist_rank) - len(dist_rank_temp)))
-				dist_rank = dist_rank_temp #The temp var is for printing purpose
+				dist_rank = dist_rank_temp #The dist_rank_temp is for printing purpose
 
 				# Update the id_dict with the newly generated cluster (a list of count mat)
 				count_temp = utils.cluster2count(cluster_temp) #Convert the new cluster to a count mat
@@ -659,7 +667,9 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv):
 	return id_dict
 
 def KL_distance_input(input_obj):
-	# Initialization of distances for input
+	# Initialization of distances for input:
+		# 1. If given input_obj is a string, read KL distances
+		# 2. If given input_obj is a list, compute KL distances
 	if isinstance(input_obj, str): #Read existing file
 		# The input object is a string, thus treat it as the file name for reading
 		id_dict, dist_dict_mat = utils.json2dict('output/'+input_obj)
@@ -848,15 +858,15 @@ def processed_data_generator(dataFilePath, baselineFilePath, resultNo, s = 21, f
 		# baselineFilePath: Path for baseline result data (unclustered)
 		# resultNo; List of transitions where there are meaningful clustering results
 	# Output:
-		# 
+		# processedFilePath
 	baselineFile = pd.ExcelFile(baselineFilePath) #Generate a ExcelFile object for raw file
 	processedFilePath = dataFilePath.split('.xlsx')[0]+'_processed.xlsx' #Generate a processed file path
 	if func_type == 'Write':
 		processedFileWriter = pd.ExcelWriter(processedFilePath) #Create a processed file writer
 
 		for transitionNo in resultNo: #Input results only for those with meaningful result
-			sheetName = baselineFile.sheet_names[transitionNo-1] #Get the current sheet name
-			baselineT = baselineFile.parse(sheet_name = transitionNo-1, header = None) #Read the baseline sheet
+			sheetName = baselineFile.sheet_names[transitionNo] #Get the current sheet name
+			baselineT = baselineFile.parse(sheet_name = sheetName, header = None) #Read the baseline sheet
 			SpecificT = pd.read_excel(dataFilePath, sheet_name = transitionNo,header = None) #Read the result sheet
 			newT =  pd.DataFrame(np.nan, index= baselineT.index , columns=SpecificT.columns) #Create new table/sheet with appropriate size
 			newT.loc[:,:] = baselineT #Fill the new table with the baseline data and then edit this new table
@@ -877,6 +887,16 @@ def processed_data_generator(dataFilePath, baselineFilePath, resultNo, s = 21, f
 	elif func_type != 'Read':
 		raise Exception('No such function type! Input Read or Write')
 	return processedFilePath
+
+# def raw_data_generator(rawFilePath, s= 21):
+# 	# Given rawFilePath, return the needed data 
+# 	# Input:
+# 		# rawFilePath: File path for the raw data file
+# 	# Output:
+# 		# 
+# 	rawFile = pd.ExcelFile(rawFilePath) #Generate a ExcelFile object for raw file
+# 	for sheetName in baselineFile.sheet_names:
+
 
 def node_col2layout(state_valid):
 	# Unused!!!
@@ -932,12 +952,11 @@ def simulate_mc_sheet(pmat_sheet, n_steps = 20000, **kwargs):
 		states, dist_steps = utils.simulate_mc(pmat, n_steps = 20000, plot_simulation = True, **kwargs)
 
 	file_path = kwargs['file_path'] if 'file_path' in kwargs.keys() else '/MCsimulation.pdf' #Extract the file path
-	fig2pdf(file_path,fig_num = 'all') #Save all figures to PDF
-
-	
+	fig2pdf(file_path,fig_num = 'all') #Save all figures to PDF	
 
 ######### Plotting in DataAnalysis #############
-def plot_mc_sheet(mc_sheet, titles_dict, size, plot_type = 'homogeneous', fig_type = 'multiple', s = 21, save_pdf = False, **kwargs):
+def plot_mc_sheet(mc_sheet, titles_dict, size, plot_type = 'homogeneous', fig_type = 'multiple', s = 21, save_pdf = False, 
+                  fig_kw = {}, plot_kw = {}, **kwargs):
 	# Given all MCs for time windows within one sheet, plot them depends on fig_type:
 		# fig_type='single': Plot each time window on one column with one figure contains all time windows
 		# fig_type='multiple': Plot each time window on a single figure, and produce multiple figures
@@ -953,17 +972,18 @@ def plot_mc_sheet(mc_sheet, titles_dict, size, plot_type = 'homogeneous', fig_ty
 			# size[1]: # of time windows
 		# plot_type: The type of plot to be generated, this determines type of container in mc_window
 			# 'step' or 'homogeneous': mc_data is a dictionary where keys are edges (node pairs) and values are edge weights
-			# 'heatmap' or 'simulation': mc_data is a transitional matrix
+			# 'heatmap' or 'simulation-bar' or 'simulation-line': mc_data is a transitional matrix
 		# fig_type: 'single' or 'multiple' that determines the # of figures to be generated
 		# s: Number of states
 		# save_pdf: Save figure(s) as PDF or not:
 			# True: Save PDF without showing figs
 			# False: Showing figs without saving as PDF
+		# kwargs:
+			# resultFolderPath
+			# resultAffix
 	# Note: This function primarily deals with axes and figure level settings. 
 		# To modify plotting within the axes, check out utils.plot_mc_dict.
 	################################################
-	border_dist = 0.1 #Distance between borders of subplots (default 0.1)
-	fig_size = (15,10) #Size of each figure
 	if fig_type == 'single':
 		fig_num = 1
 		# If there is only 1 fig, we will create a gridspace with unit rows
@@ -976,31 +996,42 @@ def plot_mc_sheet(mc_sheet, titles_dict, size, plot_type = 'homogeneous', fig_ty
 		# print('ax_num =',ax_num,'fig_num =',fig_num)
 	else:
 		raise Exception('No such figure type! Choose single or multiple')
-	# if plot_type == 'simulation': #Simulation type of plot overrides fig_type
-	# 	fig_num = 1
-	# 	ax_num = [1]
+	if plot_type.startswith('simulation-bar'): #If plot type is simulation bar plot
+	# We will add a translation figure at the beginning to translate state number to labels
+		fig, ax = plt.subplots(num = -2, figsize = [10,10])
+		fig.suptitle('Table for State Labels')
+		ax.set_axis_off()
+		table = ax.table(cellText = list(utils.NHTS_new().items()), 
+		                 colLabels = ['State Number','State Label'],
+		                 fontsize = 100,
+		                 cellLoc ='center', 
+		                 loc ='center',
+		                 colColours = ['palegreen']*2)
+		table.scale(1.1, 2)
+		# list(utils.NHTS_new().items())
 
 	# Create the axes and figures using the given parameters
-	figs, axs = fig_generator(fig_num, ax_num, titles_dict = titles_dict, border_dist=border_dist)
+	figs, axs = fig_generator(fig_num, ax_num, titles_dict = titles_dict, **fig_kw)
 	
 	mc_flatten = [mc_data for mc_window in mc_sheet for mc_data in mc_window]
 	for idx, ax in enumerate(axs):
 		# print('idx is',idx, 'with data is',mc_flatten[idx])
-		utils.plot_mc(mc_flatten[idx],plot_type, ax=ax) #Plot MC based on plot_type on current axe
+		utils.plot_mc(mc_flatten[idx],plot_type, ax=ax, **plot_kw) #Plot MC based on plot_type on current axe
 	
 	if save_pdf == True:
 		# Save all the figures in this sheet into a single PDF
 		resultFolderPath = kwargs['resultFolderPath'] if 'resultFolderPath' in kwargs.keys() else '' #Extract result folder path if there is such (a/b/c/ format)
-		resultAffix = kwargs['affix'] if 'affix' in kwargs.keys() else '' #Extract result file affix if there is such
-		resultFilePath = resultFolderPath + titles_dict['title_sheet']+'_'+plot_type+'_'+resultAffix+'.pdf' #Generate PDF file path
+		prefix = kwargs['prefix']+'-' if 'prefix' in kwargs.keys() else '' #Extract result file affix if there is such
+		suffix = '-'+kwargs['suffix'] if 'suffix' in kwargs.keys() else '' #Extract result file affix if there is such
+		resultFilePath = resultFolderPath + prefix +titles_dict['title_sheet']+suffix+'.pdf' #Generate PDF file path
 
 		fig2pdf(resultFilePath, fig_num ='all')
 	else:
 		plt.show()
-	
+		
 	return None
 
-def fig_generator(fig_num, ax_num, titles_dict, fig_size = (15, 10), border_dist = 0.2):
+def fig_generator(fig_num, ax_num, titles_dict, **kwargs):
 	# Given set of figure parameters, return a list of (figure, ax) objects for plotting
 	# Input:
 		# fig_num: Number of figures
@@ -1008,25 +1039,43 @@ def fig_generator(fig_num, ax_num, titles_dict, fig_size = (15, 10), border_dist
 			# The composition of ax_num is dependent on fig_num and len(ax_num), which is # of time windows:
 				# fig_num = 1 & len(ax_num) > 1: 
 					# This is the case where there are multiple time windows (each can have multiple plots) need to be plotted (columns) on the same figure
-					# ax_num[0] is an array of number of rows for each column
-					# ax_num[1] is the total row number
+					# Use plt.figure and fig.add_subplot
+					# ax_num[0] is an array of number of rows for each column - transCountArr
+					# ax_num[1] is the total column number - len(WindowArr)
 				# fig_num != 1 or len(ax_num) = 1:
-					# This is the case where each a single figure only contains a single time winodw (can contain multiple plots)
+					# This corresponds to the case where each a single figure only contains a single time winodw (can contain multiple plots):
+						# A: Only 1 time winodw -> fig_num =1 but len(ax_num) = 1 -> 
+						# B: Multiple time window -> fig_num > 1 and len(ax_num) > 1
+					# In this case, ax_num = transCountArr - List of # of plots in each time window
 					# ax_num[i] is number of plots in each figure i
-		# fig_size: Size of each figure
 		# titles_dict: A dictionary contains titles for figures and axes:
 			# 'title_win': List of titles for each time window
-			# 'title_sheet': A single title for current sheet (the sheet contains all MCs of the same transition #)
-		# border_dist
+			# 'title_sheet': A single title for current sheet (the sheet contains all MCs of the same transitions
+		# kwargs:
+			# border_dist:
+			# fig_size: 
+			# ax_kw: A dictionary that contains keyword arguments that will be added to fig.add_subplot, plt.subplot2grid and plt.subplots
+			# fig_kw: All other keyword arguments are used for figure parameters (plt.figure and plt.subplots)
 	# Output:
 		# figs, axs: List of figures and axes
+
+	fig_kw = kwargs.copy() #Create a copy of figure keyword dict
+	ax_kw = fig_kw.pop('ax_kw') if 'ax_kw' in fig_kw.keys() else {} #Remove and assign axes keyword dict (from fig_kw) and leaves only kwargs for the fig_kw
+	fig_size = fig_kw.pop('fig_size') if 'fig_size' in fig_kw.keys() else (15,10) #Figure size (default (15,10))
+	border_dist = fig_kw.pop('border_dist') if 'border_dist' in fig_kw.keys() else 0.2 #Distance between borders of subplots (default 0.2)
+	suptitle_kw = fig_kw.pop('suptitle_kw') if 'suptitle_kw' in fig_kw.keys() else {} #Keyword arguments for suptitle of figure (default empty)
+
+	# fig_size = kwargs['fig_size'] if 'fig_size' in kwargs.keys() else (15,10) #Figure size (default (15,10))
+	# c_layout = kwargs['c_layout'] if 'c_layout' in kwargs.keys() else False #Indicator for constrained layout (default True)
+	# t_layout = kwargs['t_layout'] if 't_layout' in kwargs.keys() else False #Indicator for tight layout (default True)
+	
+	
 	figs = [] #A list of figures
 	axs = [] #A list of axes
-	c_layout = False #Indicator for constrained layout
-	t_layout = not c_layout #Indicator for tight layout
+	plt.rcParams.update({'figure.max_open_warning': 0})
 	if fig_num == 1 and len(ax_num)>1: #There is only one figure with with multiple time windows, i.e. fig_type = 'single'
-		fig = plt.figure(figsize = fig_size, constrained_layout=c_layout, tight_layout = t_layout) #Build figure
-		fig.suptitle(titles_dict['title_sheet']) #Add the title to the figure
+		fig = plt.figure(figsize = fig_size, **fig_kw) #Build figure
+		fig.suptitle(titles_dict['title_sheet'], **suptitle_kw) #Add the title to the figure
 		ax_title = titles_dict['title_win'] #Get the list of titles for the axes, one for each time window/column
 
 		# Compute number of rows and columns for grids on figure 
@@ -1044,47 +1093,45 @@ def fig_generator(fig_num, ax_num, titles_dict, fig_size = (15, 10), border_dist
 			row_num = int(grid_row_num/ax_row_num) #Compute number of rows occupied for each MC for current col
 
 			for j in range(ax_row_num): #Iterate over each row (MC/plot)
-				ax = fig.add_subplot(gs[j*row_num:(j+1)*row_num-1,i], label = str(i)) #Add the axe
+				ax = fig.add_subplot(gs[j*row_num:(j+1)*row_num-1,i], label = str(i), **ax_kw) #Add the axe
 				axs.append(ax)
 			axs[-ax_row_num].set_title(ax_title[i]) #Only the 1st axe in column has title
 		figs.append(fig)
 
 	else: #There are multiple figures, i.e. fig_type = 'multiple', each figure corresponding to a time window
 		# This also applies for a single time winodw for a single figure
-		fig_title = titles_dict['title_win'] #fig_title is a list of title for each figure/time window
-
-		for i in range(fig_num):
-			fig = plt.figure(num = i, figsize = fig_size, constrained_layout=c_layout, tight_layout = t_layout) 
+		fig_title = titles_dict['title_win'] #fig_title is a list of title for each figure/time window - corresponding to a subtitle
+		for i in range(fig_num): #Iterate over each figure
+			fig = plt.figure(num = i, figsize = fig_size, **fig_kw) 
 			fig_ax_num = ax_num[i] #Number of plots/MCs = # of trans mat on this figure
-			ax_col_num = 2 #Number of columns for axes
-			if fig_ax_num > ax_col_num:
-				# Number of figures is larger than column number-> Multi column
-				ax_row_num = ceil(fig_ax_num/ax_col_num) #Number of rows for axes: Here we use 2 columns
+			ax_col_num = 2 #Max number of columns for axes (user-defined)
+			if fig_ax_num > ax_col_num: #Multiple column setting
+				# Number of figures is larger than column number -> Multi columns for most rows
+				fig_row_num = ceil(fig_ax_num/ax_col_num) #Number of rows for axes
 				extra_ax_num = fig_ax_num%ax_col_num #Number of axes leftover
-				extra_row_num = bool(extra_ax_num) #Number of extra rows that are incompleted filled (with leftover axes), 0 or 1
+				extra_row_num = bool(extra_ax_num) #Number of (extra) rows that are incompleted filled (with leftover axes), 0 or 1
 				
-				grid_col_num = np.lcm(ax_col_num,extra_ax_num) or ax_col_num #Number of grids to be placed (if extra=0, this equal to ax_col_num)
+				grid_col_num = np.lcm(ax_col_num,extra_ax_num) or ax_col_num #Number of columns for the grids to be placed is the least common multiplier for max # of axe columns and # of extra axes (if extra=0, this equal to ax_col_num)
 				# print('grid_col_num=',grid_col_num,'extra_ax_num=',extra_ax_num,'ax_col_num=',ax_col_num)
 				if extra_ax_num != 0:
 					grid_col_span0 = int(grid_col_num/extra_ax_num) #Grid span for axes in rows that are incompletely filled
 				grid_col_span1 = int(grid_col_num/ax_col_num) #Grid span for axes in rows that are completely filled
 
 				for j in range(extra_ax_num): #Fill 1st row with the extra axes
-					axs.append(plt.subplot2grid([ax_row_num,grid_col_num], [0,j*grid_col_span0], fig = fig, colspan = grid_col_span0))
+					axs.append(plt.subplot2grid([fig_row_num,grid_col_num], [0,j*grid_col_span0], fig = fig, colspan = grid_col_span0, **ax_kw))
 
 				for j in range(fig_ax_num-extra_ax_num): #Iterate over each axes that belongs to rows that are completely filled
-					axs.append(plt.subplot2grid([ax_row_num,grid_col_num],
+					axs.append(plt.subplot2grid([fig_row_num,grid_col_num], 
 						[floor(j/ax_col_num)+extra_row_num, (j%ax_col_num)*grid_col_span1], fig = fig,
-						colspan = grid_col_span1))
+						colspan = grid_col_span1, **ax_kw))
 			else:
-			# 1-Column setting
-				fig, ax = plt.subplots(nrows=fig_ax_num, ncols =1, num = i, figsize = fig_size, constrained_layout=c_layout, tight_layout = t_layout,
-				subplot_kw={'aspect':1}) #Build figure with only 1 column
-				axs.extend(ax) #ax is a list of axes thus needs to be merged with axs (extend than append)
+				# 1-Column figure case
+				fig, ax = plt.subplots(nrows = fig_ax_num, ncols =1, num = i, figsize = fig_size, squeeze = False, 
+					subplot_kw = ax_kw, **fig_kw) #Build figure with only 1 column
+				axs.extend(ax.flatten()) #ax is a 2d array of axes (squeeze=False) thus needs to be merged with axs (extend than append)
 			################
-			fig.suptitle(titles_dict['title_sheet']+' - '+fig_title[i]) #Get and assign the title to the figure (axes don't have a title)
+			fig.suptitle(titles_dict['title_sheet']+fig_title[i], **suptitle_kw) #Get and assign the title to the figure (axes don't have a title)
 			figs.append(fig)
-			
 	return figs, axs
 
 def fig2pdf(file_path, fig_num = 'all', **kwargs):

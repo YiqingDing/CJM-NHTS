@@ -34,13 +34,15 @@ loop_iter = range(loop_min-1,loop_max-1)
 #### The above 4 lines generate the complete data file and save it as a csv (commented)
 trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]:,] #Only use the rows not belong to test dataset
 sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default all):') or 0)
+suffix = input('Please enter any suffix for the output file name: ')
+suffix = '_'+suffix if suffix else '' #Add underscore if suffix is nonempty
 if sample_size == 0:
 	trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
 else:	
 	trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
-workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results_'+os.environ.get('USER')+'.xlsx')
+workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results_'+os.environ.get('USER')+suffix+'.xlsx')
 worksheet_0 = workbook.add_worksheet('General Results')
 print('Execution starts! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
 print('***********************************************************************************************')

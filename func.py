@@ -436,7 +436,7 @@ def datals2mcls(data_ls):
 			mc_ls.append(mc) #Append to mc_ls
 	return mc_ls
 
-def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
+def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 	# Given a list of data, perform Bayesian clustering 
 	# input:
 		# mc_ls: A list of list, where each list is a MC generated from an individual data point
@@ -459,13 +459,17 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 	# 	mc_temp: A single cluster, composed of several existing count matrices
 	###################### Initialization #######################
 	# last_time = time.time() #Timepoint of last step
+	KL_dict = kwargs['KL_dict'] if 'KL_dict' in kwargs.keys() else {} #A dictionary for KL_distance_input from kwargs
+
 	ini_count_ls = mcls2mat(mc_ls, s)[1] #Get the initial count_ls (duplicates exist)
 	cluster_ls = utils.initial_cluster_ls(ini_count_ls) #Generate the initial cluster list (duplicates allowed in count_ls)
 	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Generate the list of count matrix (no duplicates)
-	# Note: The new count_ls doesn't have duplicates in the original count_ls as they are merged. len(count_ls) = len(cluster_ls) <= len(ini_count_ls)
+	# Note: 
+		# The new count_ls can have duplicates, but not those in original count_ls since they are merged. len(count_ls) = len(cluster_ls) <= len(ini_count_ls) 
+	###################### Initialization #######################
 
 	# Compute distances and ids for unique count matrices in the new count_ls
-	id_dict, dist_dict_mat = KL_distance_input(count_ls) #If distances have not been computed previously 
+	id_dict, dist_dict_mat = KL_distance_input(count_ls, **KL_dict) #If distances have not been computed previously 
 	# print('Initial distane computed!') #--PrintStatement
 	# id_dict, dist_dict_mat = KL_distance_input('dist_dict_Bayesian.json') #If raw distances have been computed previously 
 	dist_rank = sorted(dist_dict_mat.items(), key = lambda x: x[1]) #Sort the dictionary based on distances between count_ls - output a tuple of (idx pair, distance)
@@ -666,7 +670,7 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv):
 			# raise Exception('Input value already in id_dict!!!\n')
 	return id_dict
 
-def KL_distance_input(input_obj):
+def KL_distance_input(input_obj, **kwargs):
 	# Initialization of distances for input:
 		# 1. If given input_obj is a string, read KL distances
 		# 2. If given input_obj is a list, compute KL distances
@@ -678,11 +682,14 @@ def KL_distance_input(input_obj):
 		return id_dict, dist_dict_mat
 	elif isinstance(input_obj, list): #Compute and save new distances to file
 		# The input object is a list, thus treat it as the list of count matrices
+		suffix = kwargs['suffix'] if 'suffix' in kwargs.keys() else '' #Read suffix if given
 		count_ls_unique = input_obj #The input object is a list of unique count matrices
 		# count_ls_unique = utils.unique_ls(input_obj) #Get list of unique count matrices (if there are any repetition)
 		id_dict = id_modifier(count_ls_unique) #Create id_dict from input matrices
 		dist_dict_mat = calc_MC_distance(count_ls_unique, count_ls_unique, id_dict,dist_dict_mat = collections.defaultdict(float), mat_type = 'count') #Compute the distance dictionary
-		utils.dict2json('output/dist_dict_Bayesian.json', dict(id_dict), dist_dict_mat) #Save the dist dictionary and id dictionary to a json file
+		
+		suffix = suffix if suffix.startswith('_') else '_' + suffix #Add underscore if there isn't
+		utils.dict2json('output/dist_dict_Bayesian'+suffix+'.json', dict(id_dict), dist_dict_mat) #Save the dist dictionary and id dictionary to a json file
 		return id_dict, dist_dict_mat
 
 def calc_MC_distance(mat_ls1, mat_ls2, id_dict, f_hash=utils.container_conv ,dist_dict_mat = collections.defaultdict(float), mat_type = 'count', p_out = False):
@@ -930,6 +937,7 @@ def pmat2dict(pmat,plot_type,start_state = 1):
 	return mc_dict
 
 def simulate_mc_sheet(pmat_sheet, n_steps = 20000, **kwargs):
+	# UNUSED!!!
 	# Given a sheet of Markov chain transitional matrices, simulate its transitions and record states
 	# Input:
 		# pmat_sheet: A list of list that contains all the trans mat for current sheet

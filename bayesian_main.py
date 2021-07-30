@@ -63,7 +63,7 @@ for i in loop_iter: #Iterate over different number of transitions
 		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets--for MC '+str(mc_len)+'---------')
 		prior_input_dev = ['dev',mc_crop_ls_prior[idx]] #Generate the prior input for dev prior
 		# Perform Bayesian clustering (prior using the dataset )
-		cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev)
+		cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'suffix':suffix})
 		# cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s) #Uniform prior
 		cluster_len_ls.append(len(cluster_ls)) #Append cluster length
 		print('The number of clusters is',cluster_len_ls[idx])

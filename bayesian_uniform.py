@@ -1,4 +1,4 @@
-import func, utils, xlsxwriter, pandas, pathlib, os
+import func, utils, xlsxwriter, pandas, pathlib, os, time
 ###################### Test Packages #######################
 ###################### Input #######################
 #Input for the clustering algorithm:
@@ -24,8 +24,9 @@ alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
 # Use user input for min and max loop number
 loop_min = int(input('Please enter the min number of transitions(inclusive - min 1): ') or 1)
 loop_max = int(input('Please enter the max number of transitions(inclusive - max 47): ') or 47)
-sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default all):') or 0)
+loop_iter = range(loop_min,loop_max+1)
 suffix = input('Please enter any suffix for the output file name: ')
+suffix = '_'+suffix if suffix else '' #Add underscore if suffix is nonempty
 ##### Complete Dataset for Prior Generation #####
 #### The following 4 lines generate the complete data file and save it as a csv (commented)
 # raw_trip_file_complete = 'trippub.csv' #File name of the 2k data
@@ -33,23 +34,23 @@ suffix = input('Please enter any suffix for the output file name: ')
 # trip_df = func.tripls2df(trip_ls_raw_complete, t_interval)
 # trip_df.to_csv('trip_df_complete.csv', index = False)
 #### The above 4 lines generate the complete data file and save it as a csv (commented)
-trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]:,] #Only use the rows not belong to test dataset
-loop_iter = range(loop_min,loop_max+1)
-suffix = '_'+suffix if suffix else '' #Add underscore if suffix is nonempty
-if sample_size == 0:
-	trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
-else:	
-	trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
+# trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]:,] #Only use the rows not belong to test dataset
+# sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default all):') or 0)
+# if sample_size == 0:
+	# trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
+# else:	
+	# trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
 workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results_'+os.environ.get('USER')+suffix+'.xlsx')
 worksheet_0 = workbook.add_worksheet('General Results')
-print('Execution starts! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
+print('Uniform execution starts! Transition number from',loop_min,'to',loop_max)
 print('***********************************************************************************************')
 for i, mc_len in enumerate(loop_iter): #Iterate over different number of transitions
+	last_time = time.time()
 	# mc_len = 4 #Test mc_len value
 	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to a dict of mc lists using number of transitions (keyed by window index), mc_title_ls is list of titles, index based on order of mc_crop_dict's values
-	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] #Convert the complete trip df to dict of mc lists (keyed by window index)
+	# mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] #Convert the complete trip df to dict of mc lists (keyed by window index)
 	print('MC crop list generated for mc_len=',mc_len,'!')
 	worksheet_1 = workbook.add_worksheet(str(mc_len)+' Transition') #Added new sheet to record result for the specific number of transitions
 	last_row_no = 1 # Last row number used for writing in worksheet_1 (reset for every mc_len)
@@ -57,13 +58,13 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	set_no = len(mc_crop_dict.keys()) #Total number of cluster sets for one day (# of time windows)
 	cluster_len_ls = [] #List of cluster length
 	for idx, (window_idx, mc_ls) in enumerate(mc_crop_dict.items()): #Iterate over all the time windows (idx for titles, window_idx for window index)
-		mc_ls_prior = mc_crop_dict_prior[window_idx] #Get the prior mc list (can be empty list)
-		prior_input_dev = ['dev', mc_ls_prior] if mc_ls_prior else ['uniform'] #Generate the prior input for dev prior (if no prior exists, use uniform)
 		# Each time window contains a list of MCs
-		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets/time windows--for MC of length'+str(mc_len)+'---------')
+		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets--for MC '+str(mc_len)+'---------')
+		# mc_ls_prior = mc_crop_dict_prior[window_idx] #Get the prior mc list (can be empty list)
+		# prior_input_dev = ['dev', mc_ls_prior] if mc_ls_prior else ['uniform'] #Generate the prior input for dev prior (if no prior exists, use uniform)
 		# Perform Bayesian clustering (prior using the dataset )
-		cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'suffix':suffix})
-		# cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, KL_dict = {'suffix':suffix}) #Uniform prior
+		# cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'suffix':suffix})
+		cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, KL_dict = {'suffix':suffix}) #Uniform prior
 		cluster_len_ls.append(len(cluster_ls)) #Append cluster length
 		print('The number of clusters is',cluster_len_ls[idx])
 		
@@ -89,7 +90,11 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	# Saves the file
 	worksheet_1.write_row(0,0,[str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the time window specific sheet
 	worksheet_0.write_row(i,0,[str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the 'General Result' sheet
+	
+	print('Time spent on this dataFile is',time.time() - last_time)
+	last_time = time.time()
 ###################### Test #######################
 print('***********************************************************************************************')
-print('Execution completed! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
+print('Uniform execution completed! Transition number from',loop_min,'to',loop_max)
+
 workbook.close()

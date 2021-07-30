@@ -4,15 +4,17 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 
+# File names - Input
 dataFileNameList = []
 # dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx') #File that contains all meaningful results
 # dataFileNameList.append('Bayesian_Clustering_Results_dev100.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_dev_complete.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_dev3k.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_dev200-0.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_dev200-1.xlsx')
-resultPriorLs = [i.split('_')[-1].split('.xlsx')[0] for i in dataFileNameList] #List of prior type, will be used for output folder name
-# Settings of plot
+# dataFileNameList.append('Bayesian_Clustering_Results_dev_complete.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_dev3k.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_dev200-0.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_dev200-1.xlsx')
+dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
+
+# Settings of plot - Input
 resultFolderPath = str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/' #Result folder path
 rawFileName = 'Bayesian_Clustering_Results_raw.xlsx' #File that contains unprocessed results
 s = 21 #Number of states
@@ -34,7 +36,8 @@ else:
 fig_type = 'multiple' #Figure type: 'single', 'multiple'
 save_pdf = True #If saving all figures in a PDF
 # print(resultFolderPath+resultFileAffix+'/')
-
+########################### End of Inputs ####################################
+resultPriorLs = [i.split('_')[-1].split('.xlsx')[0] for i in dataFileNameList] #List of prior type, will be used for output folder name
 baselineFilePath =  resultFolderPath+rawFileName #Get the baseline file path
 baselineFile = pd.ExcelFile(baselineFilePath) #Read the baseline file as an object
 LabelT = baselineFile.parse('WindowLabels', header = None, index_col = 0) #Get the sheet baseline file that contains all the window labels (for plotting)

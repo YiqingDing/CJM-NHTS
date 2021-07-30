@@ -392,7 +392,7 @@ def tripdf2mcls(trip_df, mc_len):
 		# trip_df: A dataframe of trips, where each row is a trip and activities are assigned to columns of corresponding times (empty columns are assigned default_val in tripls2df's call of utils.trip_translator)
 		# mc_len: Integer, defines how long a MC is, or how long the window to crop from
 	# Output:
-		# mc_crop_ls: A list of list, in which each entry is a list of Markov chains - cropped out of trip_df
+		# mc_crop_dict: A dictionary of list, keyed by window index and valued by list of Markov chains - cropped out of trip_df
 			# A list of Markov chains is a list of list, in which each entry is a Markov chains
 				# A Markov chain is a list of activities 
 		# col_name_ls: A list of list, in which each entry is a list of column names, each corresponding to the list in mc_crop_ls
@@ -409,17 +409,19 @@ def tripdf2mcls(trip_df, mc_len):
 		raise Exception('The number of transitions desired is larger than max transitions available')
 
 	# Iterate over each time window
-	for i in range(trip_df.shape[1]-mc_len):
+	# mc_crop_dict= {} #Initialize a dictionary
+	mc_crop_dict = collections.defaultdict(list) #Initialize a dictionary with default value empty list
+	for i in range(trip_df.shape[1]-mc_len): #Iterate over column indices (starting from 0)
 		# The last starting index is always (trip_df.shape[1]-mc_len-1)
 		i_end = min(i+mc_len, i_max) #Find out the end index for cropping (avoid out of index with min fn)
 		ind_df = trip_df.iloc[:,int(i):i_end+1] #Crop the specific columns out of trip_df
 		ind_ls = ind_df.values.tolist() #Convert the ind_df to list of item, where each item is a row in the original df
 		ind_mc_ls = datals2mcls(ind_ls) #Convert the data list to mc list - preprocessing
-		if ind_mc_ls: #Only appends if it's not completely zeros
+		if ind_mc_ls: #Only appends if it's not completely empty
 			# ind_mc_ls_new = [mc_ls[np.nonzero(mc_ls)[0][0]:] for mc_ls in ind_mc_ls] #Remove leading zeros in the MC
-			mc_crop_ls.append(ind_mc_ls) 
+			mc_crop_dict[i] = ind_mc_ls
 			col_name_ls.append(col_names[i:i_end+1])
-	return mc_crop_ls, col_name_ls
+	return mc_crop_dict, col_name_ls
 
 def datals2mcls(data_ls):
 	# Process all the chains in a list (data_ls) to a list of Markov chains

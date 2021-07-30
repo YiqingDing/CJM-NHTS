@@ -461,7 +461,7 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform']):
 	# last_time = time.time() #Timepoint of last step
 	ini_count_ls = mcls2mat(mc_ls, s)[1] #Get the initial count_ls (duplicates exist)
 	cluster_ls = utils.initial_cluster_ls(ini_count_ls) #Generate the initial cluster list (duplicates allowed in count_ls)
-	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Generate the list of count matrix
+	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Generate the list of count matrix (no duplicates)
 	# Note: The new count_ls doesn't have duplicates in the original count_ls as they are merged. len(count_ls) = len(cluster_ls) <= len(ini_count_ls)
 
 	# Compute distances and ids for unique count matrices in the new count_ls
@@ -652,7 +652,7 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv):
 	# Input:
 	# 	new_val_ls: List of data points that are not in id_dict, must be unique from id_dict.inverse()!
 	# 	id_dict: ID dictionary, default empty bidict()
-	# 	f_hash: Function to change data point hashable (default list of lists to tuple)
+	# 	f_hash: Function to change input hashable (default list of lists to tuple using container_conv)
 	# Output:
 	# 	id_dict: Dictionary of ids where key is the id#, value is the data (in case of hashable)
 
@@ -661,9 +661,9 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv):
 
 	for data in new_val_ls:
 		# dict keys starts from start_id
-		if f_hash(data, tuple) in id_dict.inverse:
-			raise Exception('Input value already in id_dict!!!\n')
-		id_dict[uuid.uuid4().hex] = f_hash(data, tuple) #Change the data to hashable for dic keys
+		if f_hash(data, tuple) not in id_dict.inverse:
+			id_dict[uuid.uuid4().hex] = f_hash(data, tuple) #Change the data to hashable for dic keys
+			# raise Exception('Input value already in id_dict!!!\n')
 	return id_dict
 
 def KL_distance_input(input_obj):
@@ -688,7 +688,7 @@ def KL_distance_input(input_obj):
 def calc_MC_distance(mat_ls1, mat_ls2, id_dict, f_hash=utils.container_conv ,dist_dict_mat = collections.defaultdict(float), mat_type = 'count', p_out = False):
 	# Given two lists of count matrices, compute the KL distances between their count matrices and save them to a dictionary
 	# Input:
-	# 	mat_ls1, mat_ls2: Lists of matrices, each element is an np array, they can be count or trans matrices (given by mat_type)
+	# 	mat_ls1, mat_ls2: Lists of matrices, each element is an np array, they can be count (will be converted to trans) or trans matrices (given by mat_type)
 	# 	id_dict: Dictionary for count matrices
 	# 	f_hash: Function to change data point hashable (default list of lists to tuple) for id_dict
 	# 	dist_dict_mat: Dictionary of distances, default 0.
@@ -697,7 +697,7 @@ def calc_MC_distance(mat_ls1, mat_ls2, id_dict, f_hash=utils.container_conv ,dis
 	# 	dist_dict_mat:
 	# 	-Dictionary of distances, key is a tuple of ids
 	
-	if mat_type == 'count': #Generate the transitional matrices if necessary
+	if mat_type == 'count': #Generate the transitional matrices if input mats are count matrices
 		trans_ls1 = [utils.count2trans(nmat) for nmat in mat_ls1]
 		trans_ls2 = [utils.count2trans(nmat) for nmat in mat_ls2]
 	else: #Input is transitional matrix list
@@ -708,7 +708,7 @@ def calc_MC_distance(mat_ls1, mat_ls2, id_dict, f_hash=utils.container_conv ,dis
 		for idx2, mat2 in enumerate(mat_ls2): #Iterate over 2nd matrix list
 			if not np.array_equal(mat1, mat2):
 				# Computes dist only if two matrices are different 
-				id1 = id_dict.inverse[f_hash(mat1, tuple)] #Generate id for current data 
+				id1 = id_dict.inverse[f_hash(mat1, tuple)] #Generate id for current data from id_dict
 				id2 = id_dict.inverse[f_hash(mat2, tuple)]
 				if dist_dict_mat[(id1, id2)] == 0:
 					# And there are no existing distances stored in dictionary

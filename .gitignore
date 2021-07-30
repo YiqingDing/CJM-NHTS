@@ -3,3 +3,6 @@
 *.pyc
 *.pyc
 output/dist_dict_Bayesian.json
+.DS_Store
+output/dist_dict_Bayesian.json
+output/dist_dict_Bayesian.json

@@ -38,7 +38,7 @@ suffix = '_'+suffix if suffix else '' #Add underscore if suffix is nonempty
 # sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default all):') or 0)
 # if sample_size == 0:
 	# trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
-# else:	
+# else:	 
 	# trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx

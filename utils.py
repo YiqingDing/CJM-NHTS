@@ -4,7 +4,8 @@ from math import *
 import matplotlib.pyplot as plt
 # from matplotlib import rc
 # import matplotlib
-import collections, random, bisect, ujson, csv,ast, os, sys, itertools, pydtmc
+import collections, random, bisect, ujson, csv,ast, os, sys, itertools, pydtmc, textwrap
+chord_plot = __import__("matplotlib-chord") #Import matplotlib-chord
 from sklearn.neighbors import KernelDensity
 import pandas as pd
 from scipy.special import gamma, factorial, binom, gammaln
@@ -910,7 +911,7 @@ def path_processor(f_path, change_slash = 1):
 			print('Returning a folder path (with slash)!')
 
 	return new_path
-########################################################## DataAnalysis.py
+########################################################## DataAnalysis.py ##########################################################
 def calcRow(windowArray, s, ttype = 'Baseline'):
 	# Compute the row ranges for given row indices in windowArray
 	# Input:
@@ -980,7 +981,7 @@ def node_validate(pmat, start_num = 1):
 	# Given a transitional matrix, we return a list of nodes which are valid
 	# Input:
 		# pmat: Transitional matrix of size sxs
-		# start_num: Starting state number, default 1. States are int start from this num.
+		# start_num: Starting state number, default 1. States are integers start from this num.
 	# Output:
 		# state_valid: A list of states with nonzero entries either on row or column
 	pmat = np.asarray(pmat) if not isinstance(pmat, np.ndarray) else pmat #Convert to array if it's a list
@@ -990,7 +991,7 @@ def node_validate(pmat, start_num = 1):
 	# pmat_valid = pmat[state_valid_raw,state_valid_raw]
 	return state_valid
 
-def plot_mc(mc_data,plot_type, s=21, ax = None, **kwargs):
+def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 	# Plot a mc_data according to a selected plot_type
 	# Steps:
 		# 1. Transform trans mat and extract edges & states
@@ -1000,8 +1001,10 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **kwargs):
 		# plot_type
 		# s
 		# ax: Current axe
-		# kwargs:
+		# plot_kw:
 			# colormap
+			# start_state
+			# font
 	
 	# print('---------------------------------------------------------------------------')
 	# print(ax.get_gridspec().nrows)
@@ -1016,6 +1019,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **kwargs):
 	if ax == None: #Get current axe if None given
 		ax = plt.gca()
 
+	start_state = plot_kw['start_state'] if 'start_state' in plot_kw.keys() else 1 #Start state, default 1
 	leg_ncol = 2 #Number of columns in legend
 	if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
 		leg_ncol = 3 #If a subplot column spans the entire figure, increase legend col to 3
@@ -1025,7 +1029,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **kwargs):
 		mc_data = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
 
 		# labels = [NHTS_new()[i+1] for i in range(mc_data.shape[0])]
-		labels = [i+1 for i in range(mc_data.shape[0])]
+		labels = [i+start_state for i in range(mc_data.shape[0])]
 
 		# print('Initial AR:',ax.get_aspect())
 		AR = 0.7 #Aspect ratio for the heatmap
@@ -1039,6 +1043,36 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **kwargs):
 		                   'fraction':0.05/AR, 
 		                   'location':'bottom'})
 		# print('Final AR:',ax.get_aspect())
+	elif plot_type == 'chord':
+		# Plot chord diagram with mc_data as the transitional matrix
+		pmat = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
+		
+		cm_type = plot_kw['colormap'] if 'colormap' in plot_kw.keys() else 'gist_rainbow' #Default colormap type
+		cm_dict = NHTS_new('colormap', colormap = cm_type) #Get a dictionary of colors keyed by state valued by 
+		state_space = node_validate(pmat, start_state) #Get all the states that appeared in pmat 
+		pmat_red = pmat[np.asarray(state_space) - start_state,:][:,np.asarray(state_space) - start_state] #Reduce the pmat to only rows&cols with values (valid states)
+		if pmat_red.shape[0] == 1:
+			raise Exception('The transitional matrix has only 1 state!!!')
+		labels = [NHTS_new()[i] for i in state_space] #Get labels for all states in state_space
+		rgb_colors = [i[:3] for i in list(cm_dict.values())]
+
+		# Axes Properties & Texts
+		sup = ax.figure._suptitle #Get the suptitle of current figure
+		# sup.set_y(0.98) #Change y location of suptitle
+		sup.set_fontsize(25) #Change font size of suptitle
+		prop = plot_kw['font'] | dict(ha='center', va='center') if 'font' in plot_kw.keys() else dict(ha='center', va='center') #Add/modify properties for text in chord graph
+		ax.axis('off') #Turn off the axis
+		label_max_len = 30 #Maximum length of labels (if longer, wrap it)
+		dist_multiplier = 0.95 #Multiplier of moving distance of chord text closer to origin
+		# Plot & Add Text
+		nodePos = chord_plot.chordDiagram(pmat_red, ax, colors=rgb_colors, width=0.01, pad=2, chordwidth=0.5) #Compute node/text position
+		for i, node in enumerate(nodePos): #Iterate over each node and place text
+			x,y, rot = node #Extract the x, y, and rotation of supposed label
+			label = labels[i] #Extract the label for current node
+			if len(label) > label_max_len: #If label longer than label_max_len, wrap it
+				label = textwrap.fill(label, width = label_max_len)
+			ax.text(x*dist_multiplier,y*dist_multiplier, label, rotation=rot,wrap = True, **prop) #Place label
+
 	elif plot_type.startswith('simulation'):
 		# Plot the simulation result for the given MC
 		# mc_data is the raw pmat (without threshold applied), the transitional matrix
@@ -1046,7 +1080,6 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **kwargs):
 
 		# Simulation
 		n_steps = 5000
-		start_state = 1
 		mc_data = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
 		s = mc_data.shape[0]
 		states, mc_sim = simulate_mc(mc_data, n_steps = n_steps, offset_step = 50, start_state = start_state) #Simulate (states, mc_sim) with default setting
@@ -1061,7 +1094,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **kwargs):
 
 		# Overall plot properties that apply to all simulation plots
 		bbox_props = dict(boxstyle='round', facecolor='wheat', alpha=0.5) #Property of text box
-		cm_type = kwargs['colormap'] if 'colormap' in kwargs.keys() else 'gist_rainbow' #Default colormap type
+		cm_type = plot_kw['colormap'] if 'colormap' in plot_kw.keys() else 'gist_rainbow' #Default colormap type
 		cm_dict = NHTS_new('colormap', colormap = cm_type) #Get a dictionary of colors for each state
 		
 		# Plotting
@@ -1115,7 +1148,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **kwargs):
 					ax.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, "{:.3f}".format(dist_prob[state]), ha='center', va='bottom', fontsize = 'small') #Place the prob value label
 			ax.set_ylim(*ylim)
 			
-			# Change the column number of legend 
+			# Change the number of columns in legend text
 			if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
 				leg_ncol = 3 #If a subplot column spans the entire figure, increase legend col to 3
 			leg = ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol) #Place the legend
@@ -1333,8 +1366,6 @@ def linestyle_generator(n, **kwargs):
 	ls_opt = ['-','--',':','-.',(0, (1, 10)), (0, (5, 3)), (0, (5, 1)), (0, (3, 3, 1, 3)), (0, (3, 1, 1, 1)), (0, (3, 3, 1, 3, 1, 3)), (0, (3, 1, 1, 1, 1, 1))]
 	ls_final = (ls_opt*ceil(n/len(ls_opt)))[:n]
 	return ls_final
-		
-
 ##########################################################Original Plot Functions############################################################
 def raw_plot(raw_trip_ls = []):
 	# Plot raw trip list as points. This function returns a set of axes object that will be reused to plot 

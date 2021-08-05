@@ -6,20 +6,18 @@ import matplotlib.pyplot as plt
 
 # File names - Input
 dataFileNameList = []
-# dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx') #File that contains all meaningful results
-# dataFileNameList.append('Bayesian_Clustering_Results_dev100.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_dev_complete.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_dev3k.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_dev200-0.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_dev200-1.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
+dataFileNameList.append('Bayesian_Clustering_Results_complete.xlsx')
+dataFileNameList.append('Bayesian_Clustering_Results_dev3k.xlsx') 
+dataFileNameList.append('Bayesian_Clustering_Results_dev200.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
+dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
 
 # Settings of plot - Input
 resultFolderPath = str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/' #Result folder path
-rawFileName = 'Bayesian_Clustering_Results_raw.xlsx' #File that contains unprocessed results
+rawFileName = 'Bayesian_Clustering_Results_0raw.xlsx' #File that contains unprocessed results
 s = 21 #Number of states
 threshold = 0.3 #Threshold of trans prob to be kept
-plot_type = int(input('Please give the plot type (1 for heatmap, 2 for homogeneous, 3 for simulation-line, 4 for simulation-bar-random, 5 for simulation-bar-absorb): ') or 1)
+plot_type = int(input('Please give the plot type (1 for heatmap (default), 2 for homogeneous, 3 for simulation-line, 4 for simulation-bar-random, 5 for simulation-bar-absorb, 6 for chord diagram): ') or 1)
 if plot_type == 1:
 	plot_type = 'heatmap'
 elif plot_type ==2:
@@ -30,6 +28,8 @@ elif plot_type ==4:
 	plot_type = 'simulation-bar-random'
 elif plot_type == 5:
 	plot_type = 'simulation-bar-absorb'
+elif plot_type ==6:
+	plot_type = 'chord'
 else:
 	raise Exception('No such plot type!!!')
 # plot_type = 'simulation-bar' #Plot type: 'heatmap', 'step', 'homogeneous', 'simulation-line', 'simulation-bar'
@@ -121,17 +121,14 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 					mc_window.append(mc_dict) #Append to the window
 				elif plot_type == 'heatmap': 
 					# If plot type is 'heatmap', we will use the transitional matrix directly
-					mc_window.append(pmat_threshold)
-				elif plot_type.startswith('simulation'):
-					mc_window.append(pmat) #Use original pmat for simulation (not the threshold one)
+					mc_window.append(pmat)
+				elif plot_type.startswith('simulation') or plot_type == 'chord':
+					mc_window.append(pmat) #Use original pmat for simulation (not the threshold one) and chord graph
 				else: #Simulation type plot has pmat already appended
 					raise Exception('There is no such plot type!')
 			# Note:Both entries of mc_sheet are lists, and each entry is either a mc_window or a pmat_winodw
 			mc_sheet['mc_data'].append(mc_window) #Append mc_window to the list
 			mc_sheet['pmat'].append(pmat_window) #Append pmat_window to the list
-		
-		# Get the size of plot (row and column number in plot)
-		plot_size = [transCountArr,len(windowArray)] #Column# = # of time windows, row# = least common multiplier for all val in transCountArr
 		##########################################################################################
 		# Plot everything from this excel sheet 
 		# First plot out the number of meaningful clusters and number of MCs in the window vs the time window
@@ -147,9 +144,9 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		plt1 = ax_transCount1.plot(range(1,len(windowLabels)+1), mc_num_ls, 'ro-', label = 'Number of MCs in Time Window') #Plot number of MCs in the window
 		ax_transCount0.legend([plt0, plt1[0]],[plt0.get_label(),plt1[0].get_label()], fontsize = axis_kw['legend_text_size'])
 		
-		
 		# Axis properties
 		ax_transCount0.set_ylim(0,10)
+		ax_transCount0.set_xlim(0,48)
 		ax_transCount0.tick_params(axis = 'x',which = 'major' ,bottom = False, labelbottom = True, labelsize = axis_kw['tick_label_size']) #Turn off x-axis major ticks & labels
 		ax_transCount0.set_xticks(range(1,len(windowLabels)+1)) #Set x-axis minor ticks
 		ax_transCount0.set_xticklabels(labels = windowLabels, rotation = 'vertical') #Set xtick labels and orientation
@@ -159,13 +156,14 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		ax_transCount1.set_ylabel('Number of Markov Chains in Time Window', size = axis_kw['axis_label_size'])
 		######################################
 		# Plot the specific plot type given by the user
-		func.plot_mc_sheet(mc_sheet['mc_data'],titles_dict, plot_size, plot_type = plot_type, fig_type = fig_type,save_pdf = save_pdf, 
+		func.plot_mc_sheet(mc_sheet['mc_data'],titles_dict, transCountArr, plot_type = plot_type, fig_type = fig_type,save_pdf = save_pdf, 
 			resultFolderPath = resultFolderPath+resultPrior+'/', suffix = resultPrior, prefix = plot_type,#This line deals with input for func.plot_mc_sheet
 			fig_kw = {'fig_size': (15,10), 'constrained_layout': False, 'tight_layout': True, 
-			'ax_kw':{'aspect': 'auto'}}, #fig generator settings (ax_kw is the kwargs for axes)
-			plot_kw = {'colormap': 'hsv'} #plot_mc settings
+			'ax_kw':{'aspect': 'auto'},
+			'suptitle_kw':{'size': 15}}, #fig generator settings (ax_kw, kwargs for axes; suptitle_kw, kwargs for figure suptitle)
+			plot_kw = {'colormap': 'hsv', 'font': {'fontsize': 11}} #plot_mc settings
 			)
-		######################################
+		##########################################################################################
 		# # Simulate all the MCs on this excel sheet - Currently undeveloped
 		# func.simulate_mc_sheet(mc_sheet['pmat'], n_steps = 20000, initial_state = 0, **kwargs)
 

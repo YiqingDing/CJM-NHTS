@@ -411,7 +411,7 @@ def tripdf2mcls(trip_df, mc_len):
 	# Iterate over each time window
 	# mc_crop_dict= {} #Initialize a dictionary
 	mc_crop_dict = collections.defaultdict(list) #Initialize a dictionary with default value empty list
-	for i in range(trip_df.shape[1]-mc_len): #Iterate over column indices (starting from 0)
+	for i in range(trip_df.shape[1]-mc_len): #Iterate over column (window) indices (starting from 0)
 		# The last starting index is always (trip_df.shape[1]-mc_len-1)
 		i_end = min(i+mc_len, i_max) #Find out the end index for cropping (avoid out of index with min fn)
 		ind_df = trip_df.iloc[:,int(i):i_end+1] #Crop the specific columns out of trip_df
@@ -419,7 +419,7 @@ def tripdf2mcls(trip_df, mc_len):
 		ind_mc_ls = datals2mcls(ind_ls) #Convert the data list to mc list - preprocessing
 		if ind_mc_ls: #Only appends if it's not completely empty
 			# ind_mc_ls_new = [mc_ls[np.nonzero(mc_ls)[0][0]:] for mc_ls in ind_mc_ls] #Remove leading zeros in the MC
-			mc_crop_dict[i] = ind_mc_ls
+			mc_crop_dict[i] = ind_mc_ls_new #Add the new mc_ls to the mc_crop
 			col_name_ls.append(col_names[i:i_end+1])
 	return mc_crop_dict, col_name_ls
 
@@ -965,7 +965,7 @@ def simulate_mc_sheet(pmat_sheet, n_steps = 20000, **kwargs):
 	fig2pdf(file_path,fig_num = 'all') #Save all figures to PDF	
 
 ######### Plotting in DataAnalysis #############
-def plot_mc_sheet(mc_sheet, titles_dict, size, plot_type = 'homogeneous', fig_type = 'multiple', s = 21, save_pdf = False, 
+def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous', fig_type = 'multiple', s = 21, save_pdf = False, 
                   fig_kw = {}, plot_kw = {}, **kwargs):
 	# Given all MCs for time windows within one sheet, plot them depends on fig_type:
 		# fig_type='single': Plot each time window on one column with one figure contains all time windows
@@ -977,12 +977,10 @@ def plot_mc_sheet(mc_sheet, titles_dict, size, plot_type = 'homogeneous', fig_ty
 		# titles_dict: A dictionary contains titles for figures and axes:
 			# 'title_win': Title for each time window
 			# 'title_sheet': Title for each sheet (contains all MCs of the same transition #)
-		# size: A 2-tuple:
-			# size[0]: transCountArr - List of # of trans mat in each time window
-			# size[1]: # of time windows
+		# transCountArr: A list of # of trans mat in each time window (each entry is a number)
 		# plot_type: The type of plot to be generated, this determines type of container in mc_window
 			# 'step' or 'homogeneous': mc_data is a dictionary where keys are edges (node pairs) and values are edge weights
-			# 'heatmap' or 'simulation-bar' or 'simulation-line': mc_data is a transitional matrix
+			# 'heatmap' or 'simulation-bar' or 'simulation-line' or 'chord': mc_data is a transitional matrix
 		# fig_type: 'single' or 'multiple' that determines the # of figures to be generated
 		# s: Number of states
 		# save_pdf: Save figure(s) as PDF or not:
@@ -997,12 +995,12 @@ def plot_mc_sheet(mc_sheet, titles_dict, size, plot_type = 'homogeneous', fig_ty
 	if fig_type == 'single':
 		fig_num = 1
 		# If there is only 1 fig, we will create a gridspace with unit rows
-		ax_num = size # Since only 1 fig, only 1 element in ax_num with row and column number of axes in figure
+		ax_num = [transCountArr, len(transCountArr)] # Since only 1 fig, only 1 element in ax_num with row and column number of axes in figure
 	elif fig_type =='multiple':
 		# If there are multiple figures:
-			#Number of fig = number of windows = # of columns = size[1]
-			#Each fig has number of axes = number of trans mat in the time window=transCountArr=size[0]
-		ax_num, fig_num = size
+			#Number of fig = number of windows = # of columns = len(transCountArr)
+			#Each fig has number of axes = number of trans mat in the time window=transCountArr
+		ax_num, fig_num = [transCountArr, len(transCountArr)]
 		# print('ax_num =',ax_num,'fig_num =',fig_num)
 	else:
 		raise Exception('No such figure type! Choose single or multiple')
@@ -1018,7 +1016,13 @@ def plot_mc_sheet(mc_sheet, titles_dict, size, plot_type = 'homogeneous', fig_ty
 		                 loc ='center',
 		                 colColours = ['palegreen']*2)
 		table.scale(1.1, 2)
-		# list(utils.NHTS_new().items())
+	elif plot_type == 'chord': #If plot type is chord, change fig_num and ax_num (regardless of fig_type)
+		# Only 1 chord graph per figure
+		fig_num = sum(transCountArr) #Number of figure = sum of number of axes for diffeent time windows
+		ax_num = [1]*fig_num #Number of axes is 1 axes/per figure
+		fig_title = titles_dict['title_win']
+		titles_dict['title_win'] = [item for item, count in zip(fig_title, transCountArr) for i in range(count)] #Repeat each value in fig_title by value in transCountArr
+		fig_kw['fig_size'] = [15]*2 #Override any figure size in fig_kw
 
 	# Create the axes and figures using the given parameters
 	figs, axs = fig_generator(fig_num, ax_num, titles_dict = titles_dict, **fig_kw)
@@ -1053,8 +1057,8 @@ def fig_generator(fig_num, ax_num, titles_dict, **kwargs):
 					# ax_num[0] is an array of number of rows for each column - transCountArr
 					# ax_num[1] is the total column number - len(WindowArr)
 				# fig_num != 1 or len(ax_num) = 1:
-					# This corresponds to the case where each a single figure only contains a single time winodw (can contain multiple plots):
-						# A: Only 1 time winodw -> fig_num =1 but len(ax_num) = 1 -> 
+					# This corresponds to the case where each a single figure only contains graphs for a single time winodw (can contain multiple plots):
+						# A: Only 1 time winodw -> fig_num =1 and len(ax_num) = 1 -> 
 						# B: Multiple time window -> fig_num > 1 and len(ax_num) > 1
 					# In this case, ax_num = transCountArr - List of # of plots in each time window
 					# ax_num[i] is number of plots in each figure i
@@ -1136,8 +1140,7 @@ def fig_generator(fig_num, ax_num, titles_dict, **kwargs):
 						colspan = grid_col_span1, **ax_kw))
 			else:
 				# 1-Column figure case
-				fig, ax = plt.subplots(nrows = fig_ax_num, ncols =1, num = i, figsize = fig_size, squeeze = False, 
-					subplot_kw = ax_kw, **fig_kw) #Build figure with only 1 column
+				fig, ax = plt.subplots(nrows = fig_ax_num, ncols =1, num = i, figsize = fig_size, squeeze = False, subplot_kw = ax_kw, **fig_kw) #Build figure with only 1 column
 				axs.extend(ax.flatten()) #ax is a 2d array of axes (squeeze=False) thus needs to be merged with axs (extend than append)
 			################
 			fig.suptitle(titles_dict['title_sheet']+fig_title[i], **suptitle_kw) #Get and assign the title to the figure (axes don't have a title)

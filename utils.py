@@ -390,7 +390,7 @@ def initial_cluster_ls(count_ls):
 			cluster_ls.append([nmat]*n) #Append the count mats as a cluster with length n
 	return cluster_ls
 
-def data2mc(data):
+def data2mc(data,zero_padding = 1):
 	# Given a data/chain, convert to a Markov chain.
 	# Input:
 		# data: A list of activities where idx corresponds to time, values corresponds to activities at the time
@@ -404,10 +404,10 @@ def data2mc(data):
 		# - Replaces certain discontinued values with continus values: 97 -> 20; 99 -> 21
 	###########################################################################################
 	mc = []
-	zero_padding = 1
 	#Zero padding
 	last_activity = 0 #Initialize last activity
 	if zero_padding == 1: #Zero padding 
+		# Performs zero padding by appending last activity through the data
 		for activity in data: #Iterate over different activities within the data
 			if activity != 0:
 				last_activity = activity #Records current activity as the new last activity

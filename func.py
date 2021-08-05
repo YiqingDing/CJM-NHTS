@@ -379,10 +379,9 @@ def tripls2df(trip_ls, t_interval):
 	trip_df = pd.DataFrame()
 
 	for idx, ind_trip in enumerate(trip_ls):
-		
 		# We re-use the trip_translator fn to produce the df with column names as time windows and values are activities in that interval
 		activity_df = utils.trip_translator(input_trip = ind_trip, t_interval = t_interval, default_val= 0)
-
+		activity_df.iloc[0,:] = utils.data2mc(activity_df.values.tolist()[0]) #Performs zero padding for all the inter-activity entries
 		trip_df = pd.concat([trip_df,activity_df]) #Append to the existing df
 	return trip_df
 
@@ -416,9 +415,9 @@ def tripdf2mcls(trip_df, mc_len):
 		i_end = min(i+mc_len, i_max) #Find out the end index for cropping (avoid out of index with min fn)
 		ind_df = trip_df.iloc[:,int(i):i_end+1] #Crop the specific columns out of trip_df
 		ind_ls = ind_df.values.tolist() #Convert the ind_df to list of item, where each item is a row in the original df
-		ind_mc_ls = datals2mcls(ind_ls) #Convert the data list to mc list - preprocessing
+		ind_mc_ls = datals2mcls(ind_ls) #Convert the data list to mc list - preprocessing: zero padding & index replacing 
 		if ind_mc_ls: #Only appends if it's not completely empty
-			# ind_mc_ls_new = [mc_ls[np.nonzero(mc_ls)[0][0]:] for mc_ls in ind_mc_ls] #Remove leading zeros in the MC
+			ind_mc_ls_new = [mc_ls[np.nonzero(mc_ls)[0][0]:] for mc_ls in ind_mc_ls] #Remove leading zeros in the MC
 			mc_crop_dict[i] = ind_mc_ls_new #Add the new mc_ls to the mc_crop
 			col_name_ls.append(col_names[i:i_end+1])
 	return mc_crop_dict, col_name_ls
@@ -429,11 +428,12 @@ def datals2mcls(data_ls):
 		# data_ls: A list of data, where each data is a chain of activities
 	# Output:
 		# mc_ls: A list of Markov chains, where each MC is a chain of activities under operations
-	# This function performs utils.data2mc to all the item in data_ls. See utils.data2mc for more details.
+	# This function performs utils.data2mc to all the items in data_ls. See utils.data2mc for more details.
+	# Note: Zero padding performed in data2mc here maybe unnecessary if tripls2df has performed zero padding for inter-activity entries 
 	#####################################################
 	mc_ls = [] #Initizalize the mc list
 	for data in data_ls:
-		mc = utils.data2mc(data) #Performs conversion using data2mc
+		mc = utils.data2mc(data) #Datapoint to mc using data2mc: zero padding & index replacing
 		if sum(mc) != 0: #Drop the MC with all zeros
 			mc_ls.append(mc) #Append to mc_ls
 	return mc_ls

@@ -3,3 +3,4 @@
 output/
 __pycache__/Icon
 Archive/.DS_Store
+test.py

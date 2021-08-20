@@ -462,17 +462,26 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 	###################### Initialization #######################
 	# last_time = time.time() #Timepoint of last step
 	KL_dict = kwargs['KL_dict'] if 'KL_dict' in kwargs.keys() else {} #A dictionary for KL_distance_input from kwargs
+	
 
 	ini_count_ls = mcls2mat(mc_ls, s)[1] #Get the initial count_ls (duplicates exist)
-	ini_id_dict = id_modifier(new_val_ls = ini_count_ls, save_dict = False) #Create a id_dict for entries from ini_count_ls (we will save it later on if meaningful clusters are generated)
+	
 	cluster_ls = utils.initial_cluster_ls(ini_count_ls) #Generate the initial cluster list (duplicates allowed in count_ls)
 	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Generate the list of count matrix (no duplicates)
 	# Note: 
 		# The new count_ls can have duplicates, but not those in original count_ls since they are merged. len(count_ls) = len(cluster_ls) <= len(ini_count_ls) 
+	########## Create/Read ini_id_dict ##########
+	suffix_default = ''
+	suffix = (kwargs['id_suffix'] if 'id_suffix' in kwargs.keys() else '')+suffix_default #Read suffix of dictionary from kwargs if given (then add suffix_default)
+	suffix = (str(suffix) if str(suffix).startswith('_') else '_' + str(suffix)) if suffix else '' #Add underscore if there isn't
+	dict_file_path = 'output/idDict'+suffix+'.json'
+	ini_id_dict = bidict(utils.dict_val2tuple(utils.json2dict(dict_file_path)[0])) if os.path.isfile(dict_file_path) else None #Reads ini_id_dict if it exists (with the same name), else None
+	ini_id_dict = id_modifier(new_val_ls = ini_count_ls,id_dict = ini_id_dict save_dict = False) #Updates ini_id_dict with entries from ini_count_ls (we will save it later on if meaningful clusters are generated)
 	###################### Initialization #######################
+	
 	# Compute distances and ids for unique count matrices in the new count_ls
 	id_dict, dist_dict_mat = KL_distance_input(count_ls = count_ls,id_dict = ini_id_dict, **KL_dict) #Create id_dict from ini_id_dict with count_ls and compute distances between count_ls
-	
+	# Sort dist_dict_mat
 	dist_rank = sorted(dist_dict_mat.items(), key = lambda x: x[1]) #Sort the dictionary based on distances between count_ls - output a tuple of (idx pair, distance)
 	# print('Initial distane computed and ranked!') #--PrintStatement
 	
@@ -658,7 +667,7 @@ def mcls2mat(mc_ls, s):
 def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv, save_dict = False, **kwargs):
 	# Modifies a dictionary (if not given, create a new bidict) of ids with the new input variable
 	# Input:
-		# new_val_ls: List of data points that need to be added to id_dict (can have duplicates in new_val_ls or id_dict)
+		# new_val_ls: List of data points that need to be added to id_dict (can have duplicates in new_val_ls or existing entries in id_dict)
 		# id_dict: ID dictionary, default empty bidict
 		# f_hash: Function to change input hashable (default list of lists to tuple using container_conv)
 		# save_dict: If to save dictionary
@@ -666,7 +675,6 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv, save_
 			# id_suffix: Suffix for saving id_dict
 	# Output:
 	# 	id_dict: Dictionary of ids where key is the id#, value is the data (in case of hashable)
-
 	if not id_dict: #If not bidict supplied, default empty bidict
 		id_dict = bidict()
 
@@ -679,7 +687,8 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv, save_
 		suffix_default = ''
 		suffix = (kwargs['id_suffix'] if 'id_suffix' in kwargs.keys() else '')+suffix_default #Read suffix of dictionary from kwargs if given (then add suffix_default)
 		suffix = (str(suffix) if str(suffix).startswith('_') else '_' + str(suffix)) if suffix else '' #Add underscore if there isn't
-		utils.dict2json('output/idDict'+suffix+'.json', dict(id_dict)) #Save the dist dictionary and id dictionary to a json file
+		dict_file_path = 'output/idDict'+suffix+'.json'
+		utils.dict2json(dict_file_path, dict(id_dict)) #Save the dist dictionary and id dictionary to a json file
 	return id_dict
 
 def KL_distance_input(count_ls, id_dict = None, save_dict = False, **kwargs):

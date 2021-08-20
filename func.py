@@ -472,11 +472,11 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 		# The new count_ls can have duplicates, but not those in original count_ls since they are merged. len(count_ls) = len(cluster_ls) <= len(ini_count_ls) 
 	########## Create/Read ini_id_dict ##########
 	suffix_default = ''
-	suffix = (kwargs['id_suffix'] if 'id_suffix' in kwargs.keys() else '')+suffix_default #Read suffix of dictionary from kwargs if given (then add suffix_default)
+	suffix = (KL_dict['id_suffix'] if 'id_suffix' in KL_dict.keys() else '')+suffix_default #Read suffix of dictionary from kwargs if given (then add suffix_default)
 	suffix = (str(suffix) if str(suffix).startswith('_') else '_' + str(suffix)) if suffix else '' #Add underscore if there isn't
 	dict_file_path = 'output/idDict'+suffix+'.json'
 	ini_id_dict = bidict(utils.dict_val2tuple(utils.json2dict(dict_file_path)[0])) if os.path.isfile(dict_file_path) else None #Reads ini_id_dict if it exists (with the same name), else None
-	ini_id_dict = id_modifier(new_val_ls = ini_count_ls,id_dict = ini_id_dict save_dict = False) #Updates ini_id_dict with entries from ini_count_ls (we will save it later on if meaningful clusters are generated)
+	ini_id_dict = id_modifier(new_val_ls = ini_count_ls,id_dict = ini_id_dict, save_dict = False) #Updates ini_id_dict with entries from ini_count_ls (we will save it later on if meaningful clusters are generated)
 	###################### Initialization #######################
 	
 	# Compute distances and ids for unique count matrices in the new count_ls

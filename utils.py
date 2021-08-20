@@ -776,7 +776,7 @@ def NHTS_new(extra = None, **kwargs):
 	return NHTS_book
 
 def dict2json(file, *data):
-	# Save the input data as a list into json file
+	# Save the input data as a list into json file and remove the previous file
 	json_data = ujson.dumps(data)
 
 	if os.path.exists(file):

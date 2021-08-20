@@ -457,24 +457,24 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 	# 	prior_ls: List of prior matrices, each entry is a count matrix (generated from uniform_prior function)
 	# 	id_dict: ID bidirectional dictionary, key is unique id, value is hased count matrix (tuple format)
 	# 	dist_dict_mat: Distance dictionary, key is a pair of IDs for count matrices (from id_dict), value is the distance. This dict contains all past values (a repository)
-	# 	dist_rank: Distance rank for current count_ls, in a tuple format (key_pair, distance) and ascending 
+	# 	dist_rank: Distance rank for current count_ls, in a tuple format (key_pair, distance) and ascending.
 	# 	mc_temp: A single cluster, composed of several existing count matrices
 	###################### Initialization #######################
 	# last_time = time.time() #Timepoint of last step
 	KL_dict = kwargs['KL_dict'] if 'KL_dict' in kwargs.keys() else {} #A dictionary for KL_distance_input from kwargs
 
 	ini_count_ls = mcls2mat(mc_ls, s)[1] #Get the initial count_ls (duplicates exist)
+	ini_id_dict = id_modifier(new_val_ls = ini_count_ls, save_dict = False) #Create a id_dict for entries from ini_count_ls (we will save it later on if meaningful clusters are generated)
 	cluster_ls = utils.initial_cluster_ls(ini_count_ls) #Generate the initial cluster list (duplicates allowed in count_ls)
 	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Generate the list of count matrix (no duplicates)
 	# Note: 
 		# The new count_ls can have duplicates, but not those in original count_ls since they are merged. len(count_ls) = len(cluster_ls) <= len(ini_count_ls) 
 	###################### Initialization #######################
-
 	# Compute distances and ids for unique count matrices in the new count_ls
-	id_dict, dist_dict_mat = KL_distance_input(count_ls, **KL_dict) #If distances have not been computed previously 
-	# print('Initial distane computed!') #--PrintStatement
-	# id_dict, dist_dict_mat = KL_distance_input('dist_dict_Bayesian.json') #If raw distances have been computed previously 
+	id_dict, dist_dict_mat = KL_distance_input(count_ls = count_ls,id_dict = ini_id_dict, **KL_dict) #Create id_dict from ini_id_dict with count_ls and compute distances between count_ls
+	
 	dist_rank = sorted(dist_dict_mat.items(), key = lambda x: x[1]) #Sort the dictionary based on distances between count_ls - output a tuple of (idx pair, distance)
+	# print('Initial distane computed and ranked!') #--PrintStatement
 	
 	# Generate a prior_ls for count_ls, one prior for each count matrix or cluster
 	# Prior type given by prior_input[0], prior_data generated from prior_input
@@ -564,11 +564,11 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 				dist_rank = dist_rank_temp #The dist_rank_temp is for printing purpose
 
 				# Update the id_dict with the newly generated cluster (a list of count mat)
-				count_temp = utils.cluster2count(cluster_temp) #Convert the new cluster to a count mat
+				count_temp = utils.cluster2count(cluster_temp) #Convert the newly merged cluster to a count mat
 				
 				if utils.container_conv(count_temp, tuple) not in id_dict.inverse:
 					# if count_temp not in id_dict (the new cluster/count mat hasn't been encountered before):
-					id_dict = id_modifier([count_temp], id_dict) #Update the original id dictionary with the new count mat
+					id_dict = id_modifier(new_val_ls = [count_temp], id_dict = id_dict) #Update the original id dictionary with the new count mat
 				id_temp = id_dict.inverse[utils.container_conv(count_temp, tuple)] #Get id for the new cluster
 
 				# Compute the distance between newly generated cluster and the cluster_ls (cluster_ls), save it to a temporary dictionary 
@@ -602,6 +602,8 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 		# utils.dict2json('temp/count_ls_'+str(run_no1)+'.json',count_ls)
 	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Convert final clusters to list of count mat
 	trans_ls = []
+	if len(cluster_ls) > 1: #Save ini_id_dict if meaningful clusters are generated
+		id_modifier(new_val_ls = [], id_dict = ini_id_dict, save_dict = True, **KL_dict) #Use an empty new_val_ls to save ini_id_dict
 	for nmat in count_ls: #Convert list of count matrices to list of transitional matrices
 		trans_ls.append(utils.count2trans(nmat)) #Convert count matrix and append to list
 	return cluster_ls, trans_ls
@@ -653,12 +655,15 @@ def mcls2mat(mc_ls, s):
 	# trans_ls = utils.unique_ls(trans_ls) #Get list of unique trans matrices 
 	return trans_ls, count_ls
 
-def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv):
-	# Modifies a dictionary of ids with the new input variable
+def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv, save_dict = False, **kwargs):
+	# Modifies a dictionary (if not given, create a new bidict) of ids with the new input variable
 	# Input:
-	# 	new_val_ls: List of data points that are not in id_dict, must be unique from id_dict.inverse()!
-	# 	id_dict: ID dictionary, default empty bidict()
-	# 	f_hash: Function to change input hashable (default list of lists to tuple using container_conv)
+		# new_val_ls: List of data points that need to be added to id_dict (can have duplicates in new_val_ls or id_dict)
+		# id_dict: ID dictionary, default empty bidict
+		# f_hash: Function to change input hashable (default list of lists to tuple using container_conv)
+		# save_dict: If to save dictionary
+		# kwargs:
+			# id_suffix: Suffix for saving id_dict
 	# Output:
 	# 	id_dict: Dictionary of ids where key is the id#, value is the data (in case of hashable)
 
@@ -666,33 +671,47 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv):
 		id_dict = bidict()
 
 	for data in new_val_ls:
-		# dict keys starts from start_id
-		if f_hash(data, tuple) not in id_dict.inverse:
-			id_dict[uuid.uuid4().hex] = f_hash(data, tuple) #Change the data to hashable for dic keys
+		if f_hash(data, tuple) not in id_dict.inverse: #Check if the new value already in dictionary
+			id_dict[uuid.uuid4().hex] = f_hash(data, tuple) #Change the data to hashable(tuple) for dict keys
 			# raise Exception('Input value already in id_dict!!!\n')
+	if save_dict: #Save dict with suffix (from kwargs if given)
+		# suffix_default = time.strftime("%Y-%m-%d-%H-%M") #Default suffix (we are using time of day for special purposes, usually this is empty) 
+		suffix_default = ''
+		suffix = (kwargs['id_suffix'] if 'id_suffix' in kwargs.keys() else '')+suffix_default #Read suffix of dictionary from kwargs if given (then add suffix_default)
+		suffix = (str(suffix) if str(suffix).startswith('_') else '_' + str(suffix)) if suffix else '' #Add underscore if there isn't
+		utils.dict2json('output/idDict'+suffix+'.json', dict(id_dict)) #Save the dist dictionary and id dictionary to a json file
 	return id_dict
 
-def KL_distance_input(input_obj, **kwargs):
-	# Initialization of distances for input:
-		# 1. If given input_obj is a string, read KL distances
-		# 2. If given input_obj is a list, compute KL distances
-	if isinstance(input_obj, str): #Read existing file
-		# The input object is a string, thus treat it as the file name for reading
-		id_dict, dist_dict_mat = utils.json2dict('output/'+input_obj)
-		id_dict = bidict(utils.dict_val2tuple(id_dict)) #When onverting to dict from bidict (to save to json), the tuples are converted to ls, thus needs to be converted back to tuple for bidict
-		dist_dict_mat = utils.dict_key2tuple(dist_dict_mat) #The keys of dist_dict_mat are in str format, thus needs to be converted
-		return id_dict, dist_dict_mat
-	elif isinstance(input_obj, list): #Compute and save new distances to file
-		# The input object is a list, thus treat it as the list of count matrices
-		suffix = kwargs['suffix'] if 'suffix' in kwargs.keys() else '' #Read suffix if given
-		count_ls_unique = input_obj #The input object is a list of unique count matrices
-		# count_ls_unique = utils.unique_ls(input_obj) #Get list of unique count matrices (if there are any repetition)
-		id_dict = id_modifier(count_ls_unique) #Create id_dict from input matrices
-		dist_dict_mat = calc_MC_distance(count_ls_unique, count_ls_unique, id_dict,dist_dict_mat = collections.defaultdict(float), mat_type = 'count') #Compute the distance dictionary
-		
-		suffix = suffix if suffix.startswith('_') else '_' + suffix #Add underscore if there isn't
-		utils.dict2json('output/dist_dict_Bayesian'+suffix+'.json', dict(id_dict), dist_dict_mat) #Save the dist dictionary and id dictionary to a json file
-		return id_dict, dist_dict_mat
+def KL_distance_input(count_ls, id_dict = None, save_dict = False, **kwargs):
+	# Given a list of count matrix, initialize/update their IDs in id_dict and create distance dictionary
+	# Input:
+		# count_ls: List of count matrix, note that there can be duplicates in the count_ls
+		# id_dict: Initial bidirectional dict that to be updated, default empty
+		# save_dict: If saving both id_dict and dist_dict_mat
+		# kwargs: Keyword arguments
+			# KL_suffix: Suffix for saving of both dictionary
+	# Output:
+		# id_dict: Bidirectional id dictionary that includes both entries from input id_dict and count_ls (removing any duplicates)
+		# dist_dict_mat: Dictionary of distances, keyed by pair of ids of matrices from count_ls (not all mat from id_dict are included)
+	# Note: 
+		# dist_dict_mat only contains matrices in count_ls, not everything in id_dict. 
+		# id_dict can have an initial entries and will be merged with entries from count_ls
+	##################################################
+	# # The input object is a string, thus treat it as the file name for reading
+	# id_dict, dist_dict_mat = utils.json2dict('output/'+input_obj)
+	# id_dict = bidict(utils.dict_val2tuple(id_dict)) #When onverting to dict from bidict (to save to json), the tuples are converted to ls, thus needs to be converted back to tuple for bidict
+	# dist_dict_mat = utils.dict_key2tuple(dist_dict_mat) #The keys of dist_dict_mat are in str format, thus needs to be converted
+	# return id_dict, dist_dict_mat
+	##################################################
+	# count_ls_unique = utils.unique_ls(count_ls) #Get list of unique count matrices (remove duplicates)
+	id_dict = id_modifier(new_val_ls = count_ls, id_dict=id_dict) #Create/Update id_dict from input matrices
+	dist_dict_mat = calc_MC_distance(count_ls, count_ls, id_dict, dist_dict_mat = collections.defaultdict(float), mat_type = 'count') #Compute the distance dictionary for entries in count_ls
+	if save_dict: #Save both dicts with suffix (from kwargs if given)
+		suffix_default = time.strftime("%Y-%m-%d-%H-%M") #Default suffix (we are using time of day for special purposes, usually this is empty) 
+		suffix = (kwargs['KL_suffix'] if 'KL_suffix' in kwargs.keys() else '')+suffix_default #Read suffix of saved distance dictionary from kwargs if given (and add suffix_default)
+		suffix = (str(suffix) if str(suffix).startswith('_') else '_' + str(suffix)) if suffix else '' #Add underscore if there isn't
+		utils.dict2json('output/ini_dist_dict_Bayesian'+suffix+'.json', dict(id_dict), dist_dict_mat) #Save the dist dictionary and id dictionary to a json file
+	return id_dict, dist_dict_mat
 
 def calc_MC_distance(mat_ls1, mat_ls2, id_dict, f_hash=utils.container_conv ,dist_dict_mat = collections.defaultdict(float), mat_type = 'count', p_out = False):
 	# Given two lists of count matrices, compute the KL distances between their count matrices and save them to a dictionary
@@ -992,18 +1011,6 @@ def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous
 	# Note: This function primarily deals with axes and figure level settings. 
 		# To modify plotting within the axes, check out utils.plot_mc_dict.
 	################################################
-	if fig_type == 'single':
-		fig_num = 1
-		# If there is only 1 fig, we will create a gridspace with unit rows
-		ax_num = [transCountArr, len(transCountArr)] # Since only 1 fig, only 1 element in ax_num with row and column number of axes in figure
-	elif fig_type =='multiple':
-		# If there are multiple figures:
-			#Number of fig = number of windows = # of columns = len(transCountArr)
-			#Each fig has number of axes = number of trans mat in the time window=transCountArr
-		ax_num, fig_num = [transCountArr, len(transCountArr)]
-		# print('ax_num =',ax_num,'fig_num =',fig_num)
-	else:
-		raise Exception('No such figure type! Choose single or multiple')
 	if plot_type.startswith('simulation-bar'): #If plot type is simulation bar plot
 	# We will add a translation figure at the beginning to translate state number to labels
 		fig, ax = plt.subplots(num = -2, figsize = [10,10])
@@ -1016,13 +1023,30 @@ def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous
 		                 loc ='center',
 		                 colColours = ['palegreen']*2)
 		table.scale(1.1, 2)
-	elif plot_type == 'chord': #If plot type is chord, change fig_num and ax_num (regardless of fig_type)
+	elif plot_type == 'chord': #Settings for chord diagram
 		# Only 1 chord graph per figure
+		fig_type = 'individual' #Override fig_type to 'individual' so 1 chord per figure
+		fig_kw['fig_size'] = [15]*2 #Override any figure size in fig_kw
+
+	if fig_type == 'single':
+		fig_num = 1
+		# If there is only 1 fig, we will create a gridspace with unit rows
+		ax_num = [transCountArr, len(transCountArr)] # Since only 1 fig, only 1 element in ax_num with row and column number of axes in figure
+		print(fig_num, ax_num)
+	elif fig_type =='multiple':
+		# If there are multiple figures:
+			#Number of fig = number of windows = # of columns = len(transCountArr)
+			#Each fig has number of axes = number of trans mat in the time window=transCountArr
+		ax_num, fig_num = [transCountArr, len(transCountArr)]
+		# print('ax_num =',ax_num,'fig_num =',fig_num)
+	elif fig_type == 'individual':
+		# If one plot (multiple plots in a window) has 1 figure
 		fig_num = sum(transCountArr) #Number of figure = sum of number of axes for diffeent time windows
 		ax_num = [1]*fig_num #Number of axes is 1 axes/per figure
 		fig_title = titles_dict['title_win']
-		titles_dict['title_win'] = [item for item, count in zip(fig_title, transCountArr) for i in range(count)] #Repeat each value in fig_title by value in transCountArr
-		fig_kw['fig_size'] = [15]*2 #Override any figure size in fig_kw
+		titles_dict['title_win'] = [item for item, count in zip(fig_title, transCountArr) for i in range(count)] #Repeat 
+	else:
+		raise Exception('No such figure type! Choose single or multiple')
 
 	# Create the axes and figures using the given parameters
 	figs, axs = fig_generator(fig_num, ax_num, titles_dict = titles_dict, **fig_kw)
@@ -1036,7 +1060,8 @@ def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous
 		# Save all the figures in this sheet into a single PDF
 		resultFolderPath = kwargs['resultFolderPath'] if 'resultFolderPath' in kwargs.keys() else '' #Extract result folder path if there is such (a/b/c/ format)
 		prefix = kwargs['prefix']+'-' if 'prefix' in kwargs.keys() else '' #Extract result file affix if there is such
-		suffix = '-'+kwargs['suffix'] if 'suffix' in kwargs.keys() else '' #Extract result file affix if there is such
+		suffix = kwargs['suffix'] if 'suffix' in kwargs.keys() else '' #Extract result file suffix if there is such - this is applied to file name
+		suffix = suffix + '-' if suffix else '' #Check if '-' is needed (not if empty)
 		resultFilePath = resultFolderPath + prefix +titles_dict['title_sheet']+suffix+'.pdf' #Generate PDF file path
 
 		fig2pdf(resultFilePath, fig_num ='all')
@@ -1105,8 +1130,9 @@ def fig_generator(fig_num, ax_num, titles_dict, **kwargs):
 		for i in range(grid_col_num): #Iterate over each column (time window)
 			ax_row_num = ax_num[0][i] #Get the number of rows/MCs for current column
 			row_num = int(grid_row_num/ax_row_num) #Compute number of rows occupied for each MC for current col
-
+			# print(gs)
 			for j in range(ax_row_num): #Iterate over each row (MC/plot)
+				
 				ax = fig.add_subplot(gs[j*row_num:(j+1)*row_num-1,i], label = str(i), **ax_kw) #Add the axe
 				axs.append(ax)
 			axs[-ax_row_num].set_title(ax_title[i]) #Only the 1st axe in column has title

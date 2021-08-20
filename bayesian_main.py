@@ -1,4 +1,4 @@
-import func, utils, xlsxwriter, pandas, pathlib, os
+import func, utils, xlsxwriter, pandas, pathlib, os, sys
 ###################### Test Packages #######################
 ###################### Input #######################
 #Input for the clustering algorithm:
@@ -47,6 +47,7 @@ worksheet_0 = workbook.add_worksheet('General Results')
 print('Execution starts! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
 print('***********************************************************************************************')
 for i, mc_len in enumerate(loop_iter): #Iterate over different number of transitions
+	
 	# mc_len = 4 #Test mc_len value
 	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to a dict of mc lists using number of transitions (keyed by window index), mc_title_ls is list of titles, index based on order of mc_crop_dict's values
 	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] #Convert the complete trip df to dict of mc lists (keyed by window index)
@@ -55,21 +56,21 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	last_row_no = 1 # Last row number used for writing in worksheet_1 (reset for every mc_len)
 	###################### Input #######################
 	set_no = len(mc_crop_dict.keys()) #Total number of cluster sets for one day (# of time windows)
-	cluster_len_ls = [] #List of cluster length
-	for idx, (window_idx, mc_ls) in enumerate(mc_crop_dict.items()): #Iterate over all the time windows (idx for titles, window_idx for window index)
+	cluster_len_ls = [] #List of number of clusters for time windows
+	for idx, (window_idx, mc_ls) in enumerate(mc_crop_dict.items()): #Iterate over all the time windows (idx for titles because all the titles are used, window_idx for window index)
 		mc_ls_prior = mc_crop_dict_prior[window_idx] #Get the prior mc list (can be empty list)
 		prior_input_dev = ['dev', mc_ls_prior] if mc_ls_prior else ['uniform'] #Generate the prior input for dev prior (if no prior exists, use uniform)
 		# Each time window contains a list of MCs
-		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets/time windows--for MC of length'+str(mc_len)+'---------')
+		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets/time windows--for MC of length '+str(mc_len)+'---------')
 		# Perform Bayesian clustering (prior using the dataset )
-		cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'suffix':suffix})
+		cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'id_suffix': str(mc_len)+'-'+str(idx+1)})
 		# cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, KL_dict = {'suffix':suffix}) #Uniform prior
-		cluster_len_ls.append(len(cluster_ls)) #Append cluster length
+		cluster_len_ls.append(len(cluster_ls)) #Append current number of clusters to list
 		print('The number of clusters is',cluster_len_ls[idx])
-		
 		# Saving to worksheet starts from row 1 (1st row reserved for general result)
 		# row_0 = 1+ idx * (s+1) #Starting row number of current saving 
-		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] #Current title includes a number and title time windows
+		cluster_size_ls = ['Total number of datapoints',str(len(mc_ls)),'Size of clusters: ',str([len(cluster) for cluster in cluster_ls])] if cluster_len_ls[-1]>1 else [] #Number of datapoints in each cluster if the clustering result is meaningful
+		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] + cluster_size_ls #Current title includes [number index, time windows title string] 
 		worksheet_1.write_row(last_row_no,0,current_title) #Write current title (time window), at row 1, 23, etc.
 		if cluster_len_ls[-1]>1: #Only saves trans_ls if the clustering result is meaningful
 			trans_ls_zip = list(zip(*trans_ls)) #Convert flat trans_ls to a list in which each entry is a list of row values for all trans matrices

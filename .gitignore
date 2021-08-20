@@ -1,5 +1,5 @@
-
 *.pyc
 .DS_Store
 output/
-.DS_Store
+__pycache__/Icon
+Archive/.DS_Store

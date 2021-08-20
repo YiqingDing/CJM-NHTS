@@ -40,7 +40,7 @@ cell_format = workbook.add_format({'bold': True, 'font_color': 'red'}) #Creat ce
 worksheet_0 = workbook.add_worksheet('WindowLabels') #Create a sheet that will save all the labels for windows
 # mc_tot_num_ls = [] #Create a list of length for Markov chains (each entry is mc_num_ls)
 
-titles_dict = {'title_sheet': 'Number of MCs for different time windows of ', 'title_win': [str(i+1)+' transition(s)' for i in loop_iter]}
+titles_dict = {'title_sheet': 'Number of MCs for different time windows of ', 'title_win': [str(i)+' transition(s)' for i in loop_iter]}
 fig_num = len(loop_iter)
 ax_num = [1]*fig_num
 figs, axs = func.fig_generator(fig_num, ax_num, titles_dict, tight_layout = 1, 
@@ -50,7 +50,7 @@ axis_kw = {'tick_label_size': 10, 'axis_label_size': 15, 'fontdict': {'size': 10
 #################################
 # loop_iter = [0] #Test value (should be commented unless debugging)
 for loop_idx, mc_len in enumerate(loop_iter): #Iterate over different number of transitions
-	mc_crop_ls, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to mc lists of list using number of transitions
+	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to mc lists of list using number of transitions
 	sheet_name = str(mc_len)+' Transition'
 	label_title = [title_ls[0].split(' - ')[0]+' - '+title_ls[-1].split(' - ')[-1] for title_ls in mc_title_ls]
 	worksheet_0.write_row(loop_idx, 0, [sheet_name]+label_title)
@@ -59,11 +59,11 @@ for loop_idx, mc_len in enumerate(loop_iter): #Iterate over different number of 
 	worksheet_1 = workbook.add_worksheet(sheet_name) #Added new sheet to record result for the specific number of transitions
 	last_row_no = 1 # Last row number used for writing in worksheet_1 (reset for every mc_len)
 	###################### Input #######################
-	set_no = len(mc_crop_ls) #Total number of cluster sets for one day (# of time windows)
+	set_no = len(mc_crop_dict.keys()) #Total number of cluster sets for one day (# of time windows)
 	mc_num_ls = [] #Create a list of number of MCs for current transition number, where each entry is the number of MCs for the corresponding time window
-	for idx, mc_ls in enumerate(mc_crop_ls): #Iterate over all the time windows
+	for idx, (window_idx, mc_ls) in enumerate(mc_crop_dict.items()): #Iterate over all the time windows
 		# Each time window contains a list of MCs, mc_ls
-		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets--for MC '+str(mc_len)+'---------')
+		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets--for MC of length'+str(mc_len)+'---------')
 		ini_count_ls = func.mcls2mat(mc_ls, s)[1] #Get the initial count matrix
 		ini_count_ls_np = [numpy.asarray(i) for i in ini_count_ls] #Convert original list of nested list to list of np array
 		nmat = sum(ini_count_ls_np)

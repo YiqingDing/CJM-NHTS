@@ -59,7 +59,7 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	cluster_len_ls = [] #List of cluster length
 	for idx, (window_idx, mc_ls) in enumerate(mc_crop_dict.items()): #Iterate over all the time windows (idx for titles, window_idx for window index)
 		# Each time window contains a list of MCs
-		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets--for MC '+str(mc_len)+'---------')
+		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets--for MC of length '+str(mc_len)+'---------')
 		# mc_ls_prior = mc_crop_dict_prior[window_idx] #Get the prior mc list (can be empty list)
 		# prior_input_dev = ['dev', mc_ls_prior] if mc_ls_prior else ['uniform'] #Generate the prior input for dev prior (if no prior exists, use uniform)
 		# Perform Bayesian clustering (prior using the dataset )

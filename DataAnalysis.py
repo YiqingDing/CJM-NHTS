@@ -3,20 +3,25 @@ import os, pathlib, ast, collections, sys
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
 # File names - Input
 dataFileNameList = []
-dataFileNameList.append('Bayesian_Clustering_Results_complete.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_dev3k.xlsx') 
-dataFileNameList.append('Bayesian_Clustering_Results_dev200.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_complete.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_dev2000.xlsx')
+dataFileNameList.append('Bayesian_Clustering_Results_dev478.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_dev300.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_dev200-1.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_dev200-2.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_dev100.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
-
 # Settings of plot - Input
 resultFolderPath = str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/' #Result folder path
 rawFileName = 'Bayesian_Clustering_Results_0raw.xlsx' #File that contains unprocessed results
 s = 21 #Number of states
 threshold = 0.3 #Threshold of trans prob to be kept
+# plot_type = 6 #Test plot type (comment for user input)
 plot_type = int(input('Please give the plot type (1 for heatmap (default), 2 for homogeneous, 3 for simulation-line, 4 for simulation-bar-random, 5 for simulation-bar-absorb, 6 for chord diagram): ') or 1)
 if plot_type == 1:
 	plot_type = 'heatmap'
@@ -32,17 +37,25 @@ elif plot_type ==6:
 	plot_type = 'chord'
 else:
 	raise Exception('No such plot type!!!')
-# plot_type = 'simulation-bar' #Plot type: 'heatmap', 'step', 'homogeneous', 'simulation-line', 'simulation-bar'
-fig_type = 'multiple' #Figure type: 'single', 'multiple'
+
+fig_type = 'individual' #Figure type: 'individual','single', 'multiple'
 save_pdf = True #If saving all figures in a PDF
+plot_meaningful_window = False #If plot number of meaningful windows
+# resultNo = [2] #List of number of transitions of interest - Comment if use all numbers
 # print(resultFolderPath+resultFileAffix+'/')
 ########################### End of Inputs ####################################
 resultPriorLs = [i.split('_')[-1].split('.xlsx')[0] for i in dataFileNameList] #List of prior type, will be used for output folder name
 baselineFilePath =  resultFolderPath+rawFileName #Get the baseline file path
 baselineFile = pd.ExcelFile(baselineFilePath) #Read the baseline file as an object
 LabelT = baselineFile.parse('WindowLabels', header = None, index_col = 0) #Get the sheet baseline file that contains all the window labels (for plotting)
-##########################################################################################
+# Print settings
 print('Current plot_type is [' + plot_type +']\nCurrent fig_type is ['+fig_type+']')
+print('Plotting Meaningful Time Windows: ',str([plot_meaningful_window]))
+if 'resultNo' in locals() and resultNo:
+	print('Number of transitions tested are:',resultNo)
+else:
+	print('Number of transitions tested are: [ALL]')
+##########################################################################################
 for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 	print('***********************************************************************************************')
 	print('Loop starts for file: ',dataFileName.split('.xlsx')[0])
@@ -54,20 +67,38 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 	##################
 	dataFilePath = resultFolderPath +dataFileName
 	GeneralT = pd.read_excel(dataFilePath, sheet_name = 0,header = None) #Read the excel as a df
-	GeneralT = GeneralT[GeneralT[2]!= '[]'] #Remove rows with no meaingful result
+	GeneralT[0] = GeneralT[0].apply(lambda x: int(x.replace(' transitions:',''))) #Remove extra text from the transition no and convert to int
+	timeWindowCount = GeneralT.set_index(keys = GeneralT[0].apply(lambda x: (x+1)/2))[2].apply(ast.literal_eval).apply(lambda x: len(x)) #Create a Series where index is hour value, 1st column is number of meaningful time windo for the transition number
+	GeneralT = GeneralT.set_index(keys=0) #Use the 1st col as the index (1st col is # of transitions)
+	# timeWindowCount = GeneralT[2].apply(ast.literal_eval).apply(lambda x: len(x)) #Create a Series where index is transition number, 1st column is number of meaningful time windo for the transition number
+	GeneralT = GeneralT[GeneralT[2]!= '[]'] #Remove rows with no meaingful result (empty list str)
 	GeneralT[2] = GeneralT[2].apply(ast.literal_eval) #Convert result col 2 to lists from str
 	GeneralT[1] = GeneralT[1].apply(ast.literal_eval) #Convert result col 1 to lists from str
-	GeneralT[1] = GeneralT[1].apply(lambda x: [a for a in x if a!= 1]) #Keeps only the # of meaningful clusters (remove all cluster#=1)
-	GeneralT[0] = GeneralT[0].apply(lambda x: int(x.replace(' transitions:',''))) #Remove extra text from the transition no
-	GeneralT = GeneralT.set_index(keys=0) #Use the 1st col as the index (1st col is # of transitions)
-	# resultDict = GeneralT.drop(labels = 1,axis = 1).T.to_dict('list', into = collections.defaultdict(list)) #Create a dictionary where keys are the transition no, vals are the meaningful time window indices for that transition no
-	resultNo = list(GeneralT.index) #List of all transitional no with meaningful result
+	GeneralT[1] = GeneralT[1].apply(lambda x: [a for a in x if a!= 1]) #Keeps only the # of meaningful clusters (remove all 1s in the list)
 
+	# resultDict = GeneralT.drop(labels = 1,axis = 1).T.to_dict('list', into = collections.defaultdict(list)) #Create a dictionary where keys are the transition no, vals are the meaningful time window indices for that transition no
+	resultNo = resultNo if 'resultNo' in locals() and resultNo else list(GeneralT.index) #List of all transitional numbers with meaningful result (use given values if there are any)
+	resultNo = [no for no in resultNo if no <= 6] #Filters out resultNo (6 is the max timespan)
 	# We will mix the clustered result with baseline result, i.e. fill time windows without meaningful clusters/MCs with baseline cluster (a single cluster)
 	# processedFilePath = func.processed_data_generator(dataFilePath, baselineFilePath, resultNo, func_type = 'Read') #Get the processed file path
 	
+	axis_kw = {'tick_label_size': 13, 'axis_label_size': 20, 'fontdict': {'size': 10,'weight': 'bold'}, 'legend_text_size': 15, 'suptitle_size': 20} #This dict is reused latter
+	# We will plot the number of meaningful time windows in each transition number using timeWindowCount
+	if plot_meaningful_window: #Plot number of meaningful time windows
+		fig_file, ax_file = plt.subplots(figsize = [15,10], tight_layout = True,
+			subplot_kw= {'ylabel': 'Number of Meaningful Time Windows'})
+		fig_file.suptitle('Number of Meaningful Time Windows with '+resultPrior.capitalize()+' Prior', size=axis_kw['suptitle_size']) #Create the figure suptitle
+		plt_temp = timeWindowCount.plot(kind = 'bar', ax = ax_file,xlabel = 'Timespan of Time Windows (hrs)')
+		for rect_i, rect in enumerate(ax_file.patches):
+			ax_file.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, timeWindowCount.iloc[rect_i], ha='center', va='bottom', fontdict = axis_kw['fontdict']) #Place a label on top of the bar
+		
+		ax_file.tick_params(axis = 'x',which = 'major' ,bottom = False, labelbottom = True, labelsize = axis_kw['tick_label_size']) #Turn off x-axis major ticks & labels
+		ax_file.xaxis.label.set_size(axis_kw['axis_label_size']) #Set size of axis label size
+		ax_file.yaxis.label.set_size(axis_kw['axis_label_size']) #Set size of axis label size
+		ax_file.yaxis.set_major_locator(ticker.MaxNLocator(integer = True))
+		func.fig2pdf(file_path = resultFolderPath+resultPrior+'/MeaningfulTimeWindow_'+resultPrior+'.pdf', fig_num ='all')
+		sys.exit(0)
 	##########################################################################################
-	# resultNo = [2] #Test case
 	for transitionNo in resultNo: #Loop over each transition number/sheet
 		# Read background info for this transition number from baseline file
 		sheet_name = str(transitionNo) +' Transition'
@@ -117,7 +148,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 					# If plot type is 'step' or 'homogeneous', we will use mc_dict keyed by edge tuple pairs and valued by trans prob
 					# 'step': Treat end of edges as the next state by modifying the end states to a different set of indices (same labels still)
 					# 'homogeneous': Use original states
-					mc_dict = func.pmat2dict(pmat_threshold,plot_type) #Convert pmat to a dict 
+					mc_dict = func.pmat2dict(pmat,plot_type) #Convert pmat to a dict 
 					mc_window.append(mc_dict) #Append to the window
 				elif plot_type == 'heatmap': 
 					# If plot type is 'heatmap', we will use the transitional matrix directly
@@ -134,8 +165,9 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		# First plot out the number of meaningful clusters and number of MCs in the window vs the time window
 		fig_transCount, ax_transCount0 = plt.subplots(num = -1, figsize = [15,10], tight_layout = True,
 			subplot_kw= {'xlabel': 'Time Windows', 'ylabel': 'Number of Meaningful Clusters Generated'})  #-2 for translation table, -1 for meaningful clusters
-		axis_kw = {'tick_label_size': 13, 'axis_label_size': 20, 'fontdict': {'size': 10,'weight': 'bold'}, 'legend_text_size': 15, 'suptitle_size': 25}
-		fig_transCount.suptitle('Number of Clusters and Markov Chains in Time Windows of '+sheet_name, size=axis_kw['suptitle_size']) #Create the figure
+		
+		# fig_transCount.suptitle('Number of Generated Clusters and Original Markov Chains in Time Windows of '+sheet_name+'(s)', size=axis_kw['suptitle_size']) #Create the figure suptitle for no of transitions
+		fig_transCount.suptitle('Number of Generated Clusters and Original Markov Chains in Time Windows of '+str((transitionNo+1)/2)+' hour(s)', size=axis_kw['suptitle_size']) #Create the figure suptitle for timespan in hours
 		plt0 = ax_transCount0.bar(windowArray, transCountArr, label = 'Number of Meaningful Clusters')  #Plot number of generated clusters for each meaningful window
 		rects = ax_transCount0.patches #Get the rectangles(bars) in the plot
 		for rect_i, rect in enumerate(rects):
@@ -157,15 +189,14 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		######################################
 		# Plot the specific plot type given by the user
 		func.plot_mc_sheet(mc_sheet['mc_data'],titles_dict, transCountArr, plot_type = plot_type, fig_type = fig_type,save_pdf = save_pdf, 
-			resultFolderPath = resultFolderPath+resultPrior+'/', suffix = resultPrior, prefix = plot_type,#This line deals with input for func.plot_mc_sheet
+			resultFolderPath = resultFolderPath+resultPrior+'/'+plot_type+'/', suffix = '', prefix = plot_type, #This line deals with input for func.plot_mc_sheet
 			fig_kw = {'fig_size': (15,10), 'constrained_layout': False, 'tight_layout': True, 
 			'ax_kw':{'aspect': 'auto'},
-			'suptitle_kw':{'size': 15}}, #fig generator settings (ax_kw, kwargs for axes; suptitle_kw, kwargs for figure suptitle)
-			plot_kw = {'colormap': 'hsv', 'font': {'fontsize': 11}} #plot_mc settings
+			'suptitle_kw':{'size': 20}}, #fig generator settings (ax_kw: kwargs for axes; suptitle_kw: kwargs for figure suptitle)
+			plot_kw = {'colormap':'hsv','heatmap_font':{'labelsize':12},'chord_font': {'fontsize': 17}} #plot_mc settings
 			)
 		##########################################################################################
 		# # Simulate all the MCs on this excel sheet - Currently undeveloped
 		# func.simulate_mc_sheet(mc_sheet['pmat'], n_steps = 20000, initial_state = 0, **kwargs)
-
 	print('Time spent on this dataFile is',time.time() - last_time)
 ##########################################################################################

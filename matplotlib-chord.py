@@ -160,6 +160,11 @@ def chordDiagram(X, ax, colors=None, width=0.1, pad=2, chordwidth=0.7):
     """
     # X[i, j]:  i -> j
     x = X.sum(axis = 1) # sum over rows
+    for idx, row_sum in enumerate(x): #If the row sum is 0, we will use a absorbing state
+        if row_sum.astype(float) == 0:
+        	X[idx,idx] = 1
+			# x[idx] = 1
+    x = X.sum(axis = 1)
     ax.set_xlim(-1.1, 1.1)
     ax.set_ylim(-1.1, 1.1)
 

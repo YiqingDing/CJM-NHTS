@@ -1021,18 +1021,20 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 
 	start_state = plot_kw['start_state'] if 'start_state' in plot_kw.keys() else 1 #Start state, default 1
 	leg_ncol = 2 #Number of columns in legend
+	label_max_len = 25 #Maximum length of labels (if longer, wrap it)
+
 	if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
 		leg_ncol = 3 #If a subplot column spans the entire figure, increase legend col to 3
 	if plot_type =='heatmap':
 		# Plot each chain's transitional matrix as a heatmap
 		# mc_data is pmat with threshold applied, the transitional matrix
 		mc_data = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
-
+		prop = plot_kw['heatmap_font'] if 'heatmap_font' in plot_kw.keys() else {} #Get the font properties for heatmap (if any)
+		AR = prop.pop('AR') if 'AR' in prop.keys() else 0.7 #Aspect ratio for the heatmap (get from prop if exists)
+		
 		# labels = [NHTS_new()[i+1] for i in range(mc_data.shape[0])]
-		labels = [i+start_state for i in range(mc_data.shape[0])]
-
-		# print('Initial AR:',ax.get_aspect())
-		AR = 0.7 #Aspect ratio for the heatmap
+		labels = [i+start_state for i in range(mc_data.shape[0])] #Get the numerical labels (integers) for all states
+		# print(mc_data,'\n')
 		im, cbar = heatmap(mc_data, labels, labels, ax=ax,
 		                   cmap="YlGn", 
 		                   aspect = AR,
@@ -1042,6 +1044,8 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 		                   # 'aspect':10/AR, 
 		                   'fraction':0.05/AR, 
 		                   'location':'bottom'})
+		ax.tick_params(which = 'both', **prop)
+		cbar.ax.tick_params(**prop)
 		# print('Final AR:',ax.get_aspect())
 	elif plot_type == 'chord':
 		# Plot chord diagram with mc_data as the transitional matrix
@@ -1053,24 +1057,23 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 		pmat_red = pmat[np.asarray(state_space) - start_state,:][:,np.asarray(state_space) - start_state] #Reduce the pmat to only rows&cols with values (valid states)
 		if pmat_red.shape[0] == 1:
 			raise Exception('The transitional matrix has only 1 state!!!')
-		labels = [NHTS_new()[i] for i in state_space] #Get labels for all states in state_space
-		rgb_colors = [i[:3] for i in list(cm_dict.values())]
+		labels = [NHTS_new()[i] for i in state_space] #Get labels for all states in state_space(valid states)
+		rgb_colors = [i[:3] for i in random.sample(list(cm_dict.values()), k = len(labels))] #Randomly choose colors from cm_dict
+		# rgb_colors = None if len(labels)<10 else [i[:3] for i in random.sample(list(cm_dict.values()), k = len(labels))] 
 
 		# Axes Properties & Texts
 		sup = ax.figure._suptitle #Get the suptitle of current figure
 		# sup.set_y(0.98) #Change y location of suptitle
 		sup.set_fontsize(25) #Change font size of suptitle
-		prop = plot_kw['font'] | dict(ha='center', va='center') if 'font' in plot_kw.keys() else dict(ha='center', va='center') #Add/modify properties for text in chord graph
+		prop = plot_kw['chord_font'] | dict(ha='center', va='center') if 'chord_font' in plot_kw.keys() else dict(ha='center', va='center') #Add/modify properties for text in chord graph
 		ax.axis('off') #Turn off the axis
-		label_max_len = 30 #Maximum length of labels (if longer, wrap it)
-		dist_multiplier = 0.95 #Multiplier of moving distance of chord text closer to origin
+		dist_multiplier = 0.98 #Multiplier of moving distance of chord text closer to origin
 		# Plot & Add Text
 		nodePos = chord_plot.chordDiagram(pmat_red, ax, colors=rgb_colors, width=0.01, pad=2, chordwidth=0.5) #Compute node/text position
 		for i, node in enumerate(nodePos): #Iterate over each node and place text
 			x,y, rot = node #Extract the x, y, and rotation of supposed label
 			label = labels[i] #Extract the label for current node
-			if len(label) > label_max_len: #If label longer than label_max_len, wrap it
-				label = textwrap.fill(label, width = label_max_len)
+			label = textwrap.fill(label, width = label_max_len) #If label longer than label_max_len, wrap it
 			ax.text(x*dist_multiplier,y*dist_multiplier, label, rotation=rot,wrap = True, **prop) #Place label
 
 	elif plot_type.startswith('simulation'):
@@ -1098,11 +1101,11 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 		cm_dict = NHTS_new('colormap', colormap = cm_type) #Get a dictionary of colors for each state
 		
 		# Plotting
+		ax.set_ylabel('Probability')
 		if style_type == 'line': #Simulation line plot
 			# Axes properties and plot settings
 			ax.set_ylim(-0.1,1.4)
 			ax.set_xlabel('Number of time steps')
-			ax.set_ylabel('Probability')
 			
 			ax.set_xlim(0,plot_length) #Set xlim
 			ax.text(n_steps/15, 1.35, extra_text, horizontalalignment='left', verticalalignment='top', bbox=bbox_props) #Create a text box with MC properties
@@ -1187,7 +1190,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 		elif plot_type == 'homogeneous':
 			# Plot each MC without creating new states
 			labels = [NHTS_new()[node] for node in nodes_tot] #Get labels for current nodes
-			nodePos = nx.planar_layout(G)
+			# nodePos = nx.planar_layout(G)
 			# nodePos = nx.shell_layout(G)
 			# nodePos = nx.spring_layout(G)
 			# nodePos = nx.spiral_layout(G)
@@ -1195,21 +1198,35 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 			nodePos = nx.random_layout(G)
 		else:
 			raise Exception('No such plot type!')
-		state_labels = dict(zip(nodes_tot, labels)) #Generate the state-label pair dict
-		
+		labels = [textwrap.fill(label, width = label_max_len) for label in labels] #Wrap label if longer than label_max_len
+		# state_legends ='\n'.join([str(state)+': '+label for state, label in zip(nodes_tot, labels)] )#Generate the state-label pair dict for legend
+
+		state_labels = dict(zip(nodes_tot, nodes_tot)) #Generate the state-state pair dict for showing on plot
+
 		edge_ls = list(mc_data.keys()) #Get the edges from the dictionary keys
 		edge_width = list(mc_data.values()) #Get the edge width
 		G.add_edges_from(edge_ls) #Add the edges
 		
-		size_multiplier = 10
+		size_multiplier = 60
 		nx.draw_networkx(G,
 			ax = ax, 
 			pos = nodePos, 
 			with_labels = True, 
-			labels = state_labels, 
+			labels = state_labels, #Label to be displayed
+			font_color = 'white',
+			# label = state_legends, #Legend
+			node_size = 50*size_multiplier,
+			arrowsize = size_multiplier/2,
 			width = [width*3 for width in edge_width],
-			font_size = 0.5*size_multiplier, node_size = 50*size_multiplier
+			font_size = 0.4*size_multiplier
 			)
+		# print(str(state_legends))
+
+		# ax.text(0.05,0.05, state_legends,wrap = True) #Place label
+		
+			
+
+		# print(leg)
 		
 	return ax
 
@@ -1309,8 +1326,11 @@ def simulate_mc(pmat, n_steps = 20000, **kwargs):
 
 	imat = np.eye(pmat.shape[0]) #Create an identity matrix
 	abs_states = [] #Initialize list of absorbing states
+	# Replace empty rows of valid states with the row from identity matrix (makes it an absorbing state)
+	abs_states_exp = [] #A list of exception of absorbing states (those made absorbing states by following lines)
 	for state in state_space: #Iterate over all valid states (not the entire state space which is state_space0)
 		if sum(pmat[state-start_state]) == 0:
+			# abs_states_exp.append(state) #Record the state number (comment to ignoring this feature)
 			pmat[state-start_state] = imat[state-start_state] #Replace the valid row with a row from identity matrix
 
 	for i in range(n_steps):
@@ -1348,12 +1368,16 @@ def simulate_mc(pmat, n_steps = 20000, **kwargs):
 			# vals.append(str(comm_states))
 		# Add absorbing states to text
 		params.append('Absorbing: ') #Appending absorbing indicatior
-		vals.append(str(mc.is_absorbing)) 
-		if mc.is_absorbing: #Append the absorbing states if MC has absorbing states
-			params.append('Absorbing States: ')
-			mc_sim['mc_property']['abs_states'] = [int(state) for state in mc.absorbing_states] #Append absorbing state to the mc_sim's mc_property dict
-			abs_states_str = ', '.join(mc.absorbing_states) #A string of absorbing states
-			vals.append(abs_states_str)
+		vals.append('False') #Initialize as non-absorbing (change later if absorbing)
+		if mc.is_absorbing: #DTMC absorbing
+			abs_states_raw = [int(state) for state in mc.absorbing_states] #Absorbing states given by DTMC (these can be fake if already being replaced)
+			abs_states = list(set(abs_states_raw) ^ set(abs_states_exp))
+			if abs_states: #Append the absorbing states if MC has absorbing states and not in exception
+				vals[-1] = 'True' #Change indicator to absorbing
+				params.append('Absorbing States: ')
+				mc_sim['mc_property']['abs_states'] = abs_states  #Append absorbing state to the mc_sim's mc_property dict
+				abs_states_str = ', '.join(str(v) for v in abs_states) #A string of absorbing states
+				vals.append(abs_states_str)
 		extra_text = '\n'.join(map(''.join, zip(params, vals))) #Format the values each in a single str
 	else:
 		extra_text = 'There is only a single valid state!'

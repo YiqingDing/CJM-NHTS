@@ -446,8 +446,10 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 		# s: Number of states for Markov chain 
 		# prior_input: A list of data for prior generation. The 1st element, prior_input[0], is always the prior type
 	# Output:
-		# cluster_ls: See below
-		# trans_ls: List of transitional matrices, where each entry is a transitional matrix
+		# cluster_result: A dictionary that contains all relevant results keyed as follows:
+			# cluster_ls: See below
+			# trans_ls: List of transitional matrices, where each entry is a transitional matrix
+			# cluster_ls_id: Same format as cluster_ls, but each count matrix is translated using id_dict
 	# Comments:
 		# 1. Print statements ending with comment '--PrintStatement' are used for showing progress of clustering
 		# 2. Please see below for the comments
@@ -461,8 +463,8 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 	# 	mc_temp: A single cluster, composed of several existing count matrices
 	###################### Initialization #######################
 	# last_time = time.time() #Timepoint of last step
+	clustering_result = collections.defaultdict(list)
 	KL_dict = kwargs['KL_dict'] if 'KL_dict' in kwargs.keys() else {} #A dictionary for KL_distance_input from kwargs
-	
 
 	ini_count_ls = mcls2mat(mc_ls, s)[1] #Get the initial count_ls (duplicates exist)
 	
@@ -612,10 +614,15 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Convert final clusters to list of count mat
 	trans_ls = []
 	if len(cluster_ls) > 1: #Save ini_id_dict if meaningful clusters are generated
+		# Note: the ini_id_dict is saved if meaningful clusters are generated and it updates the previous version of ini_id_dict file by deleting origin file and saving the new one
 		id_modifier(new_val_ls = [], id_dict = ini_id_dict, save_dict = True, **KL_dict) #Use an empty new_val_ls to save ini_id_dict
 	for nmat in count_ls: #Convert list of count matrices to list of transitional matrices
 		trans_ls.append(utils.count2trans(nmat)) #Convert count matrix and append to list
-	return cluster_ls, trans_ls
+	# Output
+	clustering_result['cluster_ls'] = cluster_ls
+	clustering_result['trans_ls'] =trans_ls
+	clustering_result['cluster_ls_id'] = [[id_dict.inverse[utils.container_conv(count_mat, tuple)] for count_mat in cluster] for cluster in cluster_ls]
+	return clustering_result
 
 def prior_generator(prior_data, type = 'uniform'):
 	# Incomplete
@@ -687,7 +694,7 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv, save_
 		suffix_default = ''
 		suffix = (kwargs['id_suffix'] if 'id_suffix' in kwargs.keys() else '')+suffix_default #Read suffix of dictionary from kwargs if given (then add suffix_default)
 		suffix = (str(suffix) if str(suffix).startswith('_') else '_' + str(suffix)) if suffix else '' #Add underscore if there isn't
-		dict_file_path = 'output/idDict'+suffix+'.json'
+		dict_file_path = 'output/idDict/idDict'+suffix+'.json'
 		utils.dict2json(dict_file_path, dict(id_dict)) #Save the dist dictionary and id dictionary to a json file
 	return id_dict
 
@@ -812,8 +819,9 @@ def plot_vec_centers(trip_data_df, result_loc, raw_trip_ls, top_n = float("inf")
 	# 	result_loc: Location of current file
 	img_folder_name = 'IMG' #Name of folder to save images to
 	img_folder_path =  result_loc +'/'+img_folder_name
-	if not os.path.exists(img_folder_path):
-		os.mkdir(img_folder_path)
+	pathlib.Path(img_folder_path).mkdir(parents=True, exist_ok=True) #Create the image folder (and parent folder) if not exists yet 
+	# if not os.path.exists(img_folder_path):
+	# 	os.mkdir(img_folder_path)
 	key = 'Best CJM'
 	for index, ind_trip in trip_data_df[key].reset_index(drop = True).iteritems():
 		if index < top_n:
@@ -835,8 +843,9 @@ def plot_freq_centers_bar(sort_dict, result_loc):
 
 	img_folder_path =  result_loc +'/'+img_folder_name
 
-	if not os.path.exists(img_folder_path):
-		os.mkdir(img_folder_path)
+	pathlib.Path(img_folder_path).mkdir(parents=True, exist_ok=True) #Create the image folder (and parent folder) if not exists yet 
+	# if not os.path.exists(img_folder_path):
+	# 	os.mkdir(img_folder_path)
 	time, activity, freq0, dt, da, df = [],[],[],[],[],[]
 	for key0, value0 in sort_dict.items(): #Iterate over time intervals
 		for key1, value1 in value0.items(): #Iterate over activities available
@@ -865,8 +874,9 @@ def plot_freq_centers_heat(sort_dict, result_loc):
 
 	img_folder_name = 'IMG' #Name of folder to save images to
 	img_folder_path =  result_loc +'/'+img_folder_name
-	if not os.path.exists(img_folder_path):
-		os.mkdir(img_folder_path)
+	pathlib.Path(img_folder_path).mkdir(parents=True, exist_ok=True) #Create the image folder (and parent folder) if not exists yet 
+	# if not os.path.exists(img_folder_path):
+	# 	os.mkdir(img_folder_path)
 
 	# xlabel = time_label_raw #x label
 	xlabel = activity_label_raw #x label
@@ -999,9 +1009,12 @@ def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous
 		# fig_type='single': Plot each time window on one column with one figure contains all time windows
 		# fig_type='multiple': Plot each time window on a single figure, and produce multiple figures
 	# Input:
-		# mc_data: A list of list that contains all the nodes&edges, and structured as follows:
-			# Each entry of mc_sheet is a list, mc_window, contains all the nodes&edges for the time window
-			# Each entry of mc_window is a container, mc_data, for one MC within the window
+		# mc_sheet: A dictionary contains: mc_data_mat, cluster_size
+			# mc_data_mat: A list of list that contains all the nodes&edges, and structured as follows:
+				# Each entry of mc_data_mat is a list, mc_window, contains all the nodes&edges for the time window
+				# Each entry of mc_window is a container, mc_data, for one MC within the window
+			# cluster_size_ls: A list of cluster sizes (a list of list) for current number of transitions
+				# Each entry of cluster_size_ls is cluster_size, a list of numbers of datapoints for 1 time window
 		# titles_dict: A dictionary contains titles for figures and axes:
 			# 'title_win': Title for each time window
 			# 'title_sheet': Title for each sheet (contains all MCs of the same transition #)
@@ -1060,10 +1073,11 @@ def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous
 	# Create the axes and figures using the given parameters
 	figs, axs = fig_generator(fig_num, ax_num, titles_dict = titles_dict, **fig_kw)
 	
-	mc_flatten = [mc_data for mc_window in mc_sheet for mc_data in mc_window]
+	mc_flatten = [mc_data for mc_window in mc_sheet['mc_data_mat'] for mc_data in mc_window]
+	cluster_size = [i for cluster_size in mc_sheet['cluster_size_ls'] for i in cluster_size]
 	for idx, ax in enumerate(axs):
 		# print('idx is',idx, 'with data is',mc_flatten[idx])
-		utils.plot_mc(mc_flatten[idx],plot_type, ax=ax, **plot_kw) #Plot MC based on plot_type on current axe
+		utils.plot_mc(mc_data = mc_flatten[idx], cluster_size = cluster_size[idx] ,plot_type = plot_type, ax=ax, **plot_kw) #Plot MC based on plot_type on current axe
 	
 	if save_pdf == True:
 		# Save all the figures in this sheet into a single PDF
@@ -1185,12 +1199,11 @@ def fig_generator(fig_num, ax_num, titles_dict, **kwargs):
 def fig2pdf(file_path, fig_num = 'all', **kwargs):
 	# Given the file path and figure numbers to be saved, save figures to a pdf
 	# Input:
-		# file_path: Path of file to be saved, must not end with '\' or '/'
+		# file_path: Path of file to be saved, must NOT end with '\' or '/'
 		# fig_num: 'all' or list of int, list of figure numbers
 	################################
 	folder_path = os.path.split(file_path)[0] #Extract the folder path
-	if not os.path.exists(folder_path): #Create the result folder if not exists yet
-		os.mkdir(folder_path)
+	pathlib.Path(folder_path).mkdir(parents=True, exist_ok=True) #Create the result folder (and parent folder) if not exists yet 
 	
 	pp = PdfPages(file_path) #Create the pdf file
 	# Get the list of figures given by fig_num

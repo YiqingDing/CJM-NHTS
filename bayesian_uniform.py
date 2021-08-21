@@ -64,7 +64,10 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 		# prior_input_dev = ['dev', mc_ls_prior] if mc_ls_prior else ['uniform'] #Generate the prior input for dev prior (if no prior exists, use uniform)
 		# Perform Bayesian clustering (prior using the dataset )
 		# cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'suffix':suffix})
-		cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, KL_dict = {'suffix':suffix}) #Uniform prior
+		
+		clustering_result = func.bayesian_clustering(mc_ls,alpha, s, KL_dict = {'id_suffix': str(mc_len)+'_'+str(idx+1)}) #Uniform prior
+		cluster_ls = clustering_result['cluster_ls']
+		trans_ls = clustering_result['trans_ls']
 		cluster_len_ls.append(len(cluster_ls)) #Append cluster length
 		print('The number of clusters is',cluster_len_ls[idx])
 		
@@ -73,6 +76,7 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] #Current title includes a number and title time windows
 		worksheet_1.write_row(last_row_no,0,current_title) #Write current title (time window), at row 1, 23, etc.
 		if cluster_len_ls[-1]>1: #Only saves trans_ls if the clustering result is meaningful
+			utils.dict2json('_'.join(['output/raw/bayesian_raw_results',suffix, str(mc_len),str(idx+1)])+'.json', clustering_result['cluster_ls_id']) #Save clustering result (in id format) to output/raw/
 			trans_ls_zip = list(zip(*trans_ls)) #Convert flat trans_ls to a list in which each entry is a list of row values for all trans matrices
 			k0 = 0 #Index for row no of trans_ls_zip - relative row number (reset for each time window)
 			for j in range(last_row_no+1,last_row_no+s+1): #Absolute row number in excel

@@ -10,7 +10,7 @@ dataFileNameList = []
 # dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_complete.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev2000.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_dev478.xlsx')
+dataFileNameList.append('Bayesian_Clustering_Results_yichingding_test.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev300.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-1.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-2.xlsx')
@@ -47,7 +47,7 @@ plot_meaningful_window = False #If plot number of meaningful windows
 resultPriorLs = [i.split('_')[-1].split('.xlsx')[0] for i in dataFileNameList] #List of prior type, will be used for output folder name
 baselineFilePath =  resultFolderPath+rawFileName #Get the baseline file path
 baselineFile = pd.ExcelFile(baselineFilePath) #Read the baseline file as an object
-LabelT = baselineFile.parse('WindowLabels', header = None, index_col = 0) #Get the sheet baseline file that contains all the window labels (for plotting)
+LabelT = baselineFile.parse('WindowLabels', header = None, index_col = 0) #Get the sheet in baseline file that contains all the window labels (for plotting)
 # Print settings
 print('Current plot_type is [' + plot_type +']\nCurrent fig_type is ['+fig_type+']')
 print('Plotting Meaningful Time Windows: ',str([plot_meaningful_window]))
@@ -82,8 +82,9 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 	# We will mix the clustered result with baseline result, i.e. fill time windows without meaningful clusters/MCs with baseline cluster (a single cluster)
 	# processedFilePath = func.processed_data_generator(dataFilePath, baselineFilePath, resultNo, func_type = 'Read') #Get the processed file path
 	
-	axis_kw = {'tick_label_size': 13, 'axis_label_size': 20, 'fontdict': {'size': 10,'weight': 'bold'}, 'legend_text_size': 15, 'suptitle_size': 20} #This dict is reused latter
-	# We will plot the number of meaningful time windows in each transition number using timeWindowCount
+	axis_kw = {'tick_label_size': 13, 'axis_label_size': 20, 'fontdict': {'size': 10,'weight': 'bold'}, 'legend_text_size': 15, 'suptitle_size': 20} #axis plotting kwargs 
+	##########################################################################################
+	# Plot the number of meaningful time windows in each transition number using timeWindowCount
 	if plot_meaningful_window: #Plot number of meaningful time windows
 		fig_file, ax_file = plt.subplots(figsize = [15,10], tight_layout = True,
 			subplot_kw= {'ylabel': 'Number of Meaningful Time Windows'})
@@ -104,7 +105,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		sheet_name = str(transitionNo) +' Transition'
 		baselineT = baselineFile.parse(sheet_name = sheet_name, header = None)
 		mc_num_ls = ast.literal_eval(baselineT.iloc[0,1]) #Get the list of number of MCs for each time window
-		windowLabels = LabelT.loc[sheet_name, ~LabelT.loc[sheet_name].isnull()].tolist() #Extract the window labels for current transition number
+		windowLabels = LabelT.loc[sheet_name, ~LabelT.loc[sheet_name].isnull()].tolist() #Extract the list of window labels for current transition number from baseline file 'WindowLabel' sheet
 		print('Current transition number is',transitionNo)
 		# Individual sheet analysis
 		titles_dict['title_sheet'] = str(transitionNo)+' transitions' #Assign the titles for the entire sheet
@@ -127,14 +128,15 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 			# Create title for this time window
 			title_idx = rowRangeArr[idx][0]-1 #Row number of the title for the current window in SpecificT
 			title_row = SpecificT.iloc[title_idx,:][SpecificT.iloc[title_idx,:].notnull()] #Get the row for the title
-			window_title = title_row.iloc[1].split(' - ')[0]+' - '+title_row.iloc[-1].split(' - ')[1] #Get the window title
+			window_title = title_row.iloc[1].split(' - ')[0]+' - '+title_row.iloc[-5].split(' - ')[1] #Get the title of current time window
+			cluster_size = ast.literal_eval(title_row.iloc[-1])
 			titles_dict['title_win'].append(' Window No. '+str(windowIdx)+': '+window_title) #Assign the titles for a time window (for plot_type plotting)
 			# Iterating over each MC within the window and plot it
 			for chainNo in range(transCount): #Iterate over each Markov chain
 				pmat = windowData.iloc[:,chainNo*(s+1):chainNo*(s+1)+s] #Transitional matrix for current MC
 				pmat_window.append(pmat) #Append raw pmat to list (not the one after threshold)
 				state_valid = utils.node_validate(pmat.to_numpy()) #Valid state within this MC
-				pmat_threshold = pmat[pmat>threshold].fillna(0) #Only the nodes above threshold will count
+				pmat_threshold = pmat[pmat>threshold].fillna(0) #Only the nodes with above threshold prob will count
 				################ Commented: See below for details
 				# # The following code checks if the pmat would transit to a null state which has 0 trans prob to any states
 				# node_valid = utils.node_validate(pmat, start_num = 0) #Get all the valid nodes (0-indexed)
@@ -149,6 +151,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 					# 'step': Treat end of edges as the next state by modifying the end states to a different set of indices (same labels still)
 					# 'homogeneous': Use original states
 					mc_dict = func.pmat2dict(pmat,plot_type) #Convert pmat to a dict 
+					# mc_dict = func.pmat2dict(pmat_threshold,plot_type) #Convert pmat_threshold to a dict (use threshold to simplify graph)
 					mc_window.append(mc_dict) #Append to the window
 				elif plot_type == 'heatmap': 
 					# If plot type is 'heatmap', we will use the transitional matrix directly
@@ -158,8 +161,8 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 				else: #Simulation type plot has pmat already appended
 					raise Exception('There is no such plot type!')
 			# Note:Both entries of mc_sheet are lists, and each entry is either a mc_window or a pmat_winodw
-			mc_sheet['mc_data'].append(mc_window) #Append mc_window to the list
-			mc_sheet['pmat'].append(pmat_window) #Append pmat_window to the list
+			mc_sheet['mc_data_mat'].append(mc_window) #Append mc_window to the list
+			mc_sheet['cluster_size_ls'].append(cluster_size) #Append current size of clusters to list
 		##########################################################################################
 		# Plot everything from this excel sheet 
 		# First plot out the number of meaningful clusters and number of MCs in the window vs the time window
@@ -188,7 +191,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		ax_transCount1.set_ylabel('Number of Markov Chains in Time Window', size = axis_kw['axis_label_size'])
 		######################################
 		# Plot the specific plot type given by the user
-		func.plot_mc_sheet(mc_sheet['mc_data'],titles_dict, transCountArr, plot_type = plot_type, fig_type = fig_type,save_pdf = save_pdf, 
+		func.plot_mc_sheet(mc_sheet,titles_dict, transCountArr, plot_type = plot_type, fig_type = fig_type,save_pdf = save_pdf, 
 			resultFolderPath = resultFolderPath+resultPrior+'/'+plot_type+'/', suffix = '', prefix = plot_type, #This line deals with input for func.plot_mc_sheet
 			fig_kw = {'fig_size': (15,10), 'constrained_layout': False, 'tight_layout': True, 
 			'ax_kw':{'aspect': 'auto'},

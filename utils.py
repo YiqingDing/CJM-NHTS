@@ -4,7 +4,7 @@ from math import *
 import matplotlib.pyplot as plt
 # from matplotlib import rc
 # import matplotlib
-import collections, random, bisect, ujson, csv,ast, os, sys, itertools, pydtmc, textwrap
+import collections, random, bisect, ujson, csv,ast, os, sys, itertools, pydtmc, textwrap, pathlib
 chord_plot = __import__("matplotlib-chord") #Import matplotlib-chord
 from sklearn.neighbors import KernelDensity
 import pandas as pd
@@ -779,7 +779,10 @@ def dict2json(file, *data):
 	# Save the input data as a list into json file and remove the previous file
 	json_data = ujson.dumps(data)
 
-	if os.path.exists(file):
+	folder_path = os.path.split(file)[0] #Extract the folder path for the file
+	pathlib.Path(folder_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
+
+	if os.path.exists(file): #Remove file if it already exists
 		os.remove(file)
 		# print('Existing File Removed! ')
 	
@@ -911,6 +914,7 @@ def path_processor(f_path, change_slash = 1):
 			print('Returning a folder path (with slash)!')
 
 	return new_path
+
 ########################################################## DataAnalysis.py ##########################################################
 def calcRow(windowArray, s, ttype = 'Baseline'):
 	# Compute the row ranges for given row indices in windowArray
@@ -991,7 +995,7 @@ def node_validate(pmat, start_num = 1):
 	# pmat_valid = pmat[state_valid_raw,state_valid_raw]
 	return state_valid
 
-def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
+def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 	# Plot a mc_data according to a selected plot_type
 	# Steps:
 		# 1. Transform trans mat and extract edges & states
@@ -1022,6 +1026,8 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 	start_state = plot_kw['start_state'] if 'start_state' in plot_kw.keys() else 1 #Start state, default 1
 	leg_ncol = 2 #Number of columns in legend
 	label_max_len = 25 #Maximum length of labels (if longer, wrap it)
+	property_bbox_loc = (0.5,1.35) #Location of the property box on graph
+	cluster_size_txt = 'Number of respondents: '+str(cluster_size) #Cluster size text string
 
 	if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
 		leg_ncol = 3 #If a subplot column spans the entire figure, increase legend col to 3
@@ -1092,7 +1098,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 		offsets = mc_sim['offsets']
 		bisect_coeff = bisect.bisect(offsets,plot_length) #Find number of elements to be extracted out of both offsets and dist_prob
 		dist_prob = mc_sim['dist_prob'] #Get the list of prob for timesteps in offsets
-		extra_text = mc_sim['extra_text']
+		extra_text = mc_sim['extra_text'] + '\n' + cluster_size_txt #Get the extra text along with cluster size text
 		mc_property = mc_sim['mc_property'] #Get the mc property dict (defaultdict with value = False)
 
 		# Overall plot properties that apply to all simulation plots
@@ -1122,7 +1128,6 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 
 			# Axes properties:
 			ylim = (0,1.4) #y-axis limit
-			property_bbox_loc = (0.5,1.35) #Location of the property box
 			legend_anchor_bbox = (0.5,-0.075) #Bbox the legend is anchored to
 
 			# Plot values
@@ -1176,7 +1181,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 
 	else:
 		# mc_data is a dictionary keyed by edge pair tuples and valued by trans prob 
-		# We will plot using networkx package
+		# We will plot Markov chain using networkx package
 
 		G=nx.DiGraph() #Create directed graph
 		nodes_tot = np.unique(np.asarray(list(mc_data.keys()))) #Unique nodes embedded in edges
@@ -1220,11 +1225,7 @@ def plot_mc(mc_data,plot_type, s=21, ax = None, **plot_kw):
 			width = [width*3 for width in edge_width],
 			font_size = 0.4*size_multiplier
 			)
-		# print(str(state_legends))
-
-		# ax.text(0.05,0.05, state_legends,wrap = True) #Place label
-		
-			
+		ax.text(*property_bbox_loc, cluster_size_txt)
 
 		# print(leg)
 		

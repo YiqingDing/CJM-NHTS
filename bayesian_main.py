@@ -35,19 +35,19 @@ suffix = input('Please enter any suffix for the output file name: ')
 #### The above 4 lines generate the complete data file and save it as a csv (commented)
 trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]:,] #Only use the rows not belong to test dataset
 loop_iter = range(loop_min,loop_max+1)
-suffix = '_'+suffix if suffix else '' #Add underscore if suffix is nonempty
+# suffix = '_'+raw_suffix if raw_suffix else '' #Add underscore if suffix is nonempty
 if sample_size == 0:
 	trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
 else:	
 	trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
-workbook = xlsxwriter.Workbook(str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/Bayesian_Clustering_Results_'+os.environ.get('USER')+suffix+'.xlsx')
+workbook_path =str(pathlib.Path(os.getcwd()).parent)+'_'.join(['/Results/Bayesian/Bayesian_Clustering_Results',os.environ.get('USER'),suffix])+'.xlsx'
+workbook = xlsxwriter.Workbook(workbook_path)
 worksheet_0 = workbook.add_worksheet('General Results')
 print('Execution starts! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
 print('***********************************************************************************************')
 for i, mc_len in enumerate(loop_iter): #Iterate over different number of transitions
-	
 	# mc_len = 4 #Test mc_len value
 	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to a dict of mc lists using number of transitions (keyed by window index), mc_title_ls is list of titles, index based on order of mc_crop_dict's values
 	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] #Convert the complete trip df to dict of mc lists (keyed by window index)
@@ -63,17 +63,18 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 		# Each time window contains a list of MCs
 		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets/time windows--for MC of length '+str(mc_len)+'---------')
 		# Perform Bayesian clustering (prior using the dataset )
-		cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'id_suffix': str(mc_len)+'-'+str(idx+1)})
-		# cluster_ls, trans_ls = func.bayesian_clustering(mc_ls,alpha, s, KL_dict = {'suffix':suffix}) #Uniform prior
-		cluster_len_ls.append(len(cluster_ls)) #Append current number of clusters to list
+		clustering_result = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'id_suffix': str(mc_len)+'_'+str(idx+1)})
+		# clustering_result = func.bayesian_clustering(mc_ls,alpha, s, KL_dict = {'suffix':suffix}) #Uniform prior
+		cluster_len_ls.append(len(clustering_result['cluster_ls'])) #Append current number of clusters to list
 		print('The number of clusters is',cluster_len_ls[idx])
 		# Saving to worksheet starts from row 1 (1st row reserved for general result)
 		# row_0 = 1+ idx * (s+1) #Starting row number of current saving 
-		cluster_size_ls = ['Total number of datapoints',str(len(mc_ls)),'Size of clusters: ',str([len(cluster) for cluster in cluster_ls])] if cluster_len_ls[-1]>1 else [] #Number of datapoints in each cluster if the clustering result is meaningful
+		cluster_size_ls = ['Total number of datapoints',str(len(mc_ls)),'Size of clusters: ',str([len(cluster) for cluster in clustering_result['cluster_ls']])] if cluster_len_ls[-1]>1 else [] #Number of datapoints in each cluster if the clustering result is meaningful
 		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] + cluster_size_ls #Current title includes [number index, time windows title string] 
 		worksheet_1.write_row(last_row_no,0,current_title) #Write current title (time window), at row 1, 23, etc.
-		if cluster_len_ls[-1]>1: #Only saves trans_ls if the clustering result is meaningful
-			trans_ls_zip = list(zip(*trans_ls)) #Convert flat trans_ls to a list in which each entry is a list of row values for all trans matrices
+		if cluster_len_ls[-1]>1: #Only saves trans_ls and cluster_ls (in id format) if the clustering result is meaningful
+			utils.dict2json('_'.join(['output/raw/bayesian_raw_results',suffix, str(mc_len),str(idx+1)])+'.json', clustering_result['cluster_ls_id']) #Save clustering result (in id format) to output/raw/
+			trans_ls_zip = list(zip(*clustering_result['trans_ls'])) #Convert flat clustering_result['trans_ls'] to a list in which each entry is a list of row values for all trans matrices
 			k0 = 0 #Index for row no of trans_ls_zip - relative row number (reset for each time window)
 			for j in range(last_row_no+1,last_row_no+s+1): #Absolute row number in excel
 				# j starts from last_row_no+1 (2, 24, etc.) and ends at last_row_no+s+1 (22, 44, etc.)

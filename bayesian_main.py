@@ -1,4 +1,4 @@
-import func, utils, xlsxwriter, pandas, pathlib, os, sys
+import func, utils, xlsxwriter, pandas, pathlib, os, sys, shutil
 ###################### Test Packages #######################
 ###################### Input #######################
 #Input for the clustering algorithm:
@@ -26,7 +26,7 @@ loop_min = int(input('Please enter the min number of transitions(inclusive - min
 loop_max = int(input('Please enter the max number of transitions(inclusive - max 47): ') or 47)
 sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default all):') or 0)
 suffix = input('Please enter any suffix for the output file name: ')
-##### Complete Dataset for Prior Generation #####
+########## Complete Dataset for Prior Generation ##########
 #### The following 4 lines generate the complete data file and save it as a csv (commented)
 # raw_trip_file_complete = 'trippub.csv' #File name of the 2k data
 # trip_ls_raw_complete  = func.trip_ls_input(raw_trip_file_complete,'w',save_file = False) #Generate the day trips for the complete dataset
@@ -41,8 +41,15 @@ if sample_size == 0:
 else:	
 	trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
 #################################################
-# Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
+# File names and paths
 workbook_path =str(pathlib.Path(os.getcwd()).parent)+'_'.join(['/Results/Bayesian/Bayesian_Clustering_Results',os.environ.get('USER'),suffix])+'.xlsx'
+raw_result_path = 'output/raw/' #File path to save raw result
+id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
+# Removes all existing output files to avoid conflicts
+shutil.rmtree(raw_result_path,ignore_errors=True)
+shutil.rmtree(id_dict_path,ignore_errors=True)
+#################################################
+# Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
 workbook = xlsxwriter.Workbook(workbook_path)
 worksheet_0 = workbook.add_worksheet('General Results')
 print('Execution starts! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
@@ -63,7 +70,7 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 		# Each time window contains a list of MCs
 		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets/time windows--for MC of length '+str(mc_len)+'---------')
 		# Perform Bayesian clustering (prior using the dataset )
-		clustering_result = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'id_suffix': str(mc_len)+'_'+str(idx+1)})
+		clustering_result = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'id_dict_path':id_dict_path, 'id_suffix': str(mc_len)+'_'+str(idx+1)})
 		# clustering_result = func.bayesian_clustering(mc_ls,alpha, s, KL_dict = {'suffix':suffix}) #Uniform prior
 		cluster_len_ls.append(len(clustering_result['cluster_ls'])) #Append current number of clusters to list
 		print('The number of clusters is',cluster_len_ls[idx])
@@ -73,7 +80,7 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] + cluster_size_ls #Current title includes [number index, time windows title string] 
 		worksheet_1.write_row(last_row_no,0,current_title) #Write current title (time window), at row 1, 23, etc.
 		if cluster_len_ls[-1]>1: #Only saves trans_ls and cluster_ls (in id format) if the clustering result is meaningful
-			utils.dict2json('_'.join(['output/raw/bayesian_raw_results',suffix, str(mc_len),str(idx+1)])+'.json', clustering_result['cluster_ls_id']) #Save clustering result (in id format) to output/raw/
+			utils.dict2json(raw_result_path + '_'.join(['bayesian_raw_results',suffix, str(mc_len),str(idx+1)]) + '.json', clustering_result['cluster_ls_id']) #Save clustering result (in id format) to output/raw/
 			trans_ls_zip = list(zip(*clustering_result['trans_ls'])) #Convert flat clustering_result['trans_ls'] to a list in which each entry is a list of row values for all trans matrices
 			k0 = 0 #Index for row no of trans_ls_zip - relative row number (reset for each time window)
 			for j in range(last_row_no+1,last_row_no+s+1): #Absolute row number in excel

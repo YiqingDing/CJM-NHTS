@@ -6,3 +6,5 @@ __pycache__/Icon
 Archive/.DS_Store
 test.py
 temp/Icon
+.DS_Store
+test.py

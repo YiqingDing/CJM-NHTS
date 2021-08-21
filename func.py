@@ -680,6 +680,7 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv, save_
 		# save_dict: If to save dictionary
 		# kwargs:
 			# id_suffix: Suffix for saving id_dict
+			# id_dict_path: Parent folder for id_dict
 	# Output:
 	# 	id_dict: Dictionary of ids where key is the id#, value is the data (in case of hashable)
 	if not id_dict: #If not bidict supplied, default empty bidict
@@ -694,7 +695,8 @@ def id_modifier(new_val_ls, id_dict = None, f_hash = utils.container_conv, save_
 		suffix_default = ''
 		suffix = (kwargs['id_suffix'] if 'id_suffix' in kwargs.keys() else '')+suffix_default #Read suffix of dictionary from kwargs if given (then add suffix_default)
 		suffix = (str(suffix) if str(suffix).startswith('_') else '_' + str(suffix)) if suffix else '' #Add underscore if there isn't
-		dict_file_path = 'output/idDict/idDict'+suffix+'.json'
+		id_dict_path = kwargs['id_dict_path'] if 'id_dict_path' in kwargs.keys() else 'output/idDict/'
+		dict_file_path = ''.join(id_dict_path, 'idDict', suffix, '.json')
 		utils.dict2json(dict_file_path, dict(id_dict)) #Save the dist dictionary and id dictionary to a json file
 	return id_dict
 

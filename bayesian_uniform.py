@@ -1,4 +1,4 @@
-import func, utils, xlsxwriter, pandas, pathlib, os, time
+import func, utils, xlsxwriter, pandas, pathlib, os, time, shutil
 ###################### Test Packages #######################
 ###################### Input #######################
 #Input for the clustering algorithm:
@@ -46,8 +46,8 @@ workbook_path =str(pathlib.Path(os.getcwd()).parent)+'_'.join(['/Results/Bayesia
 raw_result_path = 'output/raw/' #File path to save raw result
 id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
 # Removes all existing output files to avoid conflicts
-shutil.rmtree(raw_result_path)
-shutil.rmtree(id_dict_path)
+# shutil.rmtree(raw_result_path)
+# shutil.rmtree(id_dict_path)
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
 workbook = xlsxwriter.Workbook(workbook_path)
@@ -107,6 +107,6 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	last_time = time.time()
 ###################### Test #######################
 print('***********************************************************************************************')
-print('Uniform execution completed! Transition number from',loop_min,'to',loop_max)
+print('Uniform execution completed! Transition number from',loop_min,'to',loop_max,'with prior type:',suffix)
 
 workbook.close()

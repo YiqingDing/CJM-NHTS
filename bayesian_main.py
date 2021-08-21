@@ -46,8 +46,8 @@ workbook_path =str(pathlib.Path(os.getcwd()).parent)+'_'.join(['/Results/Bayesia
 raw_result_path = 'output/raw/' #File path to save raw result
 id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
 # Removes all existing output files to avoid conflicts
-shutil.rmtree(raw_result_path,ignore_errors=True)
-shutil.rmtree(id_dict_path,ignore_errors=True)
+# shutil.rmtree(raw_result_path,ignore_errors=True)
+# shutil.rmtree(id_dict_path,ignore_errors=True)
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
 workbook = xlsxwriter.Workbook(workbook_path)
@@ -100,5 +100,5 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	worksheet_0.write_row(i,0,[str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the 'General Result' sheet
 ###################### Test #######################
 print('***********************************************************************************************')
-print('Execution completed! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
+print('Execution completed! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max,'with prior type:',suffix)
 workbook.close()

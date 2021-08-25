@@ -1,4 +1,4 @@
-import func, utils, openpyxl, pandas, pathlib, os, sys, shutil
+import func, utils, openpyxl, pandas, pathlib, os, sys, shutil, time
 import numpy as np
 ###################### Test Packages #######################
 ###################### Input #######################
@@ -25,7 +25,7 @@ alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
 # Use user input for min and max loop number
 loop_min = int(input('Please enter the min number of transitions(inclusive - min 1): ') or 1)
 loop_max = int(input('Please enter the max number of transitions(inclusive - max 47): ') or 47)
-sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default all):') or 0)
+sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default or 0 uniform, -1 for complete dataset):') or 0)
 suffix = input('Please enter any suffix for the output file name: ')
 ########## Complete Dataset for Prior Generation ##########
 #### The following 4 lines generate the complete data file and save it as a csv (commented)
@@ -38,6 +38,10 @@ trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]
 loop_iter = range(loop_min,loop_max+1)
 # suffix = '_'+raw_suffix if raw_suffix else '' #Add underscore if suffix is nonempty
 if sample_size == 0:
+	sample_size = 'Uniform'
+	trip_df_prior = False #For uniform prior, we will use a bool for prior trip_df
+elif sample_size == -1:
+	sample_size = 'Complete'
 	trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
 else:	
 	trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
@@ -60,12 +64,14 @@ worksheet_0 = workbook.active #Get the first worksheet
 worksheet_0.title = 'General Results' #First worksheet to save overall results
 worksheet_0.append(['Number of Transitions', 'Number of Meaningful Clusters for Each Time Window', 'Index of Meaningful Time Window']) #Append a header row
 workbook.save(workbook_path) #First save the workbook before any results
-print('Execution starts! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
+print('Execution starts! Prior size =',sample_size,'transition number from',loop_min,'to',loop_max)
 print('***********************************************************************************************')
+start_time = time.time()
 for i, mc_len in enumerate(loop_iter): #Iterate over different number of transitions
+	last_time = time.time()
 	# mc_len = 4 #Test mc_len value
 	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to a dict of mc lists using number of transitions (keyed by window index), mc_title_ls is list of titles, index based on order of mc_crop_dict's values
-	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] #Convert the complete trip df to dict of mc lists (keyed by window index)
+	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] if trip_df_prior else False #Convert the complete trip df to dict of mc lists (keyed by window index)
 	print('MC crop list generated for mc_len=',mc_len,'!')
 	# Load workbook at the beginning of each loop (add a sheet in each loop)
 	workbook = openpyxl.load_workbook(workbook_path) #Realod workbook
@@ -76,8 +82,7 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	set_no = len(mc_crop_dict.keys()) #Total number of cluster sets for one day (# of time windows)
 	cluster_len_ls = [] #List of number of clusters for time windows
 	for idx, (window_idx, mc_ls) in enumerate(mc_crop_dict.items()): #Iterate over all the time windows (idx for titles because all the titles are used, window_idx for window index)
-		mc_ls_prior = mc_crop_dict_prior[window_idx] #Get the prior mc list (can be empty list)
-		prior_input_dev = ['dev', mc_ls_prior] if mc_ls_prior else ['uniform'] #Generate the prior input for dev prior (if no prior exists, use uniform)
+		prior_input_dev = ['dev', mc_crop_dict_prior[window_idx]] if mc_crop_dict_prior else ['uniform'] #Generate the prior input for dev prior (if no prior exists, use uniform)
 		# Each time window contains a list of MCs
 		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets/time windows--for MC of length '+str(mc_len)+'---------')
 		# Perform Bayesian clustering (prior using the dataset )
@@ -105,6 +110,8 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	worksheet_1.cell(row = 1, column=4).value = str(idx_meaningful) #Save idx_meaningful
 	worksheet_0.append([str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the 'General Result' sheet
 	workbook.save(workbook_path) #Save the workbook at the end of each loop (will be reopened at the beginning of next loop)
+	print('Time spent on the past number of transition is',time.time() - last_time, 'and current time taken is',time.time()-start_time)
+	last_time = time.time()
 ###################### Test #######################
 print('***********************************************************************************************')
-print('Execution completed! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max,'with prior type:',suffix)
+print('Execution completed! Prior size =',sample_size,'transition number from',loop_min,'to',loop_max,'with prior type:',suffix)

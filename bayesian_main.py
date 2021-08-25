@@ -34,6 +34,20 @@ suffix = input('Please enter any suffix for the output file name: ')
 # trip_df = func.tripls2df(trip_ls_raw_complete, t_interval)
 # trip_df.to_csv('trip_df_complete.csv', index = False)
 #### The above 4 lines generate the complete data file and save it as a csv (commented)
+# File names and paths
+workbook_path =str(pathlib.Path(os.getcwd()).parent)+'_'.join(['/Results/Bayesian/Bayesian_Clustering_Results',os.environ.get('USER'),suffix])+'.xlsx'
+folder_path = os.path.split(workbook_path)[0] #Extract the folder path for the workbook
+pathlib.Path(folder_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
+if os.path.exists(workbook_path): #Remove workbook if it already exists
+	os.remove(workbook_path)
+raw_result_path = 'output/raw/' #File path to save raw result
+id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
+prior_path = str(pathlib.Path(os.getcwd()).parent) + '/Results/Bayesian/prior/' #File path to save priors
+pathlib.Path(prior_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
+# Removes all existing output files to avoid conflicts
+# shutil.rmtree(raw_result_path,ignore_errors=True)
+# shutil.rmtree(id_dict_path,ignore_errors=True)
+#################################################
 trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]:,] #Only use the rows not belong to test dataset
 loop_iter = range(loop_min,loop_max+1)
 # suffix = '_'+raw_suffix if raw_suffix else '' #Add underscore if suffix is nonempty
@@ -43,20 +57,15 @@ if sample_size == 0:
 elif sample_size == -1:
 	sample_size = 'Complete'
 	trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
-else:	
-	trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
-#################################################
-# File names and paths
-workbook_path =str(pathlib.Path(os.getcwd()).parent)+'_'.join(['/Results/Bayesian/Bayesian_Clustering_Results',os.environ.get('USER'),suffix])+'.xlsx'
-folder_path = os.path.split(workbook_path)[0] #Extract the folder path for the workbook
-pathlib.Path(folder_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
-if os.path.exists(workbook_path): #Remove workbook if it already exists
-	os.remove(workbook_path)
-raw_result_path = 'output/raw/' #File path to save raw result
-id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
-# Removes all existing output files to avoid conflicts
-# shutil.rmtree(raw_result_path,ignore_errors=True)
-# shutil.rmtree(id_dict_path,ignore_errors=True)
+else: #Also save/read prior if we are using random samples
+	prior_file_path = prior_path + 'prior_' + str(sample_size) + '.json' #File path for current prior
+	# Read existing prior or generate and save new prior
+	if pathlib.Path(prior_file_path).is_file(): #if a prior file already exists
+		trip_df_prior = pandas.read_json(prior_file_path) #Read the json file
+		print('Reading An Existing Prior File!!!')
+	else: #if no such prior exists
+		trip_df_prior = trip_df_complete.sample(sample_size) #Choose samples with input sample_size (select the size of prior dataset - how much prior info given)
+		trip_df_prior.to_json(prior_file_path) #Save the prior file
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
 workbook = openpyxl.Workbook() #Create a workbook with openpyxl
@@ -71,8 +80,8 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	last_time = time.time()
 	# mc_len = 4 #Test mc_len value
 	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to a dict of mc lists using number of transitions (keyed by window index), mc_title_ls is list of titles, index based on order of mc_crop_dict's values
-	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] if trip_df_prior else False #Convert the complete trip df to dict of mc lists (keyed by window index)
-	print('MC crop list generated for mc_len=',mc_len,'!')
+	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] if trip_df_prior.empty else False #Convert the complete trip df to dict of mc lists (keyed by window index)
+	print('MC crop list generated for mc_len = ',mc_len,'!')
 	# Load workbook at the beginning of each loop (add a sheet in each loop)
 	workbook = openpyxl.load_workbook(workbook_path) #Realod workbook
 	worksheet_0 = workbook.active #Retrieve the first worksheet

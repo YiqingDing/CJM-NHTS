@@ -7,15 +7,14 @@ import matplotlib.ticker as ticker
 
 # File names - Input
 dataFileNameList = []
-# dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
+dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_complete.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev2000.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_yichingding_test.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_dev478.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev300.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-1.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-2.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev100.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
 
 # Settings of plot - Input
 resultFolderPath = str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/' #Result folder path
@@ -45,8 +44,8 @@ else:
 	# 'single': All figures are piled into 1 figure - Rarely used
 fig_type = 'multiple' 
 save_pdf = True #If saving all figures in a PDF
-plot_meaningful_window = False #If plot number of meaningful windows
-# resultNo = [2] #List of number of transitions of interest - Comment if use all numbers
+plot_meaningful_window = True #If plot number of meaningful windows
+# MaxResultNo = 6 #Max number of transitions of interest - Comment if use all numbers
 # print(resultFolderPath+resultFileAffix+'/')
 ########################### End of Inputs ####################################
 resultPriorLs = [i.split('_')[-1].split('.xlsx')[0] for i in dataFileNameList] #List of prior type, will be used for output folder name
@@ -56,9 +55,10 @@ LabelT = baselineFile.parse('WindowLabels', header = None, index_col = 0) #Get t
 # Print settings
 print('Current plot_type is [' + plot_type +']\nCurrent fig_type is ['+fig_type+']')
 print('Plotting Meaningful Time Windows: ',str([plot_meaningful_window]))
-if 'resultNo' in locals() and resultNo:
-	print('Number of transitions tested are:',resultNo)
+if 'MaxResultNo' in locals() and MaxResultNo:
+	print('Max number of transitions tested are:',MaxResultNo)
 else:
+	MaxResultNo = float('inf')
 	print('Number of transitions tested are: [ALL]')
 ##########################################################################################
 for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
@@ -82,8 +82,9 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 	GeneralT[1] = GeneralT[1].apply(lambda x: [a for a in x if a!= 1]) #Keeps only the # of meaningful clusters (remove all 1s in the list)
 
 	# resultDict = GeneralT.drop(labels = 1,axis = 1).T.to_dict('list', into = collections.defaultdict(list)) #Create a dictionary where keys are the transition no, vals are the meaningful time window indices for that transition no
-	resultNo = resultNo if 'resultNo' in locals() and resultNo else list(GeneralT.index) #List of all transitional numbers with meaningful result (use given values if there are any)
-	# resultNo = [no for no in resultNo if no <= 6] #Filters out resultNo (6 is the max timespan)
+	resultNo = list(GeneralT.index) #List of all transitional numbers with meaningful result (use given values if there are any)
+	resultNo = [no for no in resultNo if no <= MaxResultNo] #Filters out resultNo (the max timespan)
+	
 	# We will mix the clustered result with baseline result, i.e. fill time windows without meaningful clusters/MCs with baseline cluster (a single cluster)
 	# processedFilePath = func.processed_data_generator(dataFilePath, baselineFilePath, resultNo, func_type = 'Read') #Get the processed file path
 	
@@ -103,7 +104,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		ax_file.yaxis.label.set_size(axis_kw['axis_label_size']) #Set size of axis label size
 		ax_file.yaxis.set_major_locator(ticker.MaxNLocator(integer = True))
 		func.fig2pdf(file_path = resultFolderPath+resultPrior+'/MeaningfulTimeWindow_'+resultPrior+'.pdf', fig_num ='all')
-		sys.exit(0)
+		# sys.exit(0)
 	##########################################################################################
 	for transitionNo in resultNo: #Loop over each transition number/sheet
 		# Read background info for this transition number from baseline file

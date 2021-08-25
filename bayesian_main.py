@@ -27,6 +27,7 @@ loop_min = int(input('Please enter the min number of transitions(inclusive - min
 loop_max = int(input('Please enter the max number of transitions(inclusive - max 47): ') or 47)
 sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default or 0 uniform, -1 for complete dataset):') or 0)
 suffix = input('Please enter any suffix for the output file name: ')
+col_empty = np.full((s,1),None) #Create a column of empty cells for filling
 ########## Complete Dataset for Prior Generation ##########
 #### The following 4 lines generate the complete data file and save it as a csv (commented)
 # raw_trip_file_complete = 'trippub.csv' #File name of the 2k data
@@ -80,7 +81,7 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	last_time = time.time()
 	# mc_len = 4 #Test mc_len value
 	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to a dict of mc lists using number of transitions (keyed by window index), mc_title_ls is list of titles, index based on order of mc_crop_dict's values
-	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] if trip_df_prior.empty else False #Convert the complete trip df to dict of mc lists (keyed by window index)
+	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] if not trip_df_prior.empty else False #Convert the complete trip df to dict of mc lists (keyed by window index)
 	print('MC crop list generated for mc_len = ',mc_len,'!')
 	# Load workbook at the beginning of each loop (add a sheet in each loop)
 	workbook = openpyxl.load_workbook(workbook_path) #Realod workbook
@@ -94,7 +95,7 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 		prior_input_dev = ['dev', mc_crop_dict_prior[window_idx]] if mc_crop_dict_prior else ['uniform'] #Generate the prior input for dev prior (if no prior exists, use uniform)
 		# Each time window contains a list of MCs
 		print('--------------Clustering Starts for No.'+str(idx+1)+' out of '+str(set_no) +' sets/time windows--for MC of length '+str(mc_len)+'---------')
-		# Perform Bayesian clustering (prior using the dataset )
+		# Perform Bayesian clustering (prior using the dataset)
 		clustering_result = func.bayesian_clustering(mc_ls,alpha, s, prior_input = prior_input_dev, KL_dict = {'id_dict_path':id_dict_path, 'id_suffix': str(mc_len)+'_'+str(idx+1)})
 		# clustering_result = func.bayesian_clustering(mc_ls,alpha, s, KL_dict = {'suffix':suffix}) #Uniform prior
 		cluster_len_ls.append(len(clustering_result['cluster_ls'])) #Append current number of clusters to list
@@ -107,7 +108,7 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 		if cluster_len_ls[-1]>1: #Only saves trans_ls and cluster_ls (in id format) if the clustering result is meaningful
 			utils.dict2json(raw_result_path + '_'.join(['bayesian_raw_results',suffix, str(mc_len),str(idx+1)]) + '.json', clustering_result['cluster_ls_id']) #Save clustering result (in id format) to output/raw/
 			# Generate a np array, trans_ls_row, with each row contains the row to be saved to workbook
-			trans_ls_np = [np.concatenate([np.asarray(pmat),np.zeros([s,1])],axis = 1) for pmat in clustering_result['trans_ls']] #Convert list of list to list of np arrays and add a zero column to each array
+			trans_ls_np = [np.concatenate([np.asarray(pmat),col_empty],axis = 1) for pmat in clustering_result['trans_ls']] #Convert list of list to list of np arrays and add a zero column to each array
 			trans_ls_row = np.concatenate(trans_ls_np, axis = 1)[:,:-1] #Concatenate list of np array and remove the last column (the last 0 column)
 			for row_val in trans_ls_row: #Iterate over each row that contains (flattened) rows of trans matrices and 
 				worksheet_1.append(row_val.tolist()) #Append row to worksheet

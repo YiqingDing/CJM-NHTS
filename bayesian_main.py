@@ -43,6 +43,7 @@ else:
 #################################################
 # File names and paths
 workbook_path =str(pathlib.Path(os.getcwd()).parent)+'_'.join(['/Results/Bayesian/Bayesian_Clustering_Results',os.environ.get('USER'),suffix])+'.xlsx'
+
 raw_result_path = 'output/raw/' #File path to save raw result
 id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
 # Removes all existing output files to avoid conflicts
@@ -51,7 +52,7 @@ id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clusteri
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
 workbook = xlsxwriter.Workbook(workbook_path)
-worksheet_0 = workbook.add_worksheet('General Results')
+worksheet_0 = workbook.add_worksheet('General Results') #First worksheet to save overall results
 print('Execution starts! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
 print('***********************************************************************************************')
 for i, mc_len in enumerate(loop_iter): #Iterate over different number of transitions
@@ -78,6 +79,8 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 		# row_0 = 1+ idx * (s+1) #Starting row number of current saving 
 		cluster_size_ls = ['Total number of datapoints',str(len(mc_ls)),'Size of clusters: ',str([len(cluster) for cluster in clustering_result['cluster_ls']])] if cluster_len_ls[-1]>1 else [] #Number of datapoints in each cluster if the clustering result is meaningful
 		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] + cluster_size_ls #Current title includes [number index, time windows title string] 
+		# for col_i, cell_val in enumerate(current_title, start = 1):
+
 		worksheet_1.write_row(last_row_no,0,current_title) #Write current title (time window), at row 1, 23, etc.
 		if cluster_len_ls[-1]>1: #Only saves trans_ls and cluster_ls (in id format) if the clustering result is meaningful
 			utils.dict2json(raw_result_path + '_'.join(['bayesian_raw_results',suffix, str(mc_len),str(idx+1)]) + '.json', clustering_result['cluster_ls_id']) #Save clustering result (in id format) to output/raw/

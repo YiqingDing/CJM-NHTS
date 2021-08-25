@@ -10,23 +10,25 @@ dataFileNameList = []
 # dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_complete.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev2000.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_yichingding_test.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_yichingding_test.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev300.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-1.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-2.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev100.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
+dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
+
 # Settings of plot - Input
 resultFolderPath = str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/' #Result folder path
 rawFileName = 'Bayesian_Clustering_Results_0raw.xlsx' #File that contains unprocessed results
 s = 21 #Number of states
 threshold = 0.3 #Threshold of trans prob to be kept
 # plot_type = 6 #Test plot type (comment for user input)
-plot_type = int(input('Please give the plot type (1 for heatmap (default), 2 for homogeneous, 3 for simulation-line, 4 for simulation-bar-random, 5 for simulation-bar-absorb, 6 for chord diagram): ') or 1)
+print('----------------------------------------------------------------------------------------------')
+plot_type = int(input('Please give the plot type (1 for homogeneous (default), 2 for heatmap, 3 for simulation-line, 4 for simulation-bar-random, 5 for simulation-bar-absorb, 6 for chord diagram): ') or 1)
 if plot_type == 1:
-	plot_type = 'heatmap'
-elif plot_type ==2:
 	plot_type = 'homogeneous'
+elif plot_type ==2:
+	plot_type = 'heatmap'
 elif plot_type ==3:
 	plot_type = 'simulation-line'
 elif plot_type ==4:
@@ -37,8 +39,11 @@ elif plot_type ==6:
 	plot_type = 'chord'
 else:
 	raise Exception('No such plot type!!!')
-
-fig_type = 'individual' #Figure type: 'individual','single', 'multiple'
+#Figure type: 
+	# 'individual': Each graph/axe for 1 figure - Mostly for chord graph and heatmaps
+	# 'multiple': Each time window (contains multiple axes) for 1 figure - Most cases
+	# 'single': All figures are piled into 1 figure - Rarely used
+fig_type = 'multiple' 
 save_pdf = True #If saving all figures in a PDF
 plot_meaningful_window = False #If plot number of meaningful windows
 # resultNo = [2] #List of number of transitions of interest - Comment if use all numbers
@@ -78,7 +83,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 
 	# resultDict = GeneralT.drop(labels = 1,axis = 1).T.to_dict('list', into = collections.defaultdict(list)) #Create a dictionary where keys are the transition no, vals are the meaningful time window indices for that transition no
 	resultNo = resultNo if 'resultNo' in locals() and resultNo else list(GeneralT.index) #List of all transitional numbers with meaningful result (use given values if there are any)
-	resultNo = [no for no in resultNo if no <= 6] #Filters out resultNo (6 is the max timespan)
+	# resultNo = [no for no in resultNo if no <= 6] #Filters out resultNo (6 is the max timespan)
 	# We will mix the clustered result with baseline result, i.e. fill time windows without meaningful clusters/MCs with baseline cluster (a single cluster)
 	# processedFilePath = func.processed_data_generator(dataFilePath, baselineFilePath, resultNo, func_type = 'Read') #Get the processed file path
 	
@@ -108,7 +113,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		windowLabels = LabelT.loc[sheet_name, ~LabelT.loc[sheet_name].isnull()].tolist() #Extract the list of window labels for current transition number from baseline file 'WindowLabel' sheet
 		print('Current transition number is',transitionNo)
 		# Individual sheet analysis
-		titles_dict['title_sheet'] = str(transitionNo)+' transitions' #Assign the titles for the entire sheet
+		titles_dict['title_sheet'] = str((transitionNo+1)/2)+'-Hour' #Assign the titles for the entire sheet
 		SpecificT = pd.read_excel(dataFilePath, sheet_name = sheet_name, header = None) #Read the excel sheet for current transitional #
 		
 		dataT = SpecificT[(~SpecificT[0].isnull()) & ((SpecificT[0].apply(type) == float) | (SpecificT[0].apply(type)== int))] #Extract all the meaningful time window data (trans mat) in a single df
@@ -130,7 +135,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 			title_row = SpecificT.iloc[title_idx,:][SpecificT.iloc[title_idx,:].notnull()] #Get the row for the title
 			window_title = title_row.iloc[1].split(' - ')[0]+' - '+title_row.iloc[-5].split(' - ')[1] #Get the title of current time window
 			cluster_size = ast.literal_eval(title_row.iloc[-1])
-			titles_dict['title_win'].append(' Window No. '+str(windowIdx)+': '+window_title) #Assign the titles for a time window (for plot_type plotting)
+			titles_dict['title_win'].append(' Time Window No. '+str(windowIdx)+': '+window_title) #Assign the titles for a time window (for plot_type plotting)
 			# Iterating over each MC within the window and plot it
 			for chainNo in range(transCount): #Iterate over each Markov chain
 				pmat = windowData.iloc[:,chainNo*(s+1):chainNo*(s+1)+s] #Transitional matrix for current MC
@@ -150,8 +155,8 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 					# If plot type is 'step' or 'homogeneous', we will use mc_dict keyed by edge tuple pairs and valued by trans prob
 					# 'step': Treat end of edges as the next state by modifying the end states to a different set of indices (same labels still)
 					# 'homogeneous': Use original states
-					mc_dict = func.pmat2dict(pmat,plot_type) #Convert pmat to a dict 
-					# mc_dict = func.pmat2dict(pmat_threshold,plot_type) #Convert pmat_threshold to a dict (use threshold to simplify graph)
+					# mc_dict = func.pmat2dict(pmat,plot_type) #Convert pmat to a dict 
+					mc_dict = func.pmat2dict(pmat_threshold,plot_type) #Convert pmat_threshold to a dict (use threshold to simplify graph)
 					mc_window.append(mc_dict) #Append to the window
 				elif plot_type == 'heatmap': 
 					# If plot type is 'heatmap', we will use the transitional matrix directly
@@ -170,7 +175,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 			subplot_kw= {'xlabel': 'Time Windows', 'ylabel': 'Number of Meaningful Clusters Generated'})  #-2 for translation table, -1 for meaningful clusters
 		
 		# fig_transCount.suptitle('Number of Generated Clusters and Original Markov Chains in Time Windows of '+sheet_name+'(s)', size=axis_kw['suptitle_size']) #Create the figure suptitle for no of transitions
-		fig_transCount.suptitle('Number of Generated Clusters and Original Markov Chains in Time Windows of '+str((transitionNo+1)/2)+' hour(s)', size=axis_kw['suptitle_size']) #Create the figure suptitle for timespan in hours
+		fig_transCount.suptitle('Number of Generated Clusters and Original Markov Chains in Time Windows of '+str((transitionNo+1)/2)+'-Hour', size=axis_kw['suptitle_size']) #Create the figure suptitle for timespan in hours
 		plt0 = ax_transCount0.bar(windowArray, transCountArr, label = 'Number of Meaningful Clusters')  #Plot number of generated clusters for each meaningful window
 		rects = ax_transCount0.patches #Get the rectangles(bars) in the plot
 		for rect_i, rect in enumerate(rects):
@@ -196,7 +201,11 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 			fig_kw = {'fig_size': (15,10), 'constrained_layout': False, 'tight_layout': True, 
 			'ax_kw':{'aspect': 'auto'},
 			'suptitle_kw':{'size': 20}}, #fig generator settings (ax_kw: kwargs for axes; suptitle_kw: kwargs for figure suptitle)
-			plot_kw = {'colormap':'hsv','heatmap_font':{'labelsize':12},'chord_font': {'fontsize': 17}} #plot_mc settings
+			plot_kw = {'colormap':'hsv',
+			'heatmap_font':{'labelsize':12},
+			'chord_font': {'fontsize': 17},
+			'homogeneous_font':{'size': 20},
+			'sim_font': {'fontsize': 10.5}} #plot_mc settings
 			)
 		##########################################################################################
 		# # Simulate all the MCs on this excel sheet - Currently undeveloped

@@ -2,8 +2,7 @@
 import numpy as np
 from math import *
 import matplotlib.pyplot as plt
-# from matplotlib import rc
-# import matplotlib
+from matplotlib.offsetbox import AnchoredText
 import collections, random, bisect, ujson, csv,ast, os, sys, itertools, pydtmc, textwrap, pathlib
 chord_plot = __import__("matplotlib-chord") #Import matplotlib-chord
 from sklearn.neighbors import KernelDensity
@@ -778,10 +777,9 @@ def NHTS_new(extra = None, **kwargs):
 def dict2json(file, *data):
 	# Save the input data as a list into json file and remove the previous file
 	json_data = ujson.dumps(data)
-
+	# The following 4 lines: Create folder directory (if not existing) and remove existing file (if exists)
 	folder_path = os.path.split(file)[0] #Extract the folder path for the file
 	pathlib.Path(folder_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
-
 	if os.path.exists(file): #Remove file if it already exists
 		os.remove(file)
 		# print('Existing File Removed! ')
@@ -1008,7 +1006,9 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 		# plot_kw:
 			# colormap
 			# start_state
-			# font
+			# heatmap_font
+			# chord_font
+			# homogeneous_font
 	
 	# print('---------------------------------------------------------------------------')
 	# print(ax.get_gridspec().nrows)
@@ -1027,7 +1027,8 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 	leg_ncol = 2 #Number of columns in legend
 	label_max_len = 25 #Maximum length of labels (if longer, wrap it)
 	property_bbox_loc = (0.5,1.35) #Location of the property box on graph
-	cluster_size_txt = 'Number of respondents: '+str(cluster_size) #Cluster size text string
+	cluster_size_txt = str(cluster_size) #Cluster size text string
+	cluster_size_at = AnchoredText(cluster_size_txt, loc='upper right', frameon=True) #Create anchored text for cluster size (used on homogeneous graph & chord)
 
 	if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
 		leg_ncol = 3 #If a subplot column spans the entire figure, increase legend col to 3
@@ -1070,12 +1071,13 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 		# Axes Properties & Texts
 		sup = ax.figure._suptitle #Get the suptitle of current figure
 		# sup.set_y(0.98) #Change y location of suptitle
-		sup.set_fontsize(25) #Change font size of suptitle
+		sup.set_fontsize(25) #Override font size of suptitle
 		prop = plot_kw['chord_font'] | dict(ha='center', va='center') if 'chord_font' in plot_kw.keys() else dict(ha='center', va='center') #Add/modify properties for text in chord graph
 		ax.axis('off') #Turn off the axis
 		dist_multiplier = 0.98 #Multiplier of moving distance of chord text closer to origin
 		# Plot & Add Text
 		nodePos = chord_plot.chordDiagram(pmat_red, ax, colors=rgb_colors, width=0.01, pad=2, chordwidth=0.5) #Compute node/text position
+		# ax.add_artist(cluster_size_at) #Add anchored text for cluster size to axes
 		for i, node in enumerate(nodePos): #Iterate over each node and place text
 			x,y, rot = node #Extract the x, y, and rotation of supposed label
 			label = labels[i] #Extract the label for current node
@@ -1098,11 +1100,12 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 		offsets = mc_sim['offsets']
 		bisect_coeff = bisect.bisect(offsets,plot_length) #Find number of elements to be extracted out of both offsets and dist_prob
 		dist_prob = mc_sim['dist_prob'] #Get the list of prob for timesteps in offsets
-		extra_text = mc_sim['extra_text'] + '\n' + cluster_size_txt #Get the extra text along with cluster size text
+		extra_text = mc_sim['extra_text'] + '\n' +'Number of respondents: ' + cluster_size_txt #Get the extra text along with cluster size text
 		mc_property = mc_sim['mc_property'] #Get the mc property dict (defaultdict with value = False)
 
 		# Overall plot properties that apply to all simulation plots
 		bbox_props = dict(boxstyle='round', facecolor='wheat', alpha=0.5) #Property of text box
+		sim_font = plot_kw['sim_font'] if 'sim_font' in plot_kw.keys() else {'fontsize': 10} #Default colormap type
 		cm_type = plot_kw['colormap'] if 'colormap' in plot_kw.keys() else 'gist_rainbow' #Default colormap type
 		cm_dict = NHTS_new('colormap', colormap = cm_type) #Get a dictionary of colors for each state
 		
@@ -1114,7 +1117,7 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 			ax.set_xlabel('Number of time steps')
 			
 			ax.set_xlim(0,plot_length) #Set xlim
-			ax.text(n_steps/15, 1.35, extra_text, horizontalalignment='left', verticalalignment='top', bbox=bbox_props) #Create a text box with MC properties
+			ax.text(n_steps/15, 1.35, extra_text, horizontalalignment='left', verticalalignment='top', bbox=bbox_props, **sim_font) #Create a text box with MC properties
 			ls = linestyle_generator(s) #Line style list
 			
 			for state in unique_states:
@@ -1135,7 +1138,7 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 			state_labels = NHTS_new().values()
 			
 			dist_prob = {state: dist_prob[state][bisect_coeff-1] if state in dist_prob.keys() else 0 for state in state_space} #List of probabilities corresponding to plot_length for all states
-			if bar_type =='absorb' and mc_property['abs_states']: #If the mc is absorbing and bar type is 'absort'
+			if bar_type =='absorb' and mc_property['abs_states']: #If the mc is absorbing and bar type is 'absorb'
 				# If Markov chain is not absorbing, we will still plot the dist_prob as usual
 				abs_states = mc_property['abs_states'] #List of absorbing states (int)
 				dist_prob = {state: 1/len(abs_states) if state in abs_states else 0 for state in state_space} #Define the distribution prob as uniform among absorbing states
@@ -1159,10 +1162,10 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 			# Change the number of columns in legend text
 			if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
 				leg_ncol = 3 #If a subplot column spans the entire figure, increase legend col to 3
-			leg = ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol) #Place the legend
+			leg = ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol, **sim_font) #Place the legend
 			
 			# Resize the legend text size based on number of rows and width of the legend
-			txt_fontsize = 10 #Initial font size for legend and text
+			txt_fontsize = sim_font['fontsize'] #Initial font size for legend and text
 			if (len(ax.get_subplotspec().colspan) < ax.get_gridspec().ncols) and len(leg_texts) > 1:#If axes size not spanning the entire figure and has at least 2 legends, we will test if the legend size needs to be adjusted
 				leg_text_row_len = [len('\t\t'.join(x)) for x in zip(leg_texts[:ceil(len(leg_texts)/leg_ncol)], leg_texts[ceil(len(leg_texts)/leg_ncol):])] #List of str length where each one is the length of a row in the legend
 				txt_fontsize -= int(bool(max(0, len(leg_text_row_len) -1))) #Row# above 1 will reduce font size by 1
@@ -1170,22 +1173,24 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 					txt_fontsize -= 1
 				elif max(leg_text_row_len) > 85:  #Reduce font size by 1
 					txt_fontsize -= 1
-				if txt_fontsize != 10: #If legend font size changed
-					ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol, fontsize = txt_fontsize) #Replace the legend with a different font size
+				if txt_fontsize != sim_font['fontsize']: #If legend font size changed
+					sim_font['fontsize'] = txt_fontsize #Reassign the fontsize in sim_font
+					ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol, **sim_font) #Replace the legend with a different font size
 
-			ax.text(*property_bbox_loc, extra_text, horizontalalignment='left', verticalalignment='top', bbox=bbox_props, fontsize = txt_fontsize) #Create a text box with MC properties
+			ax.text(*property_bbox_loc, extra_text, horizontalalignment='left', verticalalignment='top', bbox=bbox_props, **sim_font) #Create a text box with MC properties
 			ax.set_xticks(range(start_state,s + start_state-1) ,minor = True) #Set x-axis minor ticks
 			ax.set_xticklabels(range(start_state,s + start_state-1) ,minor = True) #Set x-axis minor tick labels
 			ax.tick_params(axis = 'x',which = 'major' ,bottom = False, labelbottom = False) #Turn off x-axis major ticks & labels
 			
 
-	else:
+	else: #Plots MC in homogeneous/step graph
 		# mc_data is a dictionary keyed by edge pair tuples and valued by trans prob 
 		# We will plot Markov chain using networkx package
 
 		G=nx.DiGraph() #Create directed graph
 		nodes_tot = np.unique(np.asarray(list(mc_data.keys()))) #Unique nodes embedded in edges
 		G.add_nodes_from(nodes_tot) #Add all the nodes
+		txt_prop = plot_kw['homogeneous_font'] if 'homogeneous_font' in plot_kw.keys() else {} #Get the font properties for homogeneous plot (if any)
 
 		if plot_type == 'step':
 			# Plot each MC as a transition from one step to the next by duplicating end states for edges into new states (whose %21 reminder is the same as original state)
@@ -1225,8 +1230,10 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 			width = [width*3 for width in edge_width],
 			font_size = 0.4*size_multiplier
 			)
-		ax.text(*property_bbox_loc, cluster_size_txt)
-
+		# print(dir(cluster_size_at)) #Get all methods for anchored text
+		# print(any([x<0.1 and y>0.9 for x, y in nodePos.values()]))
+		cluster_size_at.txt._text.update(txt_prop) #Update the text in anchored text with properties from txt_prop
+		ax.add_artist(cluster_size_at) #Add anchored text for cluster size to axes
 		# print(leg)
 		
 	return ax

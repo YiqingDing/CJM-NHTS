@@ -1,4 +1,5 @@
-import func, utils, xlsxwriter, pandas, pathlib, os, sys, shutil
+import func, utils, openpyxl, pandas, pathlib, os, sys, shutil
+import numpy as np
 ###################### Test Packages #######################
 ###################### Input #######################
 #Input for the clustering algorithm:
@@ -43,7 +44,10 @@ else:
 #################################################
 # File names and paths
 workbook_path =str(pathlib.Path(os.getcwd()).parent)+'_'.join(['/Results/Bayesian/Bayesian_Clustering_Results',os.environ.get('USER'),suffix])+'.xlsx'
-
+folder_path = os.path.split(workbook_path)[0] #Extract the folder path for the workbook
+pathlib.Path(folder_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
+if os.path.exists(workbook_path): #Remove workbook if it already exists
+	os.remove(workbook_path)
 raw_result_path = 'output/raw/' #File path to save raw result
 id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
 # Removes all existing output files to avoid conflicts
@@ -51,8 +55,11 @@ id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clusteri
 # shutil.rmtree(id_dict_path,ignore_errors=True)
 #################################################
 # Write to an excel in Parent/Results/Bayesian/Bayesian_Clustering_Results.xlsx
-workbook = xlsxwriter.Workbook(workbook_path)
-worksheet_0 = workbook.add_worksheet('General Results') #First worksheet to save overall results
+workbook = openpyxl.Workbook() #Create a workbook with openpyxl
+worksheet_0 = workbook.active #Get the first worksheet
+worksheet_0.title = 'General Results' #First worksheet to save overall results
+worksheet_0.append(['Number of Transitions', 'Number of Meaningful Clusters for Each Time Window', 'Index of Meaningful Time Window']) #Append a header row
+workbook.save(workbook_path) #First save the workbook before any results
 print('Execution starts! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max)
 print('***********************************************************************************************')
 for i, mc_len in enumerate(loop_iter): #Iterate over different number of transitions
@@ -60,8 +67,11 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to a dict of mc lists using number of transitions (keyed by window index), mc_title_ls is list of titles, index based on order of mc_crop_dict's values
 	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] #Convert the complete trip df to dict of mc lists (keyed by window index)
 	print('MC crop list generated for mc_len=',mc_len,'!')
-	worksheet_1 = workbook.add_worksheet(str(mc_len)+' Transition') #Added new sheet to record result for the specific number of transitions
-	last_row_no = 1 # Last row number used for writing in worksheet_1 (reset for every mc_len)
+	# Load workbook at the beginning of each loop (add a sheet in each loop)
+	workbook = openpyxl.load_workbook(workbook_path) #Realod workbook
+	worksheet_0 = workbook.active #Retrieve the first worksheet
+	worksheet_1 = workbook.create_sheet(str(mc_len)+' Transition') #Added new sheet to record result for the specific number of transitions
+	worksheet_1.append([str(mc_len)+' transitions:'])
 	###################### Input #######################
 	set_no = len(mc_crop_dict.keys()) #Total number of cluster sets for one day (# of time windows)
 	cluster_len_ls = [] #List of number of clusters for time windows
@@ -79,29 +89,22 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 		# row_0 = 1+ idx * (s+1) #Starting row number of current saving 
 		cluster_size_ls = ['Total number of datapoints',str(len(mc_ls)),'Size of clusters: ',str([len(cluster) for cluster in clustering_result['cluster_ls']])] if cluster_len_ls[-1]>1 else [] #Number of datapoints in each cluster if the clustering result is meaningful
 		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] + cluster_size_ls #Current title includes [number index, time windows title string] 
-		# for col_i, cell_val in enumerate(current_title, start = 1):
-
-		worksheet_1.write_row(last_row_no,0,current_title) #Write current title (time window), at row 1, 23, etc.
+		worksheet_1.append(current_title) #Append current title
 		if cluster_len_ls[-1]>1: #Only saves trans_ls and cluster_ls (in id format) if the clustering result is meaningful
 			utils.dict2json(raw_result_path + '_'.join(['bayesian_raw_results',suffix, str(mc_len),str(idx+1)]) + '.json', clustering_result['cluster_ls_id']) #Save clustering result (in id format) to output/raw/
-			trans_ls_zip = list(zip(*clustering_result['trans_ls'])) #Convert flat clustering_result['trans_ls'] to a list in which each entry is a list of row values for all trans matrices
-			k0 = 0 #Index for row no of trans_ls_zip - relative row number (reset for each time window)
-			for j in range(last_row_no+1,last_row_no+s+1): #Absolute row number in excel
-				# j starts from last_row_no+1 (2, 24, etc.) and ends at last_row_no+s+1 (22, 44, etc.)
-				# k0 points to each row within trans_ls_zip and k0 increments with j
-				for k, row_ls in enumerate(trans_ls_zip[k0]): #Iterate over list of rows for all trans_mat
-					worksheet_1.write_row(j,k*(s+1),row_ls) #Write the one row for one matrix and goes to the next matrix
-				k0 +=1 #Update the relative index
-			last_row_no += s+1 #Update the last_row_no with the new index
+			# Generate a np array, trans_ls_row, with each row contains the row to be saved to workbook
+			trans_ls_np = [np.concatenate([np.asarray(pmat),np.zeros([s,1])],axis = 1) for pmat in clustering_result['trans_ls']] #Convert list of list to list of np arrays and add a zero column to each array
+			trans_ls_row = np.concatenate(trans_ls_np, axis = 1)[:,:-1] #Concatenate list of np array and remove the last column (the last 0 column)
+			for row_val in trans_ls_row: #Iterate over each row that contains (flattened) rows of trans matrices and 
+				worksheet_1.append(row_val.tolist()) #Append row to worksheet
 		else:
-			worksheet_1.write_row(last_row_no+1,0,['','No meaning clustering result generated!'])
-			last_row_no += 2
+			worksheet_1.append(['','No meaningful clustering result generated!'])
 	idx_meaningful = [i+1 for i, e in enumerate(cluster_len_ls) if e != 1]
 	print('The number of clusters for this division are',cluster_len_ls,'and the index of meaningful clusters are',idx_meaningful)
-	# Saves the file
-	worksheet_1.write_row(0,0,[str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the time window specific sheet
-	worksheet_0.write_row(i,0,[str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the 'General Result' sheet
+	worksheet_1.cell(row = 1, column=3).value = str(cluster_len_ls) #Save the cluster_len_ls
+	worksheet_1.cell(row = 1, column=4).value = str(idx_meaningful) #Save idx_meaningful
+	worksheet_0.append([str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the 'General Result' sheet
+	workbook.save(workbook_path) #Save the workbook at the end of each loop (will be reopened at the beginning of next loop)
 ###################### Test #######################
 print('***********************************************************************************************')
 print('Execution completed! Sample size =',sample_size,'transition number from',loop_min,'to',loop_max,'with prior type:',suffix)
-workbook.close()

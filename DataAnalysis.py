@@ -71,7 +71,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 	titles_dict = collections.defaultdict(list) #Create an empty dictionary for titles
 	##################
 	dataFilePath = resultFolderPath +dataFileName
-	GeneralT = pd.read_excel(dataFilePath, sheet_name = 0,header = None) #Read the excel as a df
+	GeneralT = pd.read_excel(dataFilePath, sheet_name = 0,header = None, names = [0,1,2]) #Read the excel as a df (no header row, use a list of zero idx for the 3 columns)
 	GeneralT[0] = GeneralT[0].apply(lambda x: int(x.replace(' transitions:',''))) #Remove extra text from the transition no and convert to int
 	timeWindowCount = GeneralT.set_index(keys = GeneralT[0].apply(lambda x: (x+1)/2))[2].apply(ast.literal_eval).apply(lambda x: len(x)) #Create a Series where index is hour value, 1st column is number of meaningful time windo for the transition number
 	GeneralT = GeneralT.set_index(keys=0) #Use the 1st col as the index (1st col is # of transitions)

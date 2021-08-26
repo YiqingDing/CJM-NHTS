@@ -7,7 +7,7 @@ import matplotlib.ticker as ticker
 
 # File names - Input
 dataFileNameList = []
-dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_complete.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev2000.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev478.xlsx')
@@ -16,6 +16,8 @@ dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-2.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev100.xlsx')
 
+dataFileNameList.append('Bayesian_Clustering_Results_yichingding_test2k.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_iris_dev20k.xlsx')
 # Settings of plot - Input
 resultFolderPath = str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/' #Result folder path
 rawFileName = 'Bayesian_Clustering_Results_0raw.xlsx' #File that contains unprocessed results
@@ -71,7 +73,8 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 	titles_dict = collections.defaultdict(list) #Create an empty dictionary for titles
 	##################
 	dataFilePath = resultFolderPath +dataFileName
-	GeneralT = pd.read_excel(dataFilePath, sheet_name = 0,header = None, names = [0,1,2]) #Read the excel as a df (no header row, use a list of zero idx for the 3 columns)
+	GeneralT = pd.read_excel(dataFilePath, sheet_name = 0, names = [0,1,2]) #Read the excel as a df (no header row, use a list of zero idx for the 3 columns)
+	# GeneralT = pd.read_excel(dataFilePath, sheet_name = 0,header = None, names = [0,1,2]) #Read the excel as a df (no header row, use a list of zero idx for the 3 columns)
 	GeneralT[0] = GeneralT[0].apply(lambda x: int(x.replace(' transitions:',''))) #Remove extra text from the transition no and convert to int
 	timeWindowCount = GeneralT.set_index(keys = GeneralT[0].apply(lambda x: (x+1)/2))[2].apply(ast.literal_eval).apply(lambda x: len(x)) #Create a Series where index is hour value, 1st column is number of meaningful time windo for the transition number
 	GeneralT = GeneralT.set_index(keys=0) #Use the 1st col as the index (1st col is # of transitions)

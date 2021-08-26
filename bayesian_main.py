@@ -21,10 +21,10 @@ trip_ls_raw  = func.trip_ls_input(raw_trip_file,'w') #Generate the day trips for
 trip_df = func.tripls2df(trip_ls_raw, t_interval) #Convert trips into df where col are time windows
 s = 21
 alpha = 10 #Global precision (this val equals to 1/s for alpha_kij)
-# loop_iter = range(47) #Max transition number available
 # Use user input for min and max loop number
-loop_min = int(input('Please enter the min number of transitions(inclusive - min 1): ') or 1)
-loop_max = int(input('Please enter the max number of transitions(inclusive - max 47): ') or 47)
+# loop_iter = range(47) #Max transition number available
+loop_start = int(input('Please enter the starting number of transitions(inclusive - min 1): ') or 1)
+loop_end = int(input('Please enter the ending number of transitions(inclusive - max 47): ') or 47)
 sample_size = int(input('Please enter number of samples to be selected from complete dataset as prior (default or 0 uniform, -1 for complete dataset):') or 0)
 suffix = input('Please enter any suffix for the output file name: ')
 col_empty = np.full((s,1),None) #Create a column of empty cells for filling
@@ -50,7 +50,7 @@ pathlib.Path(prior_path).mkdir(parents=True, exist_ok=True) #Create the folder (
 # shutil.rmtree(id_dict_path,ignore_errors=True)
 #################################################
 trip_df_complete = pandas.read_csv('trip_df_complete.csv').iloc[trip_df.shape[0]:,] #Only use the rows not belong to test dataset
-loop_iter = range(loop_min,loop_max+1)
+loop_iter = range(loop_start,loop_end+1) if loop_end >= loop_start else range(loop_start,loop_end-1, -1) #The iterator always starts from loop_start and ends with loop_end (both inclusive)
 # suffix = '_'+raw_suffix if raw_suffix else '' #Add underscore if suffix is nonempty
 if sample_size == 0:
 	sample_size = 'Uniform'
@@ -74,10 +74,10 @@ worksheet_0 = workbook.active #Get the first worksheet
 worksheet_0.title = 'General Results' #First worksheet to save overall results
 worksheet_0.append(['Number of Transitions', 'Number of Meaningful Clusters for Each Time Window', 'Index of Meaningful Time Window']) #Append a header row
 workbook.save(workbook_path) #First save the workbook before any results
-print('Execution starts! Prior size =',sample_size,'transition number from',loop_min,'to',loop_max)
+print('Execution starts! Prior size =',sample_size,'transition number from',loop_start,'to',loop_end)
 print('***********************************************************************************************')
 start_time = time.time()
-for i, mc_len in enumerate(loop_iter): #Iterate over different number of transitions
+for mc_len in loop_iter: #Iterate over different number of transitions
 	last_time = time.time()
 	# mc_len = 4 #Test mc_len value
 	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to a dict of mc lists using number of transitions (keyed by window index), mc_title_ls is list of titles, index based on order of mc_crop_dict's values
@@ -124,4 +124,4 @@ for i, mc_len in enumerate(loop_iter): #Iterate over different number of transit
 	last_time = time.time()
 ###################### Test #######################
 print('***********************************************************************************************')
-print('Execution completed! Prior size =',sample_size,'transition number from',loop_min,'to',loop_max,'with prior type:',suffix)
+print('Execution completed! Prior size =',sample_size,'transition number from',loop_start,'to',loop_end,'with prior type:',suffix)

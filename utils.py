@@ -1204,8 +1204,8 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 			# nodePos = nx.shell_layout(G)
 			# nodePos = nx.spring_layout(G)
 			# nodePos = nx.spiral_layout(G)
-			# nodePos = nx.kamada_kawai_layout(G)
-			nodePos = nx.random_layout(G)
+			nodePos = nx.kamada_kawai_layout(G)
+			# nodePos = nx.random_layout(G)
 		else:
 			raise Exception('No such plot type!')
 		labels = [textwrap.fill(label, width = label_max_len) for label in labels] #Wrap label if longer than label_max_len

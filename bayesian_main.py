@@ -41,10 +41,12 @@ folder_path = os.path.split(workbook_path)[0] #Extract the folder path for the w
 pathlib.Path(folder_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
 if os.path.exists(workbook_path): #Remove workbook if it already exists
 	os.remove(workbook_path)
-raw_result_path = 'output/raw/' #File path to save raw result
-id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
+raw_result_path = str(pathlib.Path(os.getcwd()).parent) + '/Results/Bayesian/raw/' #File path to save raw result
+id_dict_path = str(pathlib.Path(os.getcwd()).parent) + '/Results/Bayesian/idDict/' #File path to save id_dict (in Bayesian clustering)
 prior_path = str(pathlib.Path(os.getcwd()).parent) + '/Results/Bayesian/prior/' #File path to save priors
 pathlib.Path(prior_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
+pathlib.Path(raw_result_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
+pathlib.Path(id_dict_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
 # Removes all existing output files to avoid conflicts
 # shutil.rmtree(raw_result_path,ignore_errors=True)
 # shutil.rmtree(id_dict_path,ignore_errors=True)

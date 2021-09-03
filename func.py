@@ -472,7 +472,7 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Generate the list of count matrix (no duplicates)
 	# Note: 
 		# The new count_ls can have duplicates, but not those in original count_ls since they are merged. len(count_ls) = len(cluster_ls) <= len(ini_count_ls) 
-	########## Create/Read ini_id_dict ##########
+	########## Create/Read&Update ini_id_dict ##########
 	suffix_default = ''
 	suffix = (KL_dict['id_suffix'] if 'id_suffix' in KL_dict.keys() else '')+suffix_default #Read suffix of dictionary from kwargs if given (then add suffix_default)
 	suffix = (str(suffix) if str(suffix).startswith('_') else '_' + str(suffix)) if suffix else '' #Add underscore if there isn't
@@ -618,10 +618,10 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 		id_modifier(new_val_ls = [], id_dict = ini_id_dict, save_dict = True, **KL_dict) #Use an empty new_val_ls to save ini_id_dict
 	for nmat in count_ls: #Convert list of count matrices to list of transitional matrices
 		trans_ls.append(utils.count2trans(nmat)) #Convert count matrix and append to list
-	# Output
+	# Output:
 	clustering_result['cluster_ls'] = cluster_ls
-	clustering_result['trans_ls'] =trans_ls
-	clustering_result['cluster_ls_id'] = [[id_dict.inverse[utils.container_conv(count_mat, tuple)] for count_mat in cluster] for cluster in cluster_ls]
+	clustering_result['trans_ls'] = trans_ls
+	clustering_result['cluster_ls_id'] = [[ini_id_dict.inverse[utils.container_conv(count_mat, tuple)] for count_mat in cluster] for cluster in cluster_ls]
 	return clustering_result
 
 def prior_generator(prior_data, type = 'uniform'):
@@ -768,14 +768,20 @@ def calc_MC_distance(mat_ls1, mat_ls2, id_dict, f_hash=utils.container_conv ,dis
 	return dist_dict_mat
 
 def posterior_Bayesian(cluster_ls, prior_ls, mode = 'log'):
-	# Compute the posteriori
+	# Compute the posteriori given input data list and prior list
+	# Input:
+		# cluster_ls
+		# prior_ls
+		# mode
+	# Output:
+		# posterior
 	count_ls, m_ls = utils.cluster_ls2count_ls(cluster_ls) #Compute count mat list (a list of count matrices, each for one cluster) from the cluster list (each entry is a list of count matrices)
-	f1 = utils.f1_comp(cluster_ls, prior_ls, mode)	
+	f1 = utils.f1_comp(count_ls, m_ls, prior_ls, mode)
 	f2 = utils.f2_comp(count_ls, prior_ls, mode)
 
 	if mode == 'log':
 		# print('Exporting log(posterior)')
-		posterior = f1 + f2 #Computed f1 and f2 are actually log(f1) and log(f2), thus return log(posterior)
+		posterior = f1 + f2 #Computed f1 and f2 are actually log(f1) and log(f2), thus return log(posterior)=log(f1*f2)=log(f1)+log(f2)
 	else:
 		# print('Exporting real posterior')
 		posterior = f1*f2 #Real f1 and f2 return real posterior
@@ -1075,8 +1081,9 @@ def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous
 	# Create the axes and figures using the given parameters
 	figs, axs = fig_generator(fig_num, ax_num, titles_dict = titles_dict, **fig_kw)
 	
+	# Flatten the datapoints
 	mc_flatten = [mc_data for mc_window in mc_sheet['mc_data_mat'] for mc_data in mc_window]
-	cluster_size = [i for cluster_size in mc_sheet['cluster_size_ls'] for i in cluster_size]
+	cluster_size = [i for cluster_size in mc_sheet['cluster_size_ls'] for i in cluster_size] 
 	for idx, ax in enumerate(axs):
 		# print('idx is',idx, 'with data is',mc_flatten[idx])
 		utils.plot_mc(mc_data = mc_flatten[idx], cluster_size = cluster_size[idx] ,plot_type = plot_type, ax=ax, **plot_kw) #Plot MC based on plot_type on current axe

@@ -361,13 +361,18 @@ def uniform_prior_ls(cluster_ls, alpha):
 
 def dev_prior_mat(count_ls, s, prior_ratio):
 	# Sum the nmat and normalize them based on prior_ratio
+	# Input:
+		# count_ls: A list of count matrix in prior dataset
+		# s: Size of trans mat
+		# prior_ratio: The ratio to normalize prior_mat
+	# Output:
+		# prior_mat: A prior matrix without any zeros
 	prior_mat = np.zeros([s,s], dtype = int) #Initialize the combined count mat
 	f_conv = np.asarray if isinstance(count_ls[0], (list, tuple)) else lambda x: x #Determine the conversion function for data format for count mat to be np array
 	for nmat in count_ls:
-		# prior_mat += np.asarray(nmat) if isinstance()
 		prior_mat += f_conv(nmat) #Add the converted np.ndarray mat to prior_mat
-	prior_mat = discrete_normal_dist(prior_mat)*prior_ratio #Normalize the prior_mat
-	prior_mat[prior_mat == 0] = sys.float_info.min
+	prior_mat = discrete_normal_dist(prior_mat)*prior_ratio #Normalize the prior_mat with prior_ratio 
+	prior_mat[prior_mat == 0] = sys.float_info.min #Replace zero with the minimal value in python 
 	return prior_mat.tolist()
 
 def initial_cluster_ls(count_ls):
@@ -476,9 +481,16 @@ def uniform_prior_mat(m, s, alpha):
 	# Uniform prior = a matrix with equal values equal to alpha/(m*s^2)
 	return (np.ones((s,s))*alpha/(m*s**2)).tolist()
 
-def f1_comp(cluster_ls, prior_ls, mode='log'):
+def f1_comp(count_ls, m_ls, prior_ls, mode='log'):
 	# Compute f(S, C)
-	count_ls, m_ls = cluster_ls2count_ls(cluster_ls) #Convert cluster_ls to count_ls and m_ls (list of # of time series in a cluster)
+	# Input:
+		# count_ls: List of count matrix
+		# m_ls: List of # of datapoints in a cluster
+		# prior_ls: List of prior matrices
+		# mode: Log probability or original probability
+	# Output:
+		# f(S, C)
+	# count_ls, m_ls = cluster_ls2count_ls(cluster_ls) #Convert cluster_ls to count_ls and m_ls (list of # of time series in a cluster)
 
 	# Convert both prior and count mat to array if they are lists
 	count_ls = np.asarray(count_ls)
@@ -777,6 +789,7 @@ def NHTS_new(extra = None, **kwargs):
 def dict2json(file, *data):
 	# Save the input data as a list into json file and remove the previous file
 	json_data = ujson.dumps(data)
+	
 	# The following 4 lines: Create folder directory (if not existing) and remove existing file (if exists)
 	folder_path = os.path.split(file)[0] #Extract the folder path for the file
 	pathlib.Path(folder_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
@@ -864,7 +877,7 @@ def discrete_normal_dist(prior_mat, kernel = 'gaussian'):
 	box_interval = np.linspace(1.5,s-0.5,s-1) #Divide (-inf, +inf) into intervals for integrate pdf (prob approximation)
 	box_interval = np.insert(box_interval,0,float('-inf')) #Add -inf at the end
 	box_interval = np.append(box_interval,float('inf')) #Add inf at the end
-	norm_prior_mat = np.empty((0,s)) #Prior matrix initialization
+	norm_prior_mat = np.empty((0,s)) #Normalized prior matrix initialization
 	# state_space = np.linspace(1,s,s, dtype = int).reshape(-1,1)
 	# max_moment = 2*s-1 #Max moment for the linear equation
 	# C =[]

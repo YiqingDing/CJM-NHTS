@@ -103,7 +103,8 @@ for mc_len in loop_iter: #Iterate over different number of transitions
 		# Saving to worksheet starts from row 1 (1st row reserved for general result)
 		# row_0 = 1+ idx * (s+1) #Starting row number of current saving 
 		cluster_size_ls = ['Total number of datapoints',str(len(mc_ls)),'Size of clusters: ',str([len(cluster) for cluster in clustering_result['cluster_ls']])] if cluster_len_ls[-1]>1 else [] #Number of datapoints in each cluster if the clustering result is meaningful
-		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] + cluster_size_ls #Current title includes [number index, time windows title string] 
+		posterior_str = ['Posterior (initial, 1-cluster, final)',str(clustering_result['posterior'])] #Posterior string
+		current_title = ['No. '+str(idx+1)] + mc_title_ls[idx] + cluster_size_ls + posterior_str #Current title includes [number index, time windows title string, Total number of datapoints, Size of clusters (list), Posterior (initial, 1-cluster, final)] 
 		worksheet_1.append(current_title) #Append current title
 		if cluster_len_ls[-1]>1: #Only saves trans_ls and cluster_ls (in id format) if the clustering result is meaningful
 			utils.dict2json(raw_result_path + '_'.join(['bayesian_raw_results',suffix, str(mc_len),str(idx+1)]) + '.json', clustering_result['cluster_ls_id']) #Save clustering result (in id format) to output/raw/

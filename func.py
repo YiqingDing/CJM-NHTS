@@ -469,7 +469,7 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 	ini_count_ls = mcls2mat(mc_ls, s)[1] #Get the initial count_ls (duplicates exist)
 	
 	cluster_ls = utils.initial_cluster_ls(ini_count_ls) #Generate the initial cluster list (duplicates allowed in count_ls)
-	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Generate the list of count matrix (no duplicates)
+	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Generate the list of count matrix
 	# Note: 
 		# The new count_ls can have duplicates, but not those in original count_ls since they are merged. len(count_ls) = len(cluster_ls) <= len(ini_count_ls) 
 	########## Create/Read&Update ini_id_dict ##########
@@ -478,7 +478,7 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 	suffix = (str(suffix) if str(suffix).startswith('_') else '_' + str(suffix)) if suffix else '' #Add underscore if there isn't
 	dict_file_path = 'output/idDict'+suffix+'.json'
 	ini_id_dict = bidict(utils.dict_val2tuple(utils.json2dict(dict_file_path)[0])) if os.path.isfile(dict_file_path) else None #Reads ini_id_dict if it exists (with the same name), else None
-	ini_id_dict = id_modifier(new_val_ls = ini_count_ls,id_dict = ini_id_dict, save_dict = False) #Updates ini_id_dict with entries from ini_count_ls (we will save it later on if meaningful clusters are generated)
+	ini_id_dict = id_modifier(new_val_ls = ini_count_ls,id_dict = ini_id_dict, save_dict = True, **KL_dict) #Updates ini_id_dict with entries from ini_count_ls, remove original file and save it
 	###################### Initialization #######################
 	
 	# Compute distances and ids for unique count matrices in the new count_ls
@@ -501,6 +501,7 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 	prior_ls = prior_generator(prior_data, type = prior_input[0]) #Generate prior_ls
 
 	p_new = posterior_Bayesian(cluster_ls, prior_ls) #Compute the initial posterior
+	clustering_result['posterior'].append(p_new) #Append the initial probability when everything is in their own cluster
 	p_old = float('-inf') #Initial old posterior
 
 	# print('The initial number of clusters is',len(cluster_ls)) #--PrintStatement
@@ -552,6 +553,9 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 			p_temp = posterior_Bayesian(cluster_ls_temp, prior_ls_temp) #Compute the temporary posterior using the temp cluster_ls and prior_ls     
 			
 			if p_temp > p_new: #If the merged clusters (temp) have a higher posterior, we would accept
+				# Note:
+					# Acception would generate a new set of clusters, a new posterior and a new dist_rank
+					# After acception, p_new = p_temp > p_old ==> External loop continues
 				###################### Debug #######################
 				# print('The current run_no2 is', run_no2, end = '') #--PrintStatement
 				# print(' The original p_new is',p_new, 'and the new p_new is',p_temp, 'and the number of new cluster centers is', len(cluster_ls_temp)) #--PrintStatement
@@ -564,10 +568,11 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 				###################### Debug #######################
 
 				#Assign the new cluster data to existing cluster data
+
 				cluster_ls = cluster_ls_temp 
 				prior_ls = prior_ls_temp
 				count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Produce the new count_ls
-				p_new = p_temp		
+				p_new = p_temp #Replace p_new (current best posterior) with the temp posterior
 
 				#Iterate over all dist_rank to remove any entries with merged cluster
 				dist_rank_temp = [dist_pair for dist_pair in dist_rank if not bool(set(key_pair).intersection(dist_pair[0]))]
@@ -613,15 +618,20 @@ def bayesian_clustering(mc_ls, alpha, s, prior_input = ['uniform'], **kwargs):
 		# utils.dict2json('temp/count_ls_'+str(run_no1)+'.json',count_ls)
 	count_ls = utils.cluster_ls2count_ls(cluster_ls)[0] #Convert final clusters to list of count mat
 	trans_ls = []
-	if len(cluster_ls) > 1: #Save ini_id_dict if meaningful clusters are generated
-		# Note: the ini_id_dict is saved if meaningful clusters are generated and it updates the previous version of ini_id_dict file by deleting origin file and saving the new one
-		id_modifier(new_val_ls = [], id_dict = ini_id_dict, save_dict = True, **KL_dict) #Use an empty new_val_ls to save ini_id_dict
+	# if len(cluster_ls) > 1: #Save ini_id_dict if meaningful clusters are generated
+	# 	# Note: the ini_id_dict is saved if meaningful clusters are generated and it updates the previous version of ini_id_dict file by deleting origin file and saving the new one
+	# 	# This part is obsolete due to the fact that between reading and saving there may be other process reading ini_id_dict file and thus tempering the file
+	# 	id_modifier(new_val_ls = [], id_dict = ini_id_dict, save_dict = True, **KL_dict) #Use an empty new_val_ls to save ini_id_dict
 	for nmat in count_ls: #Convert list of count matrices to list of transitional matrices
 		trans_ls.append(utils.count2trans(nmat)) #Convert count matrix and append to list
+	
+	prior_tot = [sum([np.asarray(prior) for prior in prior_ls]).tolist()] #Sum all items in prior_ls to get 1 prior
+	p_tot = posterior_Bayesian([ini_count_ls], prior_tot) #Compute the posterior with everything in 1 cluster
 	# Output:
 	clustering_result['cluster_ls'] = cluster_ls
 	clustering_result['trans_ls'] = trans_ls
 	clustering_result['cluster_ls_id'] = [[ini_id_dict.inverse[utils.container_conv(count_mat, tuple)] for count_mat in cluster] for cluster in cluster_ls]
+	clustering_result['posterior'].extend([p_tot, p_old]) #Append the p_tot (posterior with only 1 cluster) and p_old (the highest posterior - external loop ends when p_new <= p_old)
 	return clustering_result
 
 def prior_generator(prior_data, type = 'uniform'):

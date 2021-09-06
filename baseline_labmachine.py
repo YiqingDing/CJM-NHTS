@@ -27,8 +27,8 @@ dist_dict0 = utils.cal_cross_dist(trip_ls, trip_ls)  #Compute the distances
 #Generate initial population (a set of CJMs each as an individual)
 m = 10 # Maximum length of CJs in initial ppl CJMs (also determines the number of ini ppl CJMs = m-1)
 n = 5 # Number of CJs in initial ppl CJMs
-gen_max = 100 #Number of generations
-trial_no_tot = 1 #Number of trials (each trial produces a separate output file)
+gen_max = int(input('Please enter the number of generations(min 1, default 20): ') or 20) #Number of generations
+trial_no_tot = int(input('Please enter the total number of trials(min 1, defult 5): ') or 5) #Number of trials (each trial produces a separate output file)
 ###################### Main Loop #######################
 start_time = time.time()
 # The purpose of the following loop is to generate populations (i.e., cluster centers) that have the highest score

@@ -248,10 +248,10 @@ def cal_mutual_dist_baseline(data_0, data_1, dist_dict =  collections.defaultdic
 def save_ls2csv(ls,writetype = 'w' , file_name='output/results.csv'):
 	# Saves a list to a new csv file with file_name 
 	# Input:
-	# ls: A list
-	# file_name: Name of csv file
+		# ls: A list
+		# file_name: Name of csv file
 	# Output:
-	# Saves the ls to a csv file with file_name, depends on the writetype
+		# Saves the ls to a csv file with file_name, depends on the writetype
 	with open(file_name,writetype) as f:
 		fwrite = csv.writer(f)
 		if writetype == 'w': #Write a new file

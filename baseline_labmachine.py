@@ -16,11 +16,11 @@ raw_trip_file = 'trippub_top2k.csv' #File name of the 2k data
 trip_ls  = func.trip_ls_input(raw_trip_file,'w') #Generate the day trips for dataset
 
 # Create output folder
-output_path = str(current_path.parent)+ '/Results/Baseline_LabMachine/'+os.environ.get('USER')+str(date.today()) #Output file path
+output_path = str(current_path.parent)+ '/Results/Baseline_LabMachine/'+str(date.today()+' '+os.environ.get('USER')) #Output file path
 pathlib.Path(output_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
 
 # Raw distance dictionary
-dist_dict_file_path = 'dist_dict.json' #File path for writing/reading
+dist_dict_file_path = 'output/dist_dict.json' #File path for writing/reading
 ######## Compute and save distances between raw journeys (commented) ########
 dist_dict0 = utils.cal_cross_dist(trip_ls, trip_ls)  #Compute the distances
 # utils.dict2json(dist_dict_file_path, dist_dict0) #Save the distances
@@ -38,8 +38,8 @@ for trial_no in range(trial_no_tot):
 	cjm_score = collections.defaultdict(list) #Initialize the score dictionary
 	record = [['Key','Best CJM','Score']] #List of [best CJM key, current best CJM, current best score]
 	filename= output_path + '/FinalResult_Trial_#' + str(trial_no+1) + '.csv' #Create name of the output folder
-	func.save_ls2csv([['Number of Generations',str(gen_max),'Number of Trial',str(trial_no_tot)]], 'w',filename)
-	func.save_ls2csv(record, 'w' , filename) #Saves the header: 'record'
+	func.save_ls2csv(['Number of Generations',str(gen_max),'Number of Trial',str(trial_no_tot)], 'w',filename)
+	func.save_ls2csv(record, 'a' , filename) #Saves the header: 'record'
 
 	for t in range(gen_max):
 		#Assign CJs to current population and evaluate current population's score (CJMs)

@@ -5,13 +5,18 @@ from datetime import date
 import func, collections, utils, importlib, ujson, pathlib, os, time
 
 ###################### Input #######################
+gen_max = int(input('Please enter the number of generations(min 1, default 20): ') or 20) #Number of generations
+trial_no_tot = int(input('Please enter the total number of trials(min 1, defult 5): ') or 5) #Number of trials (each trial produces a separate output file)
+m = 10 # Maximum length of CJs in initial ppl CJMs (also determines the number of ini ppl CJMs = m-1)
+n = 5 # Number of CJs in initial ppl CJMs
+
 # Input data file
 current_path = pathlib.Path(os.getcwd()) #Get the current working directory
 raw_trip_file = 'trippub_top2k.csv' #File name of the 2k data
 trip_ls  = func.trip_ls_input(raw_trip_file,'w') #Generate the day trips for dataset
 
 # Create output folder
-output_path = str(current_path.parent)+ '/Results/Baseline_LabMachine/'+str(date.today()) #Output file path
+output_path = str(current_path.parent)+ '/Results/Baseline_LabMachine/'+os.environ.get('USER')+str(date.today()) #Output file path
 pathlib.Path(output_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
 
 # Raw distance dictionary
@@ -22,13 +27,6 @@ dist_dict0 = utils.cal_cross_dist(trip_ls, trip_ls)  #Compute the distances
 ######## Read and load distances between raw journeys ########
 # dist_dict0 = utils.json2dict(dist_dict_file_path)[0] #existing distance dictionary 
 # dist_dict0 = utils.dict_key2tuple(dist_dict0) #Convert the file to tuples (original format before saving to .json)
-
-###################### Input #######################
-#Generate initial population (a set of CJMs each as an individual)
-m = 10 # Maximum length of CJs in initial ppl CJMs (also determines the number of ini ppl CJMs = m-1)
-n = 5 # Number of CJs in initial ppl CJMs
-gen_max = int(input('Please enter the number of generations(min 1, default 20): ') or 20) #Number of generations
-trial_no_tot = int(input('Please enter the total number of trials(min 1, defult 5): ') or 5) #Number of trials (each trial produces a separate output file)
 ###################### Main Loop #######################
 start_time = time.time()
 # The purpose of the following loop is to generate populations (i.e., cluster centers) that have the highest score

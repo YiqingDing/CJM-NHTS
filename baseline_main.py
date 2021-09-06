@@ -29,14 +29,20 @@ worksheet_0.append(['Trial Number', 'Key Identifier', 'Best CJM in Trial','Score
 workbook.save(workbook_path) #First save the workbook before any results
 
 # Raw distance dictionary
-dist_dict_file_path = 'output/dist_dict.json' #File path for writing/reading
-######## Compute and save distances between raw journeys (commented) ########
-# dist_dict0 = utils.cal_cross_dist(trip_ls, trip_ls)  #Compute the distances
-# utils.dict2json(dist_dict_file_path, dist_dict0) #Save the distances
-######## Read and load distances between raw journeys ########
-dist_dict0 = utils.json2dict(dist_dict_file_path)[0] #existing distance dictionary 
-dist_dict0 = utils.dict_key2tuple(dist_dict0) #Convert the file to tuples (original format before saving to .json)
-print('An existing dict read! Trials start! # of Trials =',trial_no_tot,'Max Generation',gen_max)
+dist_dict_file_path = 'output/dist_dict_baseline.json' #File path for writing/reading
+
+if os.path.exists(dist_dict_file_path):
+	######## Read and load distances between raw journeys ########
+	print('Reading an existing distance file!!!')
+	dist_dict0 = utils.json2dict(dist_dict_file_path)[0] #existing distance dictionary 
+	dist_dict0 = utils.dict_key2tuple(dist_dict0) #Convert the file to tuples (original format before saving to .json)
+else:
+	######## Compute and save distances between raw journeys ########
+	print('Computing and saving distances between raw journeys!!!')
+	dist_dict0 = utils.cal_cross_dist(trip_ls, trip_ls)  #Compute the distances
+	utils.dict2json(dist_dict_file_path, dist_dict0) #Save the distances
+
+print('Trials start! # of Trials =',trial_no_tot,'Max Generation',gen_max)
 print('***********************************************************************************************')
 ###################### Main Loop #######################
 start_time = time.time()

@@ -36,9 +36,9 @@ for trial_no in range(trial_no_tot):
 	ppl, top_n = func.ini_ppl_gen(trip_ls, m, n) #Generate the initial populations for cluster centers
 	center_dict_all = {} #Initialize the dictionary for assignment
 	cjm_score = collections.defaultdict(list) #Initialize the score dictionary
-	record = [['Key','Best CJM','Score']] #List of [best CJM key, current best CJM, current best score]
+	record = ['Key','Best CJM','Score'] #List of [best CJM key, current best CJM, current best score]
 	filename= output_path + '/FinalResult_Trial_#' + str(trial_no+1) + '.csv' #Create name of the output folder
-	func.save_ls2csv(['Number of Generations',str(gen_max),'Number of Trial',str(trial_no_tot)], 'w',filename)
+	func.save_ls2csv([['Number of Generations',str(gen_max),'Number of Trial',str(trial_no_tot)]], 'w',filename)
 	func.save_ls2csv(record, 'a' , filename) #Saves the header: 'record'
 
 	for t in range(gen_max):

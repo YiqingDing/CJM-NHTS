@@ -16,7 +16,7 @@ raw_trip_file = 'trippub_top2k.csv' #File name of the 2k data
 trip_ls  = func.trip_ls_input(raw_trip_file,'w') #Generate the day trips for dataset
 
 # Create output folder
-output_path = str(current_path.parent)+ '/Results/Baseline_LabMachine/'+str(date.today()+' '+os.environ.get('USER')) #Output file path
+output_path = str(current_path.parent)+ '/Results/Baseline_LabMachine/'+str(date.today())+' '+os.environ.get('USER') #Output file path
 pathlib.Path(output_path).mkdir(parents=True, exist_ok=True) #Create the folder (and parent folder) if not exists yet 
 
 # Raw distance dictionary

@@ -40,6 +40,7 @@ for trial_no in range(trial_no_tot):
 	cjm_score = collections.defaultdict(list) #Initialize the score dictionary
 	record = [['Key','Best CJM','Score']] #List of [best CJM key, current best CJM, current best score]
 	filename= output_path + '/FinalResult_Trial_#' + str(trial_no+1) + '.csv' #Create name of the output folder
+	func.save_ls2csv([['Number of Generations',str(gen_max),'Number of Trial',str(trial_no_tot)]] 'w',filename)
 	func.save_ls2csv(record, 'w' , filename) #Saves the header: 'record'
 
 	for t in range(gen_max):

@@ -1,4 +1,4 @@
-import utils, collections, csv, random, os, pathlib, ast, uuid, time, copy, itertools, sys
+import utils, collections, csv, random, os, pathlib, ast, uuid, time, copy, itertools, sys, warnings
 import pandas as pd
 from math import *
 import numpy as np
@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt, matplotlib.lines as ml
 import networkx as nx
 from matplotlib.backends.backend_pdf import PdfPages
 
-np.seterr('raise')
+# np.seterr('raise')
 
 def trip_data_processing(raw_trip_path, processed_file_name = 'final_trip.csv', save_file = True):
 	# Read the raw trip data file and return a list of day trips and save the output trip file
@@ -116,31 +116,37 @@ def trip_ls_input(file_name, mode = 'w', save_file = True):
 #################################################################################################################################################
 def ini_ppl_gen(trip, m, n = 10):
 	# Generate initial population (a list of journey maps = A list of lists of journeys) and top_n list
-	# The initial population is a set of CJMs at length from 2 to m each with n most occuring patterns 
-	# There are (m-1) CJMs and each with n journeys inside (m, n given by user)
-	# Within each CJM, the n journeys are the n most occuring journeys at length i where i is from 2 to m
 	# Input:
 		# trip: List of journeys, each entry is a journey
 		# m: Maximum length for a journey in a CJM
 		# n: Number of journeys in each CJM
 	# Output: 
-	# ini_ppl: A dictionary of CJMs each with different length of journeys within. The key is length of journey, item is list of journeys (CJM)
-	# top_n: Top trips within the range (all of them are filled in ini_ppl)
+		# ini_ppl: A dictionary of CJMs each with different length of journeys within. 
+			# The key is length of journey, item is list of journeys (CJM)
+		# top_n: Top trips that are added to ini_ppl
+	# Nonmenclature:
+		# CJ: A list of serialized events
+		# CJMs: A set of CJs, regardless of their orders
+		# CJM_i: The CJM where all CJs within are of length i
+	# The initial population is a set of (CJM_i)s at length i from 2 to m each with n most occuring patterns (CJs)
+	# There are (m-1) CJMs in initial population and each CJM has n journeys inside (m, n given by user)
+	# Within each CJM, the n journeys are the n most occuring journeys at length i where i is from 2 to m
+	# The initial population has CJMs of various lengths to incorporate 
 
 	# Count (m-1)*n journeys - max number of journeys for initial population
 	num_max = (m-1)*n #Maximum number of journeys for initial population
 	trip_cnt = collections.Counter(trip) #convert the trip list to a counter (each individual trip is a tuple of tuples)
-	ini_ppl_cnt = trip_cnt.most_common() #find the top population for initial population
+	ini_ppl_cnt = trip_cnt.most_common() #Find the top population for initial population (regardless of length)
 	
 	ini_ppl = collections.defaultdict(list) #Create an empty dictionary
-	i = 1 #Assignment number
+	i = 1 #Initialize number of assignments
 	top_n = [] #Create an empty list
 	# The following loop assigns each most_common trip to its respecitive bucket/CJM
 	for trip_set in ini_ppl_cnt: #Iterate over the most common entries
 		#Each trip_set entry is a tuple of (trip, count of trip occurance)
 		ind_trip = trip_set[0] #Extract the individual trip - ((time), (activities))
 		ind_l = len(ind_trip[0]) #Individual trip length
-		if i<= num_max: #If total assignment number hasn't reach max yet
+		if i<= num_max: #If total assignment number hasn't maxed out yet
 			if ind_l <= m and (n - len(ini_ppl[ind_l])) > 0: #Length of journey falls within range and there is space in the bucket
 				ini_ppl[ind_l].extend([ind_trip]) #Add the trip to the bucket (bucket list length < n)
 				top_n.append(ind_trip) #Add the trip to the Top_n list
@@ -151,23 +157,25 @@ def ini_ppl_gen(trip, m, n = 10):
 	# Check if any of the CJMs are not filled (bucket length < n) and print it out
 	for idx, center_ls in ini_ppl.items():
 		if len(center_ls) < n:
-			print('The CJM for length '+ str(idx) + ' is not filled (missing '+ str(n - len(center_ls))+ ' entries)! Reduce n or expand dataset!')
+			warnings.warn('The CJM for length '+ str(idx) + ' is not filled (missing '+ str(n - len(center_ls))+ ' entries)! Reduce n or expand dataset!')
 	return ini_ppl, top_n
 
 def cjm_assign(trip_ls, centers, dist_dict = {}):
 	# Assigns indiviaul entries to centers/clusters based on relative distances to given centers
 	# Input:
-	# trip_ls: Input list of individual journeys
-	# centers: Input list of centers (each is an individual journey) - can have same members as trip_ls
-	# dist_dict: Input distance dictionary, default empty
+		# trip_ls: Input list of individual journeys
+		# centers: Input list of centers (each is an individual journey) - can have same members as trip_ls
+		# dist_dict: Input distance dictionary, default empty
 	# Output:
-	# center_dict: Ouput a dictionary with structure detailed at the end of function
+		# center_dict: Ouput a dictionary for cluster centers:
+			# center_dict[trip not a center] = center of the trip (a tuple)
+			# center_dict[trip that is a center] = [trip_1, trip_2 ......] (a list of trips/tuples belong to current center)
 	center_dict = collections.defaultdict(list)
 	
 	# n = 100 #sample limit 
 	for ind_trip in trip_ls:
 		# for i in range(n):
-		if ind_trip not in centers:#The individual trip is not the top trip
+		if ind_trip not in centers: #The individual trip is not a center
 			dist_min = float('inf')
 			for ind_top in centers:
 				# Calculate the distance between current trip and current top trip (read if dist_dict available)
@@ -179,12 +187,8 @@ def cjm_assign(trip_ls, centers, dist_dict = {}):
 			# Add the individual trip to the top trip's list
 			ind_center = center_dict[ind_trip] #Identify the individual trip's center
 			center_dict[ind_center].append(ind_trip) #Add the individual trip to its center's cluster list
-		else: #If the individual trip is in the top trip list (can be easily assigned)
+		else: #If the individual trip is a center (can be easily assigned)
 			center_dict[ind_trip].insert(0, ind_trip) #Insert the top/individual trip to the 1st element of its list
-	
-	# center_dict has the following structure:
-	# center_dict[trip not a center] = center (a tuple)
-	# center_dict[trip that is a center] = [trip_1, trip_2 ......] (a list of tuples)
 	return center_dict
 
 def cjm_eval(trip_ls, center_ls, center_dict, dist_dict = {}):

@@ -3,7 +3,7 @@ import numpy as np
 from math import *
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import AnchoredText
-import collections, random, bisect, ujson, csv,ast, os, sys, itertools, pydtmc, textwrap, pathlib
+import collections, random, bisect, ujson, csv,ast, os, sys, itertools, pydtmc, textwrap, pathlib, warnings
 chord_plot = __import__("matplotlib-chord") #Import matplotlib-chord
 from sklearn.neighbors import KernelDensity
 import pandas as pd
@@ -152,9 +152,10 @@ def cal_mutual_dist(data_ls, dist_dict =  collections.defaultdict(lambda: collec
 def cal_cross_dist(ls1, ls2, dist_dict = collections.defaultdict(lambda: collections.defaultdict(int))):
 	# Calculate all the distance pairs between two lists of data entries and load them into dist_dict
 	# Input: 
-	# ls1, ls2: Lists of data entries
-	# dist_dict: Existing distance dictionary, default = empty 2d dictionary
-	# Ouput: Dictionary of dstances between different pairs of data entries, dist_dict[item1][item2]
+		# ls1, ls2: Lists of data entries
+		# dist_dict: Existing distance dictionary, default = empty 2d dictionary
+	# Ouput: 
+		# dist_dict: Dictionary of dstances between different pairs of data entries, dist_dict[item1][item2]
 	for item_1 in ls1:
 		for item_2 in ls2:
 			dist = cal_dist(item_1, item_2)

@@ -123,7 +123,7 @@ for mc_len in loop_iter: #Iterate over different number of transitions
 	worksheet_1.cell(row = 1, column=4).value = str(idx_meaningful) #Save idx_meaningful
 	worksheet_0.append([str(mc_len)+' transitions:', str(cluster_len_ls), str(idx_meaningful)]) #Write on the 'General Result' sheet
 	workbook.save(workbook_path) #Save the workbook at the end of each loop (will be reopened at the beginning of next loop)
-	print('Time spent on the past number of transition is',time.time() - last_time, 'and current time taken is',time.time()-start_time)
+	print('Time spent on the past number of transition is',time.time() - last_time, 'and current total time taken is',time.time()-start_time)
 	last_time = time.time()
 ###################### Test #######################
 print('***********************************************************************************************')

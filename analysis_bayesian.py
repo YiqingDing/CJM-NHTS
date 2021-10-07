@@ -16,8 +16,6 @@ dataFileNameList = []
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-2.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev100.xlsx')
 
-dataFileNameList.append('Bayesian_Clustering_Results_yichingding_test2k.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_iris_dev20k.xlsx')
 # Settings of plot - Input
 resultFolderPath = str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/' #Result folder path
 rawFileName = 'Bayesian_Clustering_Results_0raw.xlsx' #File that contains unprocessed results
@@ -46,9 +44,11 @@ else:
 	# 'single': All figures are piled into 1 figure - Rarely used
 fig_type = 'multiple' 
 save_pdf = True #If saving all figures in a PDF
-plot_meaningful_window = True #If plot number of meaningful windows
-# MaxResultNo = 6 #Max number of transitions of interest - Comment if use all numbers
+plot_meaningful_window = False #If plot number of meaningful windows
+# MaxResultNo = 4 #Max number of transitions of interest - Comment if use all numbers
 # print(resultFolderPath+resultFileAffix+'/')
+raw_result_path = 'output/raw/' #Folder path for raw result files
+id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
 ########################### End of Inputs ####################################
 resultPriorLs = [i.split('_')[-1].split('.xlsx')[0] for i in dataFileNameList] #List of prior type, will be used for output folder name
 baselineFilePath =  resultFolderPath+rawFileName #Get the baseline file path
@@ -86,16 +86,18 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 
 	# resultDict = GeneralT.drop(labels = 1,axis = 1).T.to_dict('list', into = collections.defaultdict(list)) #Create a dictionary where keys are the transition no, vals are the meaningful time window indices for that transition no
 	resultNo = list(GeneralT.index) #List of all transitional numbers with meaningful result (use given values if there are any)
-	resultNo = [no for no in resultNo if no <= MaxResultNo] #Filters out resultNo (the max timespan)
+	# resultNo = [no for no in resultNo if no <= MaxResultNo] #Filters out resultNo (the max timespan)
+	resultNo = [3]
 	
 	# We will mix the clustered result with baseline result, i.e. fill time windows without meaningful clusters/MCs with baseline cluster (a single cluster)
 	# processedFilePath = func.processed_data_generator(dataFilePath, baselineFilePath, resultNo, func_type = 'Read') #Get the processed file path
 	
+	figsize = [15,10]
 	axis_kw = {'tick_label_size': 13, 'axis_label_size': 20, 'fontdict': {'size': 10,'weight': 'bold'}, 'legend_text_size': 15, 'suptitle_size': 20} #axis plotting kwargs 
 	##########################################################################################
 	# Plot the number of meaningful time windows in each transition number using timeWindowCount
 	if plot_meaningful_window: #Plot number of meaningful time windows
-		fig_file, ax_file = plt.subplots(figsize = [15,10], tight_layout = True,
+		fig_file, ax_file = plt.subplots(figsize = figsize, tight_layout = True,
 			subplot_kw= {'ylabel': 'Number of Meaningful Time Windows'})
 		fig_file.suptitle('Number of Meaningful Time Windows with '+resultPrior.capitalize()+' Prior', size=axis_kw['suptitle_size']) #Create the figure suptitle
 		plt_temp = timeWindowCount.plot(kind = 'bar', ax = ax_file,xlabel = 'Timespan of Time Windows (hrs)')
@@ -129,17 +131,22 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		##########################################################################################
 		titles_dict['title_win'] = [] #Reset titles_dict's title_win list for current sheet
 		for idx, windowIdx in enumerate(windowArray): #Iterate over different time windows that have meaningful results
+			# print('idx is',idx,'and windowIdx is',windowIdx)
 			windowData = dataT.iloc[(idx*s):(idx+1)*s,:] #Crop out all the data for this time window (idx is window # for this transition #)
 			transCount = transCountArr[idx] #Num of trans mat for this time window
+			
 			# Create empty list for both mc_data and pmat
-			mc_window = []
-			pmat_window = []
-			# Create title for this time window
+			mc_window = [] #Initialize the list of mc_data for current window
+			pmat_window = [] #Initialize the list of pmat for current window
+			
+			# Create title for this time window from its title row
 			title_idx = rowRangeArr[idx][0]-1 #Row number of the title for the current window in SpecificT
 			title_row = SpecificT.iloc[title_idx,:][SpecificT.iloc[title_idx,:].notnull()] #Get the row for the title
-			window_title = title_row.iloc[1].split(' - ')[0]+' - '+title_row.iloc[-5].split(' - ')[1] #Get the title of current time window
-			cluster_size = ast.literal_eval(title_row.iloc[-1])
+			window_title = title_row.iloc[1].split(' - ')[0]+' - '+title_row.iloc[-7].split(' - ')[1] #Get the title of current time window
+			cluster_size = ast.literal_eval(title_row.iloc[-3]) #Read the size of the cluster
+
 			titles_dict['title_win'].append(' Time Window No. '+str(windowIdx)+': '+window_title) #Assign the titles for a time window (for plot_type plotting)
+			
 			# Iterating over each MC within the window and plot it
 			for chainNo in range(transCount): #Iterate over each Markov chain
 				pmat = windowData.iloc[:,chainNo*(s+1):chainNo*(s+1)+s] #Transitional matrix for current MC
@@ -170,12 +177,21 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 				else: #Simulation type plot has pmat already appended
 					raise Exception('There is no such plot type!')
 			# Note:Both entries of mc_sheet are lists, and each entry is either a mc_window or a pmat_winodw
-			mc_sheet['mc_data_mat'].append(mc_window) #Append mc_window to the list
-			mc_sheet['cluster_size_ls'].append(cluster_size) #Append current size of clusters to list
+			mc_sheet['pmat_window'].append(pmat_window) #Append the pmat to the pmat_window list in mc_sheet
+			mc_sheet['mc_data_mat'].append(mc_window) #Append mc_window to the mc_data_mat list in mc_sheet
+			mc_sheet['cluster_size_ls'].append(cluster_size) #Append current size of clusters to cluster_size_ls list in mc_sheet
+
+			# Compute the posterior probability for current time window (obsolete)
+			# raw_result_file_path = raw_result_path + '_'.join(['bayesian_raw_results',resultPrior, str(transitionNo),str(windowIdx)]) + '.json'
+			# dict_file_path = '_'.join([id_dict_path+'idDict', str(transitionNo),str(windowIdx)])+'.json'
+			# cluster_ls_id = utils.json2dict(raw_result_file_path)[0] #Read the cluster_ls in id format with 
+			# id_dict = utils.json2dict(dict_file_path)[0]
+			# cluster_ls = [[id_dict[count_mat] for count_mat in cluster] for cluster in cluster_ls_id]
+			
 		##########################################################################################
 		# Plot everything from this excel sheet 
 		# First plot out the number of meaningful clusters and number of MCs in the window vs the time window
-		fig_transCount, ax_transCount0 = plt.subplots(num = -1, figsize = [15,10], tight_layout = True,
+		fig_transCount, ax_transCount0 = plt.subplots(num = -1, figsize = figsize, tight_layout = True,
 			subplot_kw= {'xlabel': 'Time Windows', 'ylabel': 'Number of Meaningful Clusters Generated'})  #-2 for translation table, -1 for meaningful clusters
 		
 		# fig_transCount.suptitle('Number of Generated Clusters and Original Markov Chains in Time Windows of '+sheet_name+'(s)', size=axis_kw['suptitle_size']) #Create the figure suptitle for no of transitions
@@ -202,7 +218,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		# Plot the specific plot type given by the user
 		func.plot_mc_sheet(mc_sheet,titles_dict, transCountArr, plot_type = plot_type, fig_type = fig_type,save_pdf = save_pdf, 
 			resultFolderPath = resultFolderPath+resultPrior+'/'+plot_type+'/', suffix = '', prefix = plot_type, #This line deals with input for func.plot_mc_sheet
-			fig_kw = {'fig_size': (15,10), 'constrained_layout': False, 'tight_layout': True, 
+			fig_kw = {'fig_size': figsize, 'constrained_layout': False, 'tight_layout': True, 
 			'ax_kw':{'aspect': 'auto'},
 			'suptitle_kw':{'size': 20}}, #fig generator settings (ax_kw: kwargs for axes; suptitle_kw: kwargs for figure suptitle)
 			plot_kw = {'colormap':'hsv',

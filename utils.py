@@ -1104,7 +1104,7 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 		style_type = plot_type.split('-')[1] #Extract the type of plot style ('line' or 'bar')
 
 		# Simulation
-		n_steps = 5000
+		n_steps = 100000
 		mc_data = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
 		s = mc_data.shape[0]
 		states, mc_sim = simulate_mc(mc_data, n_steps = n_steps, offset_step = 50, start_state = start_state) #Simulate (states, mc_sim) with default setting
@@ -1216,9 +1216,9 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 			labels = [NHTS_new()[node] for node in nodes_tot] #Get labels for current nodes
 			# nodePos = nx.planar_layout(G)
 			# nodePos = nx.shell_layout(G)
-			# nodePos = nx.spring_layout(G)
+			nodePos = nx.spring_layout(G)
 			# nodePos = nx.spiral_layout(G)
-			nodePos = nx.kamada_kawai_layout(G)
+			# nodePos = nx.kamada_kawai_layout(G)
 			# nodePos = nx.random_layout(G)
 		else:
 			raise Exception('No such plot type!')
@@ -1229,20 +1229,50 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 
 		edge_ls = list(mc_data.keys()) #Get the edges from the dictionary keys
 		edge_width = list(mc_data.values()) #Get the edge width
-		G.add_edges_from(edge_ls) #Add the edges
+
+		# for edge in edge_ls:
+		# 	if edge[::-1] in edge_ls and edge[0] != edge[1]:
+		# 		if not G.has_edge(edge[0],edge[1]):
+		# 			G.add_edge(edge[0],edge[1],rad = random.uniform(0,0.5))
+		# 			G.add_edge(edge[1],edge[0],rad = random.uniform(0,-0.5))
+		# 	else:
+		# 		G.add_edge(edge[0],edge[1],rad = 0)
 		
 		size_multiplier = 60
+		G.add_edges_from(edge_ls) #Add the edges
+		
+		# for edge, width in zip(G.edges(data=True), edge_width):
+		# 	nx.draw_networkx_edges(G, 
+		# 		pos = nodePos, 
+		# 		ax = ax, 
+		# 		# arrows = True,
+		# 		edgelist=[(edge[0],edge[1])], 
+		# 		# connectionstyle= f'arc3, rad = {edge[2]["rad"]}',
+		# 		connectionstyle = 'arc3, rad=0.1',
+		# 		width = width*3,
+		# 		arrowsize = size_multiplier/2,
+		# 		node_size = 50*size_multiplier
+		# 		)
+
+		# nx.draw_networkx_edge_labels(G,
+		# 	ax = ax,
+		# 	pos = nodePos,
+		# 	edge_labels = {k:round(v,3) for k,v in mc_data.items()},
+		# 	)
 		nx.draw_networkx(G,
 			ax = ax, 
 			pos = nodePos, 
 			with_labels = True, 
 			labels = state_labels, #Label to be displayed
 			font_color = 'white',
-			# label = state_legends, #Legend
+			font_size = 0.4*size_multiplier,
 			node_size = 50*size_multiplier,
+			# label = state_legends, #Legend
+
+			# edgelist = [], #List of edges to be plotted
+			connectionstyle='arc3, rad=0.2',
 			arrowsize = size_multiplier/2,
-			width = [width*3 for width in edge_width],
-			font_size = 0.4*size_multiplier
+			width = [width*3 for width in edge_width]
 			)
 		# print(dir(cluster_size_at)) #Get all methods for anchored text
 		# print(any([x<0.1 and y>0.9 for x, y in nodePos.values()]))

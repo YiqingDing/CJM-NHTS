@@ -113,7 +113,7 @@ def trip_ls_input(file_name, mode = 'w', save_file = True):
 		trip_ls_raw = utils.csv_read(processed_trip_path, output_type = list) #Read the file into a list of rows
 		trip_ls = utils.ls2trip_ls(trip_ls_raw, tuple)
 	return trip_ls
-#################################################################################################################################################
+################################################################ Baseline Clustering ##################################################################
 def ini_ppl_gen(trip, m, n = 10):
 	# Generate initial population (a list of journey maps = A list of lists of journeys) and top_n list
 	# Input:
@@ -259,118 +259,7 @@ def save_ls2csv(ls,writetype = 'w' , file_name='output/results.csv'):
 		else: #Append to an existing file
 			fwrite.writerow(ls)
 
-def data_sort_labmachine(folder_path, data_name_format, output_file_name = 'result_sorted.csv'):
-	#Input file folder and name format, analyze and save output analysis
-	#folder_path: Path of data file folder
-	#data_name_format: Name format of data files (start with)
-	#Output: A dataframe of best results, each as a row 
-	result = pd.DataFrame() #Empty dataframe to save best trips
-	for root,dirs,files in os.walk(folder_path): #Iterate over all data files in path
-		for file in files:
-			if file.startswith(data_name_format): #Check if the file starts with the name FinalResult
-				df = pd.read_csv(folder_path+'/'+file) #Read the file
-				result = result.append(df.tail(1)) #Append the last line (final optimized trip) to the result list
-
-	result.insert(0,'Trial No', range(1, result.shape[0]+1)) #Add the trial number 
-	final = result.sort_values('Score',ascending=False) #Sort the result list based on final score
-	output_path = folder_path+'/' + output_file_name
-	final.to_csv(output_path, index=False) #Save the result list to csv
-
-	#Return final result list (each row is an optimization result for a trial) and output file path (in case of future use)
-	# final is a dataframe
-	return final
-
-def data_translate_labmachine(result_file, simplified_activities = True, keep_origin = True):
-	# Given a result file and traslate it into a df using default book and save it to CSV
-	# Input:
-		# result_file: Full file path for read, each row is a CJM
-		# simplified_activities: Whether the result would be a single column dataframe or multiple columns
-		# keep_origin: If original Best CJM and keys are kept
-	# Output:
-		# result_translated
-
-	NHTS_book = utils.NHTS()
-
-	df_data = pd.read_csv(result_file, converters={'Best CJM': eval}) #Read the sorted csv file and treat CJM list as value(rather than string)
-	result_translated = pd.DataFrame() #Create an empty dataframe
-
-	for idx, row in df_data.iterrows(): #Iterate over each set of cluster centers for each trial(row)
-		trip_ls = row['Best CJM'] #The bset CJMs for current trial as a list, each entry is a list of individual trips
-
-		for ind_trip in trip_ls: #Iterate over each trip/cluster center in current set and translate the trip 
-			trip_current_df = row.copy().to_frame().transpose() #Create a copy of the current row
-			trip_current_df.insert(3, 'Current Trip', [ind_trip]) #Add the current trip to the row
-			trip_current_df.reset_index(drop=True, inplace=True) #Reset the index
-			# single_col determines the format of the translated result
-				# If true, a single cell dataframe containing list of activities is generated (time ignored)
-				# If false, a row dataframe where each cell contains an activity for that 30 min interval (49 lists in total)
-			trip_translated_df = utils.trip_translator(input_trip = ind_trip, book=NHTS_book, single_col = simplified_activities)
-			trip_current_df = pd.concat([trip_current_df,trip_translated_df],axis = 1) #Concat translated result with current trip
-
-			result_translated = result_translated.append(trip_current_df) #Append the current trip to translated result
-
-	if keep_origin == False: #If the original Best CJM and keys are kept
-		del result_translated['Best CJM']
-		del result_translated['Key']
-	
-	name_extension = 'simplified' if simplified_activities else 'full'
-	result_translated.to_csv(str(pathlib.Path(result_file).parent)+'/result_translated_'+ name_extension +'.csv',  index=False) #Save to CSV and ignore index
-
-	#Output: A csv file with each row as a cluster center for a specific trial in the trial column
-	return result_translated
-
-# def raw_translate(raw_trip_ls, simplified_activities = True):
-# 	#Default book
-# 	NHTS_book = utils.NHTS()
-	
-# 	result_translated = pd.DataFrame() #Create an empty dataframe
-
-# 	for ind_trip in raw_trip_ls: #Iterate over each trip/cluster center in current set and translate the trip 
-		
-# 		trip_current_df = pd.DataFrame([[ind_trip]], columns = ['Current Trip'] ) #Create an empty df
-# 		trip_current_df.reset_index(drop=True, inplace=True)
-# 		# single_col determines the format of the translated result
-# 			# If true, a single cell dataframe containing list of activities is generated (time ignored)
-# 			# If false, a row dataframe where each cell contains an activity for that 30 min interval (49 lists in total)
-# 		trip_translated_df = utils.trip_translator(input_trip = ind_trip, book=NHTS_book, single_col = simplified_activities)
-# 		trip_current_df = pd.concat([trip_current_df,trip_translated_df],axis = 1) #Concat translated result with current trip
-
-# 		result_translated = result_translated.append(trip_current_df) #Append the current trip to translated result
-	
-# 	name_extension = 'simplified' if simplified_activities else 'full'
-# 	result_translated.to_csv('result_translated_raw_'+name_extension+ '.csv',  index=False) #Save to CSV and ignore index
-
-# 	#Output: A csv file with each row as a cluster center for a specific trial in the trial column
-# 	return result_translated
-
-def most_frequent_activities(result_translated, result_file_path):
-	col_names = utils.col_names_30min() #Get names of the columns (hours)
-	sort_dict = {} #A dictionary of sorted activities (key is the time range, value is another dictionary where key is activity, value is number of appearances)
-	sort_ls = [] #A list of most frequent activities at each hour (len = len(col_names)) excluding 'Nothing'
-	freq1 = [] #A list of frequencies, freq1 refers to freq including 'Nothing'
-	freq2 = [] #A list of frequencies, freq2 refers to freq excluding 'Nothing'
-	# sort_ls_raw = [] #A list of most frequent activities at each hour (len = len(col_names)) including 'Nothing'
-	for time_range in col_names: # Iterate over 30-min time range
-		sort_dict_df = result_translated[time_range].value_counts() #Count the number of appearances of activities for this time range
-		sort_dict[time_range] = sort_dict_df.to_dict() #Create a dictionary: key is time range, value is another dictionary (key is activities, value is # of appearances)
-
-		activities_ls = list(sort_dict_df.index.values) #List of activities filled at this hour, in the order of number of appearances
-		sort_ls.append('Nothing')
-		freq1.append(1) #Default 'Nothing' freq1 = 1, freq1 refers to freq including 'Nothing'
-		freq2.append(1) #Default 'Nothing' freq2 = 1, freq2 refers to freq excluding 'Nothing'
-		# sort_ls_raw.append(activities_ls[0])
-		for activity in activities_ls: #The 1st activity that is not 'Nothing' would be the most appearing one
-			# if activity != 'Nothing' and sort_dict_df[activity]>= 50: #Only records if appeared over 50 times
-			if activity != 'Nothing':
-				sort_ls[-1] = activity #Replace 'Nothing' with another activity and stop
-				freq1[-1] = sort_dict_df[activity]/( sum(sort_dict[time_range].values()) ) # Change freq to the freq with 'Nothing'
-				freq2[-1] = sort_dict_df[activity]/( sum(sort_dict[time_range].values()) - sort_dict[time_range]['Nothing']) # Change freq to the freq without 'Nothing'
-				break
-
-	pd.DataFrame([sort_ls,freq1, freq2], columns = col_names).to_csv(str(pathlib.Path(result_file_path).parent)+'/frequent_activities.csv',  index=False)
-	return sort_dict, sort_ls
-
-#################################################################################################################################################
+########################################################## Bayesian Clustering ########################################################################
 def tripls2df(trip_ls, t_interval):
 	# Convert trip_ls to a df with columns for each time interval given by the time interval
 	# Input:
@@ -833,7 +722,94 @@ def merge_count(count_ls, *idx):
 
 	return new_count_ls
 
-#################################################################################################################################################
+################################################## Baseline Analysis - Original #######################################################################
+def data_sort_labmachine(folder_path, data_name_format, output_file_name = 'result_sorted.csv'):
+	#Input file folder and name format, analyze and save output analysis
+	#folder_path: Path of data file folder
+	#data_name_format: Name format of data files (start with)
+	#Output: A dataframe of best results, each as a row 
+	result = pd.DataFrame() #Empty dataframe to save best trips
+	for root,dirs,files in os.walk(folder_path): #Iterate over all data files in path
+		for file in files:
+			if file.startswith(data_name_format): #Check if the file starts with the name FinalResult
+				df = pd.read_csv(folder_path+'/'+file) #Read the file
+				result = result.append(df.tail(1)) #Append the last line (final optimized trip) to the result list
+
+	result.insert(0,'Trial No', range(1, result.shape[0]+1)) #Add the trial number 
+	final = result.sort_values('Score',ascending=False) #Sort the result list based on final score
+	output_path = folder_path+'/' + output_file_name
+	final.to_csv(output_path, index=False) #Save the result list to csv
+
+	#Return final result list (each row is an optimization result for a trial) and output file path (in case of future use)
+	# final is a dataframe
+	return final
+
+def data_translate_labmachine(result_file, simplified_activities = True, keep_origin = True):
+	# Given a result file and traslate it into a df using default book and save it to CSV
+	# Input:
+		# result_file: Full file path for read, each row is a CJM
+		# simplified_activities: Whether the result would be a single column dataframe or multiple columns
+		# keep_origin: If original Best CJM and keys are kept
+	# Output:
+		# result_translated
+
+	NHTS_book = utils.NHTS()
+
+	df_data = pd.read_csv(result_file, converters={'Best CJM': eval}) #Read the sorted csv file and treat CJM list as value(rather than string)
+	result_translated = pd.DataFrame() #Create an empty dataframe
+
+	for idx, row in df_data.iterrows(): #Iterate over each set of cluster centers for each trial(row)
+		trip_ls = row['Best CJM'] #The bset CJMs for current trial as a list, each entry is a list of individual trips
+
+		for ind_trip in trip_ls: #Iterate over each trip/cluster center in current set and translate the trip 
+			trip_current_df = row.copy().to_frame().transpose() #Create a copy of the current row
+			trip_current_df.insert(3, 'Current Trip', [ind_trip]) #Add the current trip to the row
+			trip_current_df.reset_index(drop=True, inplace=True) #Reset the index
+			# single_col determines the format of the translated result
+				# If true, a single cell dataframe containing list of activities is generated (time ignored)
+				# If false, a row dataframe where each cell contains an activity for that 30 min interval (49 lists in total)
+			trip_translated_df = utils.trip_translator(input_trip = ind_trip, book=NHTS_book, single_col = simplified_activities)
+			trip_current_df = pd.concat([trip_current_df,trip_translated_df],axis = 1) #Concat translated result with current trip
+
+			result_translated = result_translated.append(trip_current_df) #Append the current trip to translated result
+
+	if keep_origin == False: #If the original Best CJM and keys are kept
+		del result_translated['Best CJM']
+		del result_translated['Key']
+	
+	name_extension = 'simplified' if simplified_activities else 'full'
+	result_translated.to_csv(str(pathlib.Path(result_file).parent)+'/result_translated_'+ name_extension +'.csv',  index=False) #Save to CSV and ignore index
+
+	#Output: A csv file with each row as a cluster center for a specific trial in the trial column
+	return result_translated
+
+def most_frequent_activities(result_translated, result_file_path):
+	col_names = utils.col_names_30min() #Get names of the columns (hours)
+	sort_dict = {} #A dictionary of sorted activities (key is the time range, value is another dictionary where key is activity, value is number of appearances)
+	sort_ls = [] #A list of most frequent activities at each hour (len = len(col_names)) excluding 'Nothing'
+	freq1 = [] #A list of frequencies, freq1 refers to freq including 'Nothing'
+	freq2 = [] #A list of frequencies, freq2 refers to freq excluding 'Nothing'
+	# sort_ls_raw = [] #A list of most frequent activities at each hour (len = len(col_names)) including 'Nothing'
+	for time_range in col_names: # Iterate over 30-min time range
+		sort_dict_df = result_translated[time_range].value_counts() #Count the number of appearances of activities for this time range
+		sort_dict[time_range] = sort_dict_df.to_dict() #Create a dictionary: key is time range, value is another dictionary (key is activities, value is # of appearances)
+
+		activities_ls = list(sort_dict_df.index.values) #List of activities filled at this hour, in the order of number of appearances
+		sort_ls.append('Nothing')
+		freq1.append(1) #Default 'Nothing' freq1 = 1, freq1 refers to freq including 'Nothing'
+		freq2.append(1) #Default 'Nothing' freq2 = 1, freq2 refers to freq excluding 'Nothing'
+		# sort_ls_raw.append(activities_ls[0])
+		for activity in activities_ls: #The 1st activity that is not 'Nothing' would be the most appearing one
+			# if activity != 'Nothing' and sort_dict_df[activity]>= 50: #Only records if appeared over 50 times
+			if activity != 'Nothing':
+				sort_ls[-1] = activity #Replace 'Nothing' with another activity and stop
+				freq1[-1] = sort_dict_df[activity]/( sum(sort_dict[time_range].values()) ) # Change freq to the freq with 'Nothing'
+				freq2[-1] = sort_dict_df[activity]/( sum(sort_dict[time_range].values()) - sort_dict[time_range]['Nothing']) # Change freq to the freq without 'Nothing'
+				break
+
+	pd.DataFrame([sort_ls,freq1, freq2], columns = col_names).to_csv(str(pathlib.Path(result_file_path).parent)+'/frequent_activities.csv',  index=False)
+	return sort_dict, sort_ls
+
 def plot_vec_centers(trip_data_df, result_loc, raw_trip_ls, top_n = float("inf")):
 	# Given set of centers in df format, plot and save all the centers
 	# Input:
@@ -919,7 +895,10 @@ def plot_freq_centers_heat(sort_dict, result_loc):
 	fig.savefig(img_folder_path+'/FrequencyHeat.png')
 	plt.close()
 
-#################################################### DataAnalysis ############################################################
+################################################## Baseline Analysis - New #######################################################################
+# This section covers 
+
+#################################################### Bayesian Analysis ################################################################################
 def processed_data_generator(dataFilePath, baselineFilePath, resultNo, s = 21, func_type = 'Write'):
 	# Mix the baseline result with the clustered result and generate a new excel (with multiple sheets)
 	# Input:
@@ -1024,7 +1003,7 @@ def simulate_mc_sheet(pmat_sheet, n_steps = 20000, **kwargs):
 	file_path = kwargs['file_path'] if 'file_path' in kwargs.keys() else '/MCsimulation.pdf' #Extract the file path
 	fig2pdf(file_path,fig_num = 'all') #Save all figures to PDF	
 
-######### Plotting in DataAnalysis #############
+######### Bayesian Analysis - Plotting #############
 def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous', fig_type = 'multiple', s = 21, save_pdf = False, 
                   fig_kw = {}, plot_kw = {}, **kwargs):
 	# Given all MCs for time windows within one sheet, plot them depends on fig_type:

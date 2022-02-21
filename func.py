@@ -1127,19 +1127,21 @@ def fig_generator(fig_num, ax_num, titles_dict, **kwargs):
 	ax_kw = fig_kw.pop('ax_kw') if 'ax_kw' in fig_kw.keys() else {} #Remove and assign axes keyword dict (from fig_kw) and leaves only kwargs for the fig_kw
 	fig_size = fig_kw.pop('fig_size') if 'fig_size' in fig_kw.keys() else (15,10) #Figure size (default (15,10))
 	border_dist = fig_kw.pop('border_dist') if 'border_dist' in fig_kw.keys() else 0.2 #Distance between borders of subplots (default 0.2)
+
 	suptitle_kw = fig_kw.pop('suptitle_kw') if 'suptitle_kw' in fig_kw.keys() else {} #Keyword arguments for suptitle of figure (default empty)
 
 	# fig_size = kwargs['fig_size'] if 'fig_size' in kwargs.keys() else (15,10) #Figure size (default (15,10))
 	# c_layout = kwargs['c_layout'] if 'c_layout' in kwargs.keys() else False #Indicator for constrained layout (default True)
 	# t_layout = kwargs['t_layout'] if 't_layout' in kwargs.keys() else False #Indicator for tight layout (default True)
 	
-	
 	figs = [] #A list of figures
 	axs = [] #A list of axes
 	plt.rcParams.update({'figure.max_open_warning': 0})
 	if fig_num == 1 and len(ax_num)>1: #There is only one figure with with multiple time windows, i.e. fig_type = 'single'
 		fig = plt.figure(figsize = fig_size, **fig_kw) #Build figure
-		fig.suptitle(titles_dict['title_sheet'], **suptitle_kw) #Add the title to the figure
+		if 'Plot' in suptitle_kw.keys(): #Plot suptitle only if command is given
+			del suptitle_kw['Plot'] #Remove the key 'Plot'
+			fig.suptitle(titles_dict['title_sheet'], **suptitle_kw) #Add the title to the figure
 		ax_title = titles_dict['title_win'] #Get the list of titles for the axes, one for each time window/column
 
 		# Compute number of rows and columns for grids on figure 
@@ -1194,6 +1196,9 @@ def fig_generator(fig_num, ax_num, titles_dict, **kwargs):
 				fig, ax = plt.subplots(nrows = fig_ax_num, ncols =1, num = i, figsize = fig_size, squeeze = False, subplot_kw = ax_kw, **fig_kw) #Build figure with only 1 column
 				axs.extend(ax.flatten()) #ax is a 2d array of axes (squeeze=False) thus needs to be merged with axs (extend than append)
 			################
+			# if 'Plot' in suptitle_kw.keys(): #Plot suptitle only if command is given
+			# 	del suptitle_kw['Plot'] #Remove the key 'Plot'
+			# 	print('Printing suptitle!!!!!! and suptitle_kw is',suptitle_kw)
 			fig.suptitle(titles_dict['title_sheet']+fig_title[i], **suptitle_kw) #Get and assign the title to the figure (axes don't have a title)
 			figs.append(fig)
 	return figs, axs

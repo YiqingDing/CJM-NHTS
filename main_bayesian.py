@@ -56,7 +56,7 @@ loop_iter = range(loop_start,loop_end+1) if loop_end >= loop_start else range(lo
 # suffix = '_'+raw_suffix if raw_suffix else '' #Add underscore if suffix is nonempty
 if sample_size == 0:
 	sample_size = 'Uniform'
-	trip_df_prior = False #For uniform prior, we will use a bool for prior trip_df
+	trip_df_prior = pandas.DataFrame() #For uniform prior, we will use a empty df for prior trip_df
 elif sample_size == -1:
 	sample_size = 'Complete'
 	trip_df_prior = trip_df_complete #Use trip_df_complete or trip_df_select
@@ -83,7 +83,7 @@ for mc_len in loop_iter: #Iterate over different number of transitions
 	last_time = time.time()
 	# mc_len = 4 #Test mc_len value
 	mc_crop_dict, mc_title_ls = func.tripdf2mcls(trip_df, mc_len) #Convert trip df to a dict of mc lists using number of transitions (keyed by window index), mc_title_ls is list of titles, index based on order of mc_crop_dict's values
-	mc_crop_dict_prior = func.tripdf2mcls(trip_df_prior, mc_len)[0] if not trip_df_prior.empty else False #Convert the complete trip df to dict of mc lists (keyed by window index)
+	mc_crop_dict_prior = False if trip_df_prior.empty else func.tripdf2mcls(trip_df_prior, mc_len)[0] #Convert the prior trip df to dict of mc lists (keyed by window index) (if trip_df_prior is not empty)
 	print('MC crop list generated for mc_len = ',mc_len,'!')
 	# Load workbook at the beginning of each loop (add a sheet in each loop)
 	workbook = openpyxl.load_workbook(workbook_path) #Realod workbook

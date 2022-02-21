@@ -15,14 +15,15 @@ dataFileNameList = []
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-1.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-2.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev100.xlsx')
+dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
 
 # Settings of plot - Input
 resultFolderPath = str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/' #Result folder path
 rawFileName = 'Bayesian_Clustering_Results_0raw.xlsx' #File that contains unprocessed results
 s = 21 #Number of states
-threshold = 0.3 #Threshold of trans prob to be kept
+threshold = 0 #Threshold of trans prob to be kept
 # plot_type = 6 #Test plot type (comment for user input)
-print('----------------------------------------------------------------------------------------------')
+print('-'*100)
 plot_type = int(input('Please give the plot type (1 for homogeneous (default), 2 for heatmap, 3 for simulation-line, 4 for simulation-bar-random, 5 for simulation-bar-absorb, 6 for chord diagram): ') or 1)
 if plot_type == 1:
 	plot_type = 'homogeneous'
@@ -42,29 +43,31 @@ else:
 	# 'individual': Each graph/axe for 1 figure - Mostly for chord graph and heatmaps
 	# 'multiple': Each time window (contains multiple axes) for 1 figure - Most cases
 	# 'single': All figures are piled into 1 figure - Rarely used
-fig_type = 'multiple' 
+fig_type = 'individual' 
 save_pdf = True #If saving all figures in a PDF
-plot_meaningful_window = False #If plot number of meaningful windows
+plot_meaningful_window = False #If plot the bar plot of number of meaningful windows
 # MaxResultNo = 4 #Max number of transitions of interest - Comment if use all numbers
 # print(resultFolderPath+resultFileAffix+'/')
 raw_result_path = 'output/raw/' #Folder path for raw result files
 id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
+
+# Figure properties
+# figsize = [6.5*3,2.38*3]
+figsize = [15,10]
+axis_kw = {'tick_label_size': 13, 'axis_label_size': 20, 'fontdict': {'size': 10,'weight': 'bold'}, 'legend_text_size': 15, 'suptitle_size': 20} #axis plotting kwargs 
 ########################### End of Inputs ####################################
 resultPriorLs = [i.split('_')[-1].split('.xlsx')[0] for i in dataFileNameList] #List of prior type, will be used for output folder name
 baselineFilePath =  resultFolderPath+rawFileName #Get the baseline file path
 baselineFile = pd.ExcelFile(baselineFilePath) #Read the baseline file as an object
 LabelT = baselineFile.parse('WindowLabels', header = None, index_col = 0) #Get the sheet in baseline file that contains all the window labels (for plotting)
 # Print settings
-print('Current plot_type is [' + plot_type +']\nCurrent fig_type is ['+fig_type+']')
-print('Plotting Meaningful Time Windows: ',str([plot_meaningful_window]))
-if 'MaxResultNo' in locals() and MaxResultNo:
-	print('Max number of transitions tested are:',MaxResultNo)
-else:
+print('Current plot_type is [' + plot_type +']\nCurrent fig_type is ['+fig_type+']') #Print plot_type and fig_type
+print('Plotting Meaningful Time Window Bar Plot: ',str([plot_meaningful_window])) 
+if 'MaxResultNo' not in locals() or MaxResultNo: #If no MaxResultNo given
 	MaxResultNo = float('inf')
-	print('Number of transitions tested are: [ALL]')
 ##########################################################################################
 for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
-	print('***********************************************************************************************')
+	print('*'*80)
 	print('Loop starts for file: ',dataFileName.split('.xlsx')[0])
 	##################
 	last_time = time.time()
@@ -85,15 +88,15 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 	GeneralT[1] = GeneralT[1].apply(lambda x: [a for a in x if a!= 1]) #Keeps only the # of meaningful clusters (remove all 1s in the list)
 
 	# resultDict = GeneralT.drop(labels = 1,axis = 1).T.to_dict('list', into = collections.defaultdict(list)) #Create a dictionary where keys are the transition no, vals are the meaningful time window indices for that transition no
-	resultNo = list(GeneralT.index) #List of all transitional numbers with meaningful result (use given values if there are any)
-	# resultNo = [no for no in resultNo if no <= MaxResultNo] #Filters out resultNo (the max timespan)
-	resultNo = [3]
-	
+	transitionNoLs = list(GeneralT.index) #List of all transitional numbers (timespans) with meaningful results (use given values if there are any)
+	transitionNoLs = [no for no in transitionNoLs if no <= MaxResultNo] #Filters out transitionNoLs (the max timespan)
+	# transitionNoLs = [3] #!!!!Testing ONLY!!!!
+	print('Number of Transitions Tested for Current File:',transitionNoLs)
+	print('>'*50)
+
 	# We will mix the clustered result with baseline result, i.e. fill time windows without meaningful clusters/MCs with baseline cluster (a single cluster)
-	# processedFilePath = func.processed_data_generator(dataFilePath, baselineFilePath, resultNo, func_type = 'Read') #Get the processed file path
-	
-	figsize = [15,10]
-	axis_kw = {'tick_label_size': 13, 'axis_label_size': 20, 'fontdict': {'size': 10,'weight': 'bold'}, 'legend_text_size': 15, 'suptitle_size': 20} #axis plotting kwargs 
+	# processedFilePath = func.processed_data_generator(dataFilePath, baselineFilePath, transitionNoLs, func_type = 'Read') #Get the processed file path
+		
 	##########################################################################################
 	# Plot the number of meaningful time windows in each transition number using timeWindowCount
 	if plot_meaningful_window: #Plot number of meaningful time windows
@@ -111,7 +114,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		func.fig2pdf(file_path = resultFolderPath+resultPrior+'/MeaningfulTimeWindow_'+resultPrior+'.pdf', fig_num ='all')
 		# sys.exit(0)
 	##########################################################################################
-	for transitionNo in resultNo: #Loop over each transition number/sheet
+	for transitionNo in transitionNoLs: #Loop over each transition number/sheet
 		# Read background info for this transition number from baseline file
 		sheet_name = str(transitionNo) +' Transition'
 		baselineT = baselineFile.parse(sheet_name = sheet_name, header = None)
@@ -220,12 +223,12 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 			resultFolderPath = resultFolderPath+resultPrior+'/'+plot_type+'/', suffix = '', prefix = plot_type, #This line deals with input for func.plot_mc_sheet
 			fig_kw = {'fig_size': figsize, 'constrained_layout': False, 'tight_layout': True, 
 			'ax_kw':{'aspect': 'auto'},
-			'suptitle_kw':{'size': 20}}, #fig generator settings (ax_kw: kwargs for axes; suptitle_kw: kwargs for figure suptitle)
+			'suptitle_kw':{'size': 30}}, #fig generator settings (ax_kw: kwargs for axes; suptitle_kw: kwargs for figure suptitle)
 			plot_kw = {'colormap':'hsv',
 			'heatmap_font':{'labelsize':12},
 			'chord_font': {'fontsize': 17},
 			'homogeneous_font':{'size': 20},
-			'sim_font': {'fontsize': 10.5}} #plot_mc settings
+			'sim_font': {'fontsize': 12.5}} #plot_mc settings
 			)
 		##########################################################################################
 		# # Simulate all the MCs on this excel sheet - Currently undeveloped

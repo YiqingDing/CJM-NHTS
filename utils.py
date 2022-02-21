@@ -1119,12 +1119,12 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 
 		# Overall plot properties that apply to all simulation plots
 		bbox_props = dict(boxstyle='round', facecolor='wheat', alpha=0.5) #Property of text box
-		sim_font = plot_kw['sim_font'] if 'sim_font' in plot_kw.keys() else {'fontsize': 10} #Default colormap type
+		sim_font = plot_kw['sim_font'] if 'sim_font' in plot_kw.keys() else {'fontsize': 10} #Default txt size for legend & txt box
 		cm_type = plot_kw['colormap'] if 'colormap' in plot_kw.keys() else 'gist_rainbow' #Default colormap type
 		cm_dict = NHTS_new('colormap', colormap = cm_type) #Get a dictionary of colors for each state
 		
 		# Plotting
-		ax.set_ylabel('Probability')
+		ax.set_ylabel('Probability', size = sim_font['fontsize']*2)
 		if style_type == 'line': #Simulation line plot
 			# Axes properties and plot settings
 			ax.set_ylim(-0.1,1.4)
@@ -1170,7 +1170,7 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 				
 				if dist_prob[state] > 0: #If dist > 0, place a prob value label on top of the bar
 					rect = ax.patches[-1] #Get the recetangle that was plotted
-					ax.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, "{:.3f}".format(dist_prob[state]), ha='center', va='bottom', fontsize = 'small') #Place the prob value label
+					ax.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, "{:.3f}".format(dist_prob[state]), ha='center', va='bottom', fontsize = sim_font['fontsize']) #Place the prob value label
 			ax.set_ylim(*ylim)
 			
 			# Change the number of columns in legend text
@@ -1238,27 +1238,9 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 		# 	else:
 		# 		G.add_edge(edge[0],edge[1],rad = 0)
 		
-		size_multiplier = 60
+		size_multiplier = txt_prop['size']*3 if 'size' in txt_prop.keys() else 60
 		G.add_edges_from(edge_ls) #Add the edges
 		
-		# for edge, width in zip(G.edges(data=True), edge_width):
-		# 	nx.draw_networkx_edges(G, 
-		# 		pos = nodePos, 
-		# 		ax = ax, 
-		# 		# arrows = True,
-		# 		edgelist=[(edge[0],edge[1])], 
-		# 		# connectionstyle= f'arc3, rad = {edge[2]["rad"]}',
-		# 		connectionstyle = 'arc3, rad=0.1',
-		# 		width = width*3,
-		# 		arrowsize = size_multiplier/2,
-		# 		node_size = 50*size_multiplier
-		# 		)
-
-		# nx.draw_networkx_edge_labels(G,
-		# 	ax = ax,
-		# 	pos = nodePos,
-		# 	edge_labels = {k:round(v,3) for k,v in mc_data.items()},
-		# 	)
 		nx.draw_networkx(G,
 			ax = ax, 
 			pos = nodePos, 
@@ -1270,15 +1252,13 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 			# label = state_legends, #Legend
 
 			# edgelist = [], #List of edges to be plotted
-			connectionstyle='arc3, rad=0.2',
-			arrowsize = size_multiplier/2,
-			width = [width*3 for width in edge_width]
+			connectionstyle='arc3, rad=0.2', #Change the radian
+			arrowsize = size_multiplier/5,
+			width = [width*2 for width in edge_width]
 			)
 		# print(dir(cluster_size_at)) #Get all methods for anchored text
-		# print(any([x<0.1 and y>0.9 for x, y in nodePos.values()]))
 		cluster_size_at.txt._text.update(txt_prop) #Update the text in anchored text with properties from txt_prop
 		ax.add_artist(cluster_size_at) #Add anchored text for cluster size to axes
-		# print(leg)
 		
 	return ax
 

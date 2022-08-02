@@ -1,5 +1,5 @@
 import func, utils, time
-import os, pathlib, ast, collections, sys
+import os, pathlib, ast, collections, sys, random
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -7,31 +7,31 @@ import matplotlib.ticker as ticker
 
 # File names - Input
 dataFileNameList = []
-# dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_complete.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_dev2000.xlsx')
-# dataFileNameList.append('Bayesian_Clustering_Results_dev478.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_uniform.xlsx') #Clustering result with uniform prior
+# dataFileNameList.append('Bayesian_Clustering_Results_dev20k.xlsx') #Clustering result with 20000 selected samples as prior
+dataFileNameList.append('Bayesian_Clustering_Results_dev478.xlsx') #Use 478 selected samples as prior
 # dataFileNameList.append('Bayesian_Clustering_Results_dev300.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-1.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev200-2.xlsx')
 # dataFileNameList.append('Bayesian_Clustering_Results_dev100.xlsx')
-dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
+# dataFileNameList.append('Bayesian_Clustering_Results_fulllength.xlsx')
 
 # Settings of plot - Input
 resultFolderPath = str(pathlib.Path(os.getcwd()).parent)+'/Results/Bayesian/' #Result folder path
-rawFileName = 'Bayesian_Clustering_Results_0raw.xlsx' #File that contains unprocessed results
+rawFileName = 'Bayesian_Clustering_Results_raw.xlsx' #File that contains unprocessed results
 s = 21 #Number of states
 threshold = 0 #Threshold of trans prob to be kept
 # plot_type = 6 #Test plot type (comment for user input)
 print('-'*100)
-plot_type = int(input('Please give the plot type (1 for homogeneous (default), 2 for heatmap, 3 for simulation-line, 4 for simulation-bar-random, 5 for simulation-bar-absorb, 6 for chord diagram): ') or 1)
+# plot_type = int(input('Please give the plot type (1 for homogeneous (default), 2 for heatmap, 3 for simulation-line, 4 for simulation-bar-random, 5 for simulation-bar-absorb, 6 for chord diagram): ') or 1)
+plot_type = 6 #******************************************************** ------ CHECK THIS SETTING!!!!!!!!!!
 if plot_type == 1:
 	plot_type = 'homogeneous'
 elif plot_type ==2:
 	plot_type = 'heatmap'
 elif plot_type ==3:
 	plot_type = 'simulation-line'
-elif plot_type ==4:
+elif plot_type ==4: 
 	plot_type = 'simulation-bar-random'
 elif plot_type == 5:
 	plot_type = 'simulation-bar-absorb'
@@ -44,17 +44,25 @@ else:
 	# 'multiple': Each time window (contains multiple axes) for 1 figure - Most cases
 	# 'single': All figures are piled into 1 figure - Rarely used
 fig_type = 'individual' 
-save_pdf = True #If saving all figures in a PDF
+save_type = 'png' #Type of files images will be saved to: 'pdf', 'png', 'show'
 plot_meaningful_window = False #If plot the bar plot of number of meaningful windows
 # MaxResultNo = 4 #Max number of transitions of interest - Comment if use all numbers
 # print(resultFolderPath+resultFileAffix+'/')
-raw_result_path = 'output/raw/' #Folder path for raw result files
+raw_result_path = 'output/raw/' #Folder path for raw result files to read from
 id_dict_path = 'output/idDict/' #File path to save id_dict (in Bayesian clustering)
 
 # Figure properties
-# figsize = [6.5*3,2.38*3]
-figsize = [15,10]
-axis_kw = {'tick_label_size': 13, 'axis_label_size': 20, 'fontdict': {'size': 10,'weight': 'bold'}, 'legend_text_size': 15, 'suptitle_size': 20} #axis plotting kwargs 
+figsize_scale = 1
+figsize = [6.5*3,2.38*3] #Large aspect ratio figsize: For plot_type == 5 or 6 and meaningful time window
+# figsize = [15*figsize_scale,10*figsize_scale]
+# figsize = [10,10] #figsize for 2 plots together
+axis_kw = {'tick_label_size': 18, 'axis_label_size': 25, 'bar_txt_dict': {'size': 20,'weight': 'bold'}, 'legend_text_size': 20, 'suptitle_size': 35}  #axis plotting kwargs (also used in mc plots)
+plot_kw = {'colormap':'hsv', 
+			'homogeneous_seed': 962, #random.randint(0,1000), #Seed for node pos in homogeneous graph
+			'heatmap_font':{'labelsize':12},
+			'chord_font': {'fontsize': 30},
+			'homogeneous_font':{'size': 24},
+			'sim_font': {'fontsize': 17}} #Keyword dict for mc plots
 ########################### End of Inputs ####################################
 resultPriorLs = [i.split('_')[-1].split('.xlsx')[0] for i in dataFileNameList] #List of prior type, will be used for output folder name
 baselineFilePath =  resultFolderPath+rawFileName #Get the baseline file path
@@ -90,7 +98,7 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 	# resultDict = GeneralT.drop(labels = 1,axis = 1).T.to_dict('list', into = collections.defaultdict(list)) #Create a dictionary where keys are the transition no, vals are the meaningful time window indices for that transition no
 	transitionNoLs = list(GeneralT.index) #List of all transitional numbers (timespans) with meaningful results (use given values if there are any)
 	transitionNoLs = [no for no in transitionNoLs if no <= MaxResultNo] #Filters out transitionNoLs (the max timespan)
-	# transitionNoLs = [3] #!!!!Testing ONLY!!!!
+	transitionNoLs = [3] #*********************************************************/////////////////////////////////////////////////////////////////!!!!Testing ONLY!!!!
 	print('Number of Transitions Tested for Current File:',transitionNoLs)
 	print('>'*50)
 
@@ -105,13 +113,14 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 		fig_file.suptitle('Number of Meaningful Time Windows with '+resultPrior.capitalize()+' Prior', size=axis_kw['suptitle_size']) #Create the figure suptitle
 		plt_temp = timeWindowCount.plot(kind = 'bar', ax = ax_file,xlabel = 'Timespan of Time Windows (hrs)')
 		for rect_i, rect in enumerate(ax_file.patches):
-			ax_file.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, timeWindowCount.iloc[rect_i], ha='center', va='bottom', fontdict = axis_kw['fontdict']) #Place a label on top of the bar
+			ax_file.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, timeWindowCount.iloc[rect_i], ha='center', va='bottom', fontdict = axis_kw['bar_txt_dict']) #Place a label on top of the bar
 		
-		ax_file.tick_params(axis = 'x',which = 'major' ,bottom = False, labelbottom = True, labelsize = axis_kw['tick_label_size']) #Turn off x-axis major ticks & labels
+		ax_file.tick_params(axis = 'both',which = 'major' ,bottom = False, labelbottom = True, labelsize = axis_kw['tick_label_size']) #Turn off x-axis major ticks & labels
 		ax_file.xaxis.label.set_size(axis_kw['axis_label_size']) #Set size of axis label size
 		ax_file.yaxis.label.set_size(axis_kw['axis_label_size']) #Set size of axis label size
 		ax_file.yaxis.set_major_locator(ticker.MaxNLocator(integer = True))
-		func.fig2pdf(file_path = resultFolderPath+resultPrior+'/MeaningfulTimeWindow_'+resultPrior+'.pdf', fig_num ='all')
+		ax_file.set_ylim(0,max(timeWindowCount)*1.1)
+		func.fig2file(file_path = resultFolderPath+resultPrior+'/MeaningfulTimeWindow_'+resultPrior, save_type = 'png', fig_num ='all')
 		# sys.exit(0)
 	##########################################################################################
 	for transitionNo in transitionNoLs: #Loop over each transition number/sheet
@@ -193,43 +202,38 @@ for fileNo, dataFileName in enumerate(dataFileNameList): #Loop over each file
 			
 		##########################################################################################
 		# Plot everything from this excel sheet 
-		# First plot out the number of meaningful clusters and number of MCs in the window vs the time window
+		# 1) Plot out the number of meaningful clusters and number of MCs in the window vs the time window
 		fig_transCount, ax_transCount0 = plt.subplots(num = -1, figsize = figsize, tight_layout = True,
-			subplot_kw= {'xlabel': 'Time Windows', 'ylabel': 'Number of Meaningful Clusters Generated'})  #-2 for translation table, -1 for meaningful clusters
+			subplot_kw= {'xlabel': 'Time Windows', 'ylabel': 'Number of Meaningful Clusters'})  #-2 for translation table, -1 for meaningful clusters
 		
 		# fig_transCount.suptitle('Number of Generated Clusters and Original Markov Chains in Time Windows of '+sheet_name+'(s)', size=axis_kw['suptitle_size']) #Create the figure suptitle for no of transitions
 		fig_transCount.suptitle('Number of Generated Clusters and Original Markov Chains in Time Windows of '+str((transitionNo+1)/2)+'-Hour', size=axis_kw['suptitle_size']) #Create the figure suptitle for timespan in hours
 		plt0 = ax_transCount0.bar(windowArray, transCountArr, label = 'Number of Meaningful Clusters')  #Plot number of generated clusters for each meaningful window
 		rects = ax_transCount0.patches #Get the rectangles(bars) in the plot
 		for rect_i, rect in enumerate(rects):
-			ax_transCount0.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, transCount, ha='center', va='bottom', fontdict = axis_kw['fontdict']) #Place a label on top of the bar
+			ax_transCount0.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, transCount, ha='center', va='bottom', fontdict = axis_kw['bar_txt_dict']) #Place a label on top of the bar
 		ax_transCount1 = ax_transCount0.twinx() #Instance a second axes that shares the same x-axis
 		plt1 = ax_transCount1.plot(range(1,len(windowLabels)+1), mc_num_ls, 'ro-', label = 'Number of MCs in Time Window') #Plot number of MCs in the window
-		ax_transCount0.legend([plt0, plt1[0]],[plt0.get_label(),plt1[0].get_label()], fontsize = axis_kw['legend_text_size'])
+		ax_transCount0.legend([plt0, plt1[0]],[plt0.get_label(),plt1[0].get_label()], fontsize = axis_kw['legend_text_size'], loc = 'upper right')
 		
 		# Axis properties
 		ax_transCount0.set_ylim(0,10)
 		ax_transCount0.set_xlim(0,48)
-		ax_transCount0.tick_params(axis = 'x',which = 'major' ,bottom = False, labelbottom = True, labelsize = axis_kw['tick_label_size']) #Turn off x-axis major ticks & labels
+		ax_transCount0.tick_params(axis = 'both',which = 'major' ,bottom = False, labelbottom = True, labelsize = axis_kw['tick_label_size']) #Turn off x-axis major ticks & labels
 		ax_transCount0.set_xticks(range(1,len(windowLabels)+1)) #Set x-axis minor ticks
 		ax_transCount0.set_xticklabels(labels = windowLabels, rotation = 'vertical') #Set xtick labels and orientation
 		ax_transCount0.xaxis.label.set_size(axis_kw['axis_label_size']) #Set size of axis label size
 		ax_transCount0.yaxis.label.set_size(axis_kw['axis_label_size']) #Set size of axis label size
 		ax_transCount1.set_ylim(0,500)
-		ax_transCount1.set_ylabel('Number of Markov Chains in Time Window', size = axis_kw['axis_label_size'])
+		ax_transCount1.set_ylabel('Number of Markov Chains', size = axis_kw['axis_label_size'])
 		######################################
-		# Plot the specific plot type given by the user
-		func.plot_mc_sheet(mc_sheet,titles_dict, transCountArr, plot_type = plot_type, fig_type = fig_type,save_pdf = save_pdf, 
+		# 2) Plot the specific plot type given by the user
+		func.plot_mc_sheet(mc_sheet,titles_dict, transCountArr, plot_type = plot_type, fig_type = fig_type,save_type = save_type, 
 			resultFolderPath = resultFolderPath+resultPrior+'/'+plot_type+'/', suffix = '', prefix = plot_type, #This line deals with input for func.plot_mc_sheet
 			fig_kw = {'fig_size': figsize, 'constrained_layout': False, 'tight_layout': True, 
 			'ax_kw':{'aspect': 'auto'},
-			'suptitle_kw':{'size': 30}}, #fig generator settings (ax_kw: kwargs for axes; suptitle_kw: kwargs for figure suptitle)
-			plot_kw = {'colormap':'hsv',
-			'heatmap_font':{'labelsize':12},
-			'chord_font': {'fontsize': 17},
-			'homogeneous_font':{'size': 20},
-			'sim_font': {'fontsize': 12.5}} #plot_mc settings
-			)
+			'suptitle_kw':{'size': axis_kw['suptitle_size'],'Plot':True}}, #fig generator settings (ax_kw: kwargs for axes; suptitle_kw: kwargs for figure suptitle)
+			plot_kw = plot_kw) #plot_mc settings
 		##########################################################################################
 		# # Simulate all the MCs on this excel sheet - Currently undeveloped
 		# func.simulate_mc_sheet(mc_sheet['pmat'], n_steps = 20000, initial_state = 0, **kwargs)

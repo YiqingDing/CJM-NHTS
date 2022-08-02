@@ -1001,10 +1001,10 @@ def simulate_mc_sheet(pmat_sheet, n_steps = 20000, **kwargs):
 		states, dist_steps = utils.simulate_mc(pmat, n_steps = 20000, plot_simulation = True, **kwargs)
 
 	file_path = kwargs['file_path'] if 'file_path' in kwargs.keys() else '/MCsimulation.pdf' #Extract the file path
-	fig2pdf(file_path,fig_num = 'all') #Save all figures to PDF	
+	fig2file(file_path,fig_num = 'all') #Save all figures to PDF	
 
 ######### Bayesian Analysis - Plotting #############
-def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous', fig_type = 'multiple', s = 21, save_pdf = False, 
+def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous', fig_type = 'multiple', s = 21, save_type = 'pdf', 
                   fig_kw = {}, plot_kw = {}, **kwargs):
 	# Given all MCs for time windows within one sheet, plot them depends on fig_type:
 		# fig_type='single': Plot each time window on one column with one figure contains all time windows
@@ -1025,9 +1025,10 @@ def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous
 			# 'heatmap' or 'simulation-bar' or 'simulation-line' or 'chord': mc_data is a transitional matrix
 		# fig_type: 'single' or 'multiple' that determines the # of figures to be generated
 		# s: Number of states
-		# save_pdf: Save figure(s) as PDF or not:
-			# True: Save PDF without showing figs
-			# False: Showing figs without saving as PDF
+		# save_type: Save figure(s) as file type:
+			# 'pdf': Save images as a PDF without showing
+			# 'png': Save images as PNG files without showing
+			# 'show': Showing figs without saving
 		# kwargs:
 			# resultFolderPath
 			# resultAffix
@@ -1058,12 +1059,12 @@ def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous
 		print(fig_num, ax_num)
 	elif fig_type =='multiple':
 		# If there are multiple figures:
-			#Number of fig = number of windows = # of columns = len(transCountArr)
+			#Number of fig = number of time windows = # of columns = len(transCountArr)
 			#Each fig has number of axes = number of trans mat in the time window=transCountArr
 		ax_num, fig_num = [transCountArr, len(transCountArr)]
 		# print('ax_num =',ax_num,'fig_num =',fig_num)
 	elif fig_type == 'individual':
-		# If one plot (multiple plots in a window) has 1 figure
+		# If one plot (there are multiple plots in a time window) has 1 figure
 		fig_num = sum(transCountArr) #Number of figure = sum of number of axes for diffeent time windows
 		ax_num = [1]*fig_num #Number of axes is 1 axes/per figure
 		fig_title = titles_dict['title_win']
@@ -1081,15 +1082,15 @@ def plot_mc_sheet(mc_sheet, titles_dict, transCountArr, plot_type = 'homogeneous
 		# print('idx is',idx, 'with data is',mc_flatten[idx])
 		utils.plot_mc(mc_data = mc_flatten[idx], cluster_size = cluster_size[idx] ,plot_type = plot_type, ax=ax, **plot_kw) #Plot MC based on plot_type on current axe
 	
-	if save_pdf == True:
-		# Save all the figures in this sheet into a single PDF
+	if save_type != 'show':
 		resultFolderPath = kwargs['resultFolderPath'] if 'resultFolderPath' in kwargs.keys() else '' #Extract result folder path if there is such (a/b/c/ format)
 		prefix = kwargs['prefix']+'-' if 'prefix' in kwargs.keys() else '' #Extract result file affix if there is such
 		suffix = kwargs['suffix'] if 'suffix' in kwargs.keys() else '' #Extract result file suffix if there is such - this is applied to file name
 		suffix = suffix + '-' if suffix else '' #Check if '-' is needed (not if empty)
-		resultFilePath = resultFolderPath + prefix +titles_dict['title_sheet']+suffix+'.pdf' #Generate PDF file path
-
-		fig2pdf(resultFilePath, fig_num ='all')
+		
+		resultFilePath = resultFolderPath + prefix + titles_dict['title_sheet']+suffix #Generate path: File path without extension or Folder path for set of images
+		# Save all the figures in this sheet into the specific file types		
+		fig2file(resultFilePath, save_type, fig_num ='all')
 	else:
 		plt.show()
 		
@@ -1137,10 +1138,11 @@ def fig_generator(fig_num, ax_num, titles_dict, **kwargs):
 	figs = [] #A list of figures
 	axs = [] #A list of axes
 	plt.rcParams.update({'figure.max_open_warning': 0})
+	plot_suptitle = suptitle_kw.pop('Plot') #Get if suptitle is plotted
+
 	if fig_num == 1 and len(ax_num)>1: #There is only one figure with with multiple time windows, i.e. fig_type = 'single'
 		fig = plt.figure(figsize = fig_size, **fig_kw) #Build figure
-		if 'Plot' in suptitle_kw.keys(): #Plot suptitle only if command is given
-			del suptitle_kw['Plot'] #Remove the key 'Plot'
+		if plot_suptitle: #Plot suptitle only if command is given
 			fig.suptitle(titles_dict['title_sheet'], **suptitle_kw) #Add the title to the figure
 		ax_title = titles_dict['title_win'] #Get the list of titles for the axes, one for each time window/column
 
@@ -1199,29 +1201,40 @@ def fig_generator(fig_num, ax_num, titles_dict, **kwargs):
 			# if 'Plot' in suptitle_kw.keys(): #Plot suptitle only if command is given
 			# 	del suptitle_kw['Plot'] #Remove the key 'Plot'
 			# 	print('Printing suptitle!!!!!! and suptitle_kw is',suptitle_kw)
-			fig.suptitle(titles_dict['title_sheet']+fig_title[i], **suptitle_kw) #Get and assign the title to the figure (axes don't have a title)
+			if plot_suptitle: #Plot suptitle only if command is given
+				fig.suptitle(titles_dict['title_sheet']+fig_title[i], **suptitle_kw) #Get and assign the title to the figure (axes don't have a title)
 			figs.append(fig)
 	return figs, axs
 
-def fig2pdf(file_path, fig_num = 'all', **kwargs):
-	# Given the file path and figure numbers to be saved, save figures to a pdf
+def fig2file(file_path, save_type = 'pdf', fig_num = 'all', **kwargs):
+	# Given the file path and figure numbers to be saved, save figures to files
 	# Input:
-		# file_path: Path of file to be saved, must NOT end with '\' or '/'
+		# file_path: Path of file to be saved, without file extension, must NOT end with '\' or '/'
+		# (Not Used) folder_path: Path of parent folder
+		# save_type: File type to be saved
 		# fig_num: 'all' or list of int, list of figure numbers
 	################################
-	folder_path = os.path.split(file_path)[0] #Extract the folder path
+	folder_path = os.path.split(file_path)[0] #Extract the parent folder path
 	pathlib.Path(folder_path).mkdir(parents=True, exist_ok=True) #Create the result folder (and parent folder) if not exists yet 
 	
-	pp = PdfPages(file_path) #Create the pdf file
 	# Get the list of figures given by fig_num
 	if fig_num == 'all':
 		figs = list(map(plt.figure, plt.get_fignums())) #Get list of all figures opened right now
 	else:
 		figs = list(map(plt.figure, fig_num)) #Get list of figures given by fig_num
-	for fig in figs: #Iterate over each figure
-		pp.savefig(fig)
+	# Save images according to given file type
+	if save_type == 'pdf': #If all images saved to 1 pdf file
+		pdf_file_path = file_path + '.pdf' #Add pdf extension to file_path
+		pp = PdfPages(pdf_file_path) #Create the pdf file
+		for fig in figs: #Iterate over each figure
+			pp.savefig(fig) #Save files into pdf
+		pp.close() #Close and save the PDF
+	elif save_type =='png': #If images are saved to individual image files
+		pathlib.Path(file_path).mkdir(parents=True, exist_ok=True) #Images will be saved to folder of file_path, thus needs to create folder
+		for idx, fig in enumerate(figs):
+			img_file_path = '{}/fig-{}.{}'.format(file_path,idx, save_type) #Create image path (file_path is the folder path now)
+			fig.savefig(img_file_path)
 
-	pp.close() #Close and save the PDF
 	plt.close('all') #Close all figures
 
 	return None

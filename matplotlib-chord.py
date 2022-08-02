@@ -140,7 +140,7 @@ def selfChordArc(start=0, end=60, radius=1.0, chordwidth=0.7, ax=None, color=(1,
         patch = patches.PathPatch(path, facecolor=color+(0.5,), edgecolor=color+(0.4,), lw=LW)
         ax.add_patch(patch)
 
-def chordDiagram(X, ax, colors=None, width=0.1, pad=2, chordwidth=0.7):
+def chordDiagram(X, ax, colors=None, width=0.1, pad=2, chordwidth=0.7, radius = 1.0):
     """Plot a chord diagram
 
     Parameters
@@ -157,6 +157,8 @@ def chordDiagram(X, ax, colors=None, width=0.1, pad=2, chordwidth=0.7):
         gap pad between two neighboring ideogram arcs, unit: degree, default: 2 degree
     chordwidth : optional
         position of the control points for the chords, controlling the shape of the chords
+    radius : optional (added by Yiqing Ding)
+        Size of chord diagram: Distance from center to graph edge
     """
     # X[i, j]:  i -> j
     x = X.sum(axis = 1) # sum over rows
@@ -203,9 +205,9 @@ def chordDiagram(X, ax, colors=None, width=0.1, pad=2, chordwidth=0.7):
 
     for i in range(len(x)):
         start, end = arc[i]
-        IdeogramArc(start=start, end=end, radius=1.0, ax=ax, color=colors[i], width=width)
+        IdeogramArc(start=start, end=end, radius=radius, ax=ax, color=colors[i], width=width)
         start, end = pos[(i,i)]
-        selfChordArc(start, end, radius=1.-width, color=colors[i], chordwidth=chordwidth*0.7, ax=ax)
+        selfChordArc(start, end, radius= radius -width, color=colors[i], chordwidth=chordwidth*0.7, ax=ax)
         for j in range(i):
             color = colors[i]
             if X[i, j] > X[j, i]:
@@ -213,7 +215,7 @@ def chordDiagram(X, ax, colors=None, width=0.1, pad=2, chordwidth=0.7):
             start1, end1 = pos[(i,j)]
             start2, end2 = pos[(j,i)]
             ChordArc(start1, end1, start2, end2,
-                     radius=1.-width, color=colors[i], chordwidth=chordwidth, ax=ax)
+                     radius=radius-width, color=colors[i], chordwidth=chordwidth, ax=ax)
 
     #print(nodePos)
     return nodePos

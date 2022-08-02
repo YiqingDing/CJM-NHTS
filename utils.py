@@ -10,6 +10,7 @@ import pandas as pd
 from scipy.special import gamma, factorial, binom, gammaln
 import scipy.stats
 import networkx as nx
+from matplotlib.patches import ConnectionStyle
 # R change wd: setwd("~/Google Drive/School/Stanford/Research/Journey Map/Markov Chain Paper/Code & Data/NHTS")
 
 # 4 different sections:
@@ -771,16 +772,23 @@ def NHTS_new(extra = None, **kwargs):
 		# NHTS_book: A dictionary keyed by state index (1 - 21) and valued the following:
 			# If extra is None, returns labels
 			# If extra is colormap, returns unique color 
-	NHTS_book = {1: 'Regular home activities (chores, sleep)', 2: 'Work from home (paid)', 3: 'Work', 4: 'Work-related meeting / trip', 
-	5: 'Volunteer activities (not paid)', 6: 'Drop off /pick up someone', 7: 'Change type of transportation', 
-	8: 'Attend school as a student', 9: 'Attend child care', 10: 'Attend adult care', 11: 'Buy goods (groceries, clothes, appliances, gas)',
-	12: 'Buy services (dry cleaners, banking, service a car, pet care)', 13: 'Buy meals (go out for a meal, snack, carry-out)',
-	14: 'Other general errands (post office, library)', 15: 'Recreational activities (visit parks, movies, bars, museums)',
-	16: 'Exercise (go for a jog, walk, walk the dog, go to the gym)', 17: 'Visit friends or relatives', 18: 'Health care visit (medical, dental, therapy)',
-	19: 'Religious or other community activities', 20: 'Something else', 21: 'Nothing',}
-	if extra == 'colormap':
-		s = len(NHTS_book.keys())
-		colormap =  kwargs['colormap'] if 'colormap' in kwargs.keys() else 'gist_rainbow'
+	# NHTS_book = {1: 'Regular home activities (chores, sleep)', 2: 'Work from home (paid)', 3: 'Work', 4: 'Work-related meeting / trip', 
+	# 5: 'Volunteer activities (not paid)', 6: 'Drop off /pick up someone', 7: 'Change type of transportation', 
+	# 8: 'Attend school as a student', 9: 'Attend child care', 10: 'Attend adult care', 11: 'Buy goods (groceries, clothes, appliances, gas)',
+	# 12: 'Buy services (dry cleaners, banking, service a car, pet care)', 13: 'Buy meals (go out for a meal, snack, carry-out)',
+	# 14: 'Other general errands (post office, library)', 15: 'Recreational activities (visit parks, movies, bars, museums)',
+	# 16: 'Exercise (go for a jog, walk, walk the dog, go to the gym)', 17: 'Visit friends or relatives', 18: 'Health care visit (medical, dental, therapy)',
+	# 19: 'Religious or other community activities', 20: 'Something else', 21: 'Nothing',} #Commented origin dict
+	NHTS_book = {1: 'Regular home activities', 2: 'Work from home', 3: 'Work', 4: 'Work-related meeting/trip', 
+	5: 'Volunteer activities', 6: 'Drop off/pick up someone', 7: 'Change type of transportation', 
+	8: 'Attend school as a student', 9: 'Attend child care', 10: 'Attend adult care', 11: 'Buy goods',
+	12: 'Buy services', 13: 'Buy meals',
+	14: 'Other general errands', 15: 'Recreational activities',
+	16: 'Exercise', 17: 'Visit friends or relatives', 18: 'Health care visit',
+	19: 'Religious or community activities', 20: 'Something else', 21: 'Nothing',} #Abridged dict (all brackets removed for increased font)
+	if extra == 'colormap': #If color map to be returned
+		s = len(NHTS_book.keys()) #Get the total number of items for the keys
+		colormap =  kwargs['colormap'] if 'colormap' in kwargs.keys() else 'gist_rainbow' #Read input colormap name, if any
 		cm = plt.get_cmap(colormap) #Get a colormap (can edit type)
 		colorCycle = [cm(1.*i/s) for i in range(s)] #Default color map that will be applied to all plots
 		for idx, (key, value) in enumerate(NHTS_book.items()): #Iterate over each item in dictionary 
@@ -1015,7 +1023,7 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 	# Input:
 		# mc_data
 		# plot_type
-		# s
+		# s: Number of states
 		# ax: Current axe
 		# plot_kw:
 			# colormap
@@ -1036,12 +1044,13 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 	# sys.exit(0)
 	if ax == None: #Get current axe if None given
 		ax = plt.gca()
+	fig_current = ax.get_figure() #Get current figure (alternatively, use ax.figure)
 
 	start_state = plot_kw['start_state'] if 'start_state' in plot_kw.keys() else 1 #Start state, default 1
 	leg_ncol = 2 #Number of columns in legend
 	label_max_len = 25 #Maximum length of labels (if longer, wrap it)
-	property_bbox_loc = (0.5,1.35) #Location of the property box on graph
-	cluster_size_txt = str(cluster_size) #Cluster size text string
+
+	cluster_size_txt = str(cluster_size) #Cluster size text string (used on homogeneous graph & chord)
 	cluster_size_at = AnchoredText(cluster_size_txt, loc='upper right', frameon=True) #Create anchored text for cluster size (used on homogeneous graph & chord)
 
 	if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
@@ -1071,32 +1080,44 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 	elif plot_type == 'chord':
 		# Plot chord diagram with mc_data as the transitional matrix
 		pmat = np.asarray(mc_data,dtype =float) if not isinstance(mc_data,np.ndarray) else mc_data #Convert to np array
-		
+		# Generate colors for the chord graph
 		cm_type = plot_kw['colormap'] if 'colormap' in plot_kw.keys() else 'gist_rainbow' #Default colormap type
-		cm_dict = NHTS_new('colormap', colormap = cm_type) #Get a dictionary of colors keyed by state valued by 
+		cm_dict_ls = list(NHTS_new('colormap', colormap = cm_type).values()) #Get a dictionary of colors keyed by state valued by 
 		state_space = node_validate(pmat, start_state) #Get all the states that appeared in pmat 
 		pmat_red = pmat[np.asarray(state_space) - start_state,:][:,np.asarray(state_space) - start_state] #Reduce the pmat to only rows&cols with values (valid states)
 		if pmat_red.shape[0] == 1:
 			raise Exception('The transitional matrix has only 1 state!!!')
 		labels = [NHTS_new()[i] for i in state_space] #Get labels for all states in state_space(valid states)
-		rgb_colors = [i[:3] for i in random.sample(list(cm_dict.values()), k = len(labels))] #Randomly choose colors from cm_dict
-		# rgb_colors = None if len(labels)<10 else [i[:3] for i in random.sample(list(cm_dict.values()), k = len(labels))] 
+		random.seed(6) #Random seed for color of chord graph
+		rgb_colors = [i[:3] for i in random.sample(cm_dict_ls, k = len(labels))] #Randomly choose colors from cm_dict_ls
+		# print(NHTS_new())
+		# sys.exit(0)
+		color_states = [NHTS_new()[i] for i in [11,1]] #States whose colors will be colored (look up through NHTS_new())
+		rgb_colors_greyed = [color if labels[i] in color_states else (192/255,192/255,192/255) for i, color in enumerate(rgb_colors) ] #Greyed out version
 
 		# Axes Properties & Texts
-		sup = ax.figure._suptitle #Get the suptitle of current figure
+		sup = fig_current._suptitle #Get the suptitle of current figure
 		# sup.set_y(0.98) #Change y location of suptitle
-		sup.set_fontsize(25) #Override font size of suptitle
+		# if sup: #Change font if suptitle exists
+		# 	sup.set_fontsize(25) #Override font size of suptitle (make it smallers so it fits chord graph)
 		prop = plot_kw['chord_font'] | dict(ha='center', va='center') if 'chord_font' in plot_kw.keys() else dict(ha='center', va='center') #Add/modify properties for text in chord graph
 		ax.axis('off') #Turn off the axis
-		dist_multiplier = 0.98 #Multiplier of moving distance of chord text closer to origin
+		dist_multiplier = 0.9 #Multiplier of moving distance of chord text closer to origin
+		label_max_len = 13 #Change text wrap length
 		# Plot & Add Text
-		nodePos = chord_plot.chordDiagram(pmat_red, ax, colors=rgb_colors, width=0.01, pad=2, chordwidth=0.5) #Compute node/text position
+		nodePos = chord_plot.chordDiagram(pmat_red, ax, 
+			colors=rgb_colors_greyed, 
+			width=0.0, 
+			pad=2, 
+			radius = 0.85,
+			chordwidth=0.5)  #Compute node/text position
 		# ax.add_artist(cluster_size_at) #Add anchored text for cluster size to axes
 		for i, node in enumerate(nodePos): #Iterate over each node and place text
 			x,y, rot = node #Extract the x, y, and rotation of supposed label
 			label = labels[i] #Extract the label for current node
-			label = textwrap.fill(label, width = label_max_len) #If label longer than label_max_len, wrap it
-			ax.text(x*dist_multiplier,y*dist_multiplier, label, rotation=rot,wrap = True, **prop) #Place label
+			c = 'k' if label in color_states else 'silver' #Greyed out all labels except those in color_states
+			label = textwrap.fill(label, width = label_max_len) #If label longer than label_max_len, wrap it			
+			ax.text(x*dist_multiplier,y*dist_multiplier, label, rotation=rot,wrap = True, **prop, c = c) #Place label
 
 	elif plot_type.startswith('simulation'):
 		# Plot the simulation result for the given MC
@@ -1119,7 +1140,7 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 
 		# Overall plot properties that apply to all simulation plots
 		bbox_props = dict(boxstyle='round', facecolor='wheat', alpha=0.5) #Property of text box
-		sim_font = plot_kw['sim_font'] if 'sim_font' in plot_kw.keys() else {'fontsize': 10} #Default txt size for legend & txt box
+		sim_font = plot_kw['sim_font'] if 'sim_font' in plot_kw.keys() else {'fontsize': 10} #Default txt size (1) bar txt=1; (2) tick label=0.8; (3) legend=1; (4) txt box=1.2;
 		cm_type = plot_kw['colormap'] if 'colormap' in plot_kw.keys() else 'gist_rainbow' #Default colormap type
 		cm_dict = NHTS_new('colormap', colormap = cm_type) #Get a dictionary of colors for each state
 		
@@ -1143,9 +1164,10 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 		elif style_type == 'bar': #Simulation bar plots
 			bar_type = plot_type.split('-')[2] #Get the type of bar plot ('random', 'absorb') - default 'random'
 
-			# Axes properties:
+			# User-defined Axes properties:
 			ylim = (0,1.4) #y-axis limit
 			legend_anchor_bbox = (0.5,-0.075) #Bbox the legend is anchored to
+			property_bbox_loc = [0.5,ylim[1]*0.95] #Location of the property box on graph
 
 			# Plot values
 			state_space = NHTS_new().keys()
@@ -1160,41 +1182,70 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 				bbox_props['edgecolor'] = 'Red'
 
 			# Plot bar plot with legends and label
-			leg_texts = []
+			leg_texts = [] #List: Each item is a legend label string
+			idx = 1 #Position of bars (since not all bars are plotted)
 			for state, label in NHTS_new().items(): #Iterate over every state in state space even state doesn't appear (do this to have a proper x-axis len)
-				if dist_prob[state] < 0.001: #If distribution prob=0, we would ignore the label/lagend
-					label = '_'+label
-				else:
-					leg_texts.append(label)
-				ax.bar(state, dist_prob[state] , width = 0.8, align = 'center', label = label, tick_label = state, color = cm_dict[state]) #Plot the bar
+				# if dist_prob[state] < 0.001: #If distribution prob=0, we would ignore the label/lagend
+				# 	label = '_'+label #Add '_' to ignore label in legend
 				
-				if dist_prob[state] > 0: #If dist > 0, place a prob value label on top of the bar
+				if dist_prob[state] > 0.001: #Plot only if prob > 0
+					leg_texts.append(label)
+					ax.bar(state, dist_prob[state], 
+						width = 0.8, 
+						align = 'center', 
+						label = label, 
+						# log = True, #Change y-axis scale to logscale
+						color = cm_dict[state]) #Plot the bar				
+					idx += 1
 					rect = ax.patches[-1] #Get the recetangle that was plotted
-					ax.text(rect.get_x() + rect.get_width() / 2, rect.get_height()+0.01, "{:.3f}".format(dist_prob[state]), ha='center', va='bottom', fontsize = sim_font['fontsize']) #Place the prob value label
-			ax.set_ylim(*ylim)
-			
-			# Change the number of columns in legend text
-			if len(ax.get_subplotspec().colspan) == ax.get_gridspec().ncols:
-				leg_ncol = 3 #If a subplot column spans the entire figure, increase legend col to 3
-			leg = ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol, **sim_font) #Place the legend
-			
-			# Resize the legend text size based on number of rows and width of the legend
-			txt_fontsize = sim_font['fontsize'] #Initial font size for legend and text
-			if (len(ax.get_subplotspec().colspan) < ax.get_gridspec().ncols) and len(leg_texts) > 1:#If axes size not spanning the entire figure and has at least 2 legends, we will test if the legend size needs to be adjusted
-				leg_text_row_len = [len('\t\t'.join(x)) for x in zip(leg_texts[:ceil(len(leg_texts)/leg_ncol)], leg_texts[ceil(len(leg_texts)/leg_ncol):])] #List of str length where each one is the length of a row in the legend
-				txt_fontsize -= int(bool(max(0, len(leg_text_row_len) -1))) #Row# above 1 will reduce font size by 1
-				if max(leg_text_row_len) > 65: #Reduce font size by 1
-					txt_fontsize -= 1
-				elif max(leg_text_row_len) > 85:  #Reduce font size by 1
-					txt_fontsize -= 1
-				if txt_fontsize != sim_font['fontsize']: #If legend font size changed
-					sim_font['fontsize'] = txt_fontsize #Reassign the fontsize in sim_font
-					ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol, **sim_font) #Replace the legend with a different font size
+					ax.text(
+						rect.get_x() + rect.get_width() / 2, 
+						rect.get_height()*1.005, 
+						"{:.3f}".format(dist_prob[state]), 
+						ha='center', va='bottom', 
+						fontsize = sim_font['fontsize']) #Place the prob value label on top of bar and append to bar_txt list (for later processing) 
+			# Change the axis settings
+			if ax.get_yscale() == 'linear': #If linear scale, change y-axis lim according to ylim
+				# When linear scale y-axis is used, do the following:
+					# Set ylim using given ylim
+					# No legend
+					# Add x-ticks and labels of appropriate rotation and text
+				ax.set_ylim(*ylim) #Change y limit
+				leg_texts = [textwrap.fill(label, width = label_max_len*.6) for label in leg_texts] #Wrap texts
+				ax.set_xticks(range(1,idx),labels  = leg_texts, ha = 'right', rotation = 45 ) #Set x-axis ticks and labels with right alignment & increase the font sizes
+				ax.tick_params(axis = 'both',which = 'both', labelsize = sim_font['fontsize']*.95) #Set tick label sizes
+			elif ax.get_yscale() =='log': #If log scale
+				# When log scale y-axis is used, do the following:
+					# Change y-axis limit and MC property box location
+					# Turn off x-axis ticks and ticklabels
+					# Add legend of appropriate size
+				ax.set_ylim(ax.get_ylim()[0],ax.get_ylim()[1]*100) #Change y-limit
+				property_bbox_loc[1] = ax.get_ylim()[1]*0.6	#Change MC property box location
 
-			ax.text(*property_bbox_loc, extra_text, horizontalalignment='left', verticalalignment='top', bbox=bbox_props, **sim_font) #Create a text box with MC properties
-			ax.set_xticks(range(start_state,s + start_state-1) ,minor = True) #Set x-axis minor ticks
-			ax.set_xticklabels(range(start_state,s + start_state-1) ,minor = True) #Set x-axis minor tick labels
-			ax.tick_params(axis = 'x',which = 'major' ,bottom = False, labelbottom = False) #Turn off x-axis major ticks & labels
+				ax.tick_params(axis = 'x',which='both',bottom = False, labelbottom = False) #Turn off x-axis ticks and labels
+
+				# Place legend with appropriate size
+				leg_ncol = 2 #Initialize number of columns the legend has
+				leg = ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol, **sim_font) #Place the initial legend
+				# Change the number of columns and/or fontsize for legend texts to best fit
+				renderer = fig_current.canvas.get_renderer() #Get the renderer of current figure - Need this to compute legend and axes width
+				fig_grid_col = ax.get_gridspec().ncols #Number of columns for the figure (fixed)
+				ax_grid_ncol = len(ax.get_subplotspec().colspan) #Number of columns current axes occupy (fixed)
+				ax_width_inch = ax.get_window_extent(renderer=renderer).transformed(fig_current.dpi_scale_trans.inverted()).width #Axes width in inch (fixed)
+				#If axes width > legend width, add an extra column for legend text
+				while ax_width_inch > leg.get_window_extent(renderer=renderer).transformed(fig_current.dpi_scale_trans.inverted()).width and leg_ncol < len(leg_texts):
+					leg_ncol +=1 #Change the legend column
+					leg = ax.legend(bbox_to_anchor = legend_anchor_bbox, loc = 'upper center', ncol=leg_ncol, **sim_font) #Redraw the legend
+			
+				ax.tick_params(axis = 'both',which = 'both', labelsize = sim_font['fontsize']*.8) #Set tick label sizes
+
+			# !!!Note: Not Implemented!!! --> Resize text size based on number of rows and width of the legend.
+			# print('fig width is:',fig_current.get_size_inches())
+
+			# Create MC property text box
+			txt_box_prop = {key: val for key, val in sim_font.items() if key != 'fontsize'} | {'fontsize': sim_font['fontsize']*1.2} #Change the font of text in the box
+			ax.text(*property_bbox_loc, extra_text, horizontalalignment='left', verticalalignment='top', bbox=bbox_props, **txt_box_prop) #Create the text box with MC properties
+
 			
 
 	else: #Plots MC in homogeneous/step graph
@@ -1202,6 +1253,8 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 		# We will plot Markov chain using networkx package
 
 		G=nx.DiGraph() #Create directed graph
+		seed = plot_kw['homogeneous_seed'] if 'homogeneous_seed' in plot_kw.keys() else None #Random seed for node position
+		print('seed is',seed)
 		nodes_tot = np.unique(np.asarray(list(mc_data.keys()))) #Unique nodes embedded in edges
 		G.add_nodes_from(nodes_tot) #Add all the nodes
 		txt_prop = plot_kw['homogeneous_font'] if 'homogeneous_font' in plot_kw.keys() else {} #Get the font properties for homogeneous plot (if any)
@@ -1214,31 +1267,23 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 		elif plot_type == 'homogeneous':
 			# Plot each MC without creating new states
 			labels = [NHTS_new()[node] for node in nodes_tot] #Get labels for current nodes
-			# nodePos = nx.planar_layout(G)
+			# nodePos = nx.circular_layout(G)
 			# nodePos = nx.shell_layout(G)
-			nodePos = nx.spring_layout(G)
+			nodePos = nx.spring_layout(G, 
+				# scale = .5,
+				iterations = 1,
+				seed = seed) #Get the node position
 			# nodePos = nx.spiral_layout(G)
 			# nodePos = nx.kamada_kawai_layout(G)
-			# nodePos = nx.random_layout(G)
+			# nodePos = nx.random_layout(G,seed = seed)
 		else:
 			raise Exception('No such plot type!')
 		labels = [textwrap.fill(label, width = label_max_len) for label in labels] #Wrap label if longer than label_max_len
 		# state_legends ='\n'.join([str(state)+': '+label for state, label in zip(nodes_tot, labels)] )#Generate the state-label pair dict for legend
 
 		state_labels = dict(zip(nodes_tot, nodes_tot)) #Generate the state-state pair dict for showing on plot
-
 		edge_ls = list(mc_data.keys()) #Get the edges from the dictionary keys
-		edge_width = list(mc_data.values()) #Get the edge width
-
-		# for edge in edge_ls:
-		# 	if edge[::-1] in edge_ls and edge[0] != edge[1]:
-		# 		if not G.has_edge(edge[0],edge[1]):
-		# 			G.add_edge(edge[0],edge[1],rad = random.uniform(0,0.5))
-		# 			G.add_edge(edge[1],edge[0],rad = random.uniform(0,-0.5))
-		# 	else:
-		# 		G.add_edge(edge[0],edge[1],rad = 0)
-		
-		size_multiplier = txt_prop['size']*3 if 'size' in txt_prop.keys() else 60
+		size_multiplier = txt_prop['size']*3 if 'size' in txt_prop.keys() else 60 #Size multiplier: Scales size of node, font size of node, arrowsize according to textsize of label
 		G.add_edges_from(edge_ls) #Add the edges
 		
 		nx.draw_networkx(G,
@@ -1249,17 +1294,48 @@ def plot_mc(mc_data, cluster_size, plot_type, s=21, ax = None, **plot_kw):
 			font_color = 'white',
 			font_size = 0.4*size_multiplier,
 			node_size = 50*size_multiplier,
-			# label = state_legends, #Legend
 
-			# edgelist = [], #List of edges to be plotted
-			connectionstyle='arc3, rad=0.2', #Change the radian
-			arrowsize = size_multiplier/5,
-			width = [width*2 for width in edge_width]
-			)
-		# print(dir(cluster_size_at)) #Get all methods for anchored text
+			connectionstyle='arc3, rad=0.3', #Change the radian
+			arrowsize = size_multiplier/3,
+			width = [mc_data[edge]*2 for edge in edge_ls]
+			) #Draw nework with above settings
+
+		# Following commented codes are for drawing network graph with edges and nodes separately
+		# self_edges = [edge for edge in edge_ls if edge[0] == edge[1]]
+		# noself_edges = [edge for edge in edge_ls if edge[0] != edge[1]]
+		# self_edge_style = ConnectionStyle.Arc3(rad=0.2)
+		# arcs_noself = nx.draw_networkx_edges(G, 
+		# 	pos = nodePos,
+		# 	edgelist = noself_edges,
+		# 	width = [mc_data[edge]*2 for edge in noself_edges],
+		# 	connectionstyle='arc3, rad=0.3',
+		# 	arrowsize = size_multiplier/5,
+		# 	ax=ax) #Draw non-self loop edges
+		# arcs_self_loop = nx.draw_networkx_edges(G, 
+		# 	pos = nodePos,
+		# 	edgelist = self_edges,
+		# 	width = [mc_data[edge]*2 for edge in self_edges],
+		# 	# connectionstyle='arc3, shrinkA=0.1',
+		# 	arrowsize = size_multiplier/5,
+		# 	ax=ax) #Draw self-loop edges
+		# nx.draw_networkx_nodes(G,
+		# 	pos = nodePos,
+		# 	node_size = 40*size_multiplier,
+		# 	ax=ax)
+		# nx.draw_networkx_labels(G,
+		# 	pos = nodePos,
+		# 	font_color = 'white',
+		# 	font_size = 0.4*size_multiplier,
+		# 	labels = state_labels, #Label to be displayed
+		# 	ax = ax)
+		# for arc in arcs_self_loop:
+		# 	arc.set(mutation_aspect=0.000005)'''
+
 		cluster_size_at.txt._text.update(txt_prop) #Update the text in anchored text with properties from txt_prop
+
+		# print(dir(cluster_size_at)) #Get all methods for anchored text
+		# cluster_size_at.txt._text.set_text(cluster_size_txt+' seed='+str(seed))
 		ax.add_artist(cluster_size_at) #Add anchored text for cluster size to axes
-		
 	return ax
 
 def heatmap(data, row_labels, col_labels, ax=None,
@@ -1422,7 +1498,12 @@ def linestyle_generator(n, **kwargs):
 	ls_opt = ['-','--',':','-.',(0, (1, 10)), (0, (5, 3)), (0, (5, 1)), (0, (3, 3, 1, 3)), (0, (3, 1, 1, 1)), (0, (3, 3, 1, 3, 1, 3)), (0, (3, 1, 1, 1, 1, 1))]
 	ls_final = (ls_opt*ceil(n/len(ls_opt)))[:n]
 	return ls_final
-##########################################################Original Plot Functions############################################################
+
+def legend_generator(ax, ):
+	# Given axes and labels, place legends of appropriate size on the axes
+
+	return None
+##########################################################Plot Functions for Baseline############################################################
 def raw_plot(raw_trip_ls = []):
 	# Plot raw trip list as points. This function returns a set of axes object that will be reused to plot 
 	# Input:
